@@ -30,6 +30,8 @@ import generator.RegexInput
 import generator.GeneratorFactory
 import java.util.regex.Pattern
 import java.util.regex.PatternSyntaxException
+import generator.Literal
+import generator.DefaultEntity
 
 /**
  * This class contains custom validation rules. 
@@ -455,6 +457,49 @@ class BotValidator extends AbstractBotValidator {
 					}
 				}
 			}
+		}
+	}
+	
+	@Check
+	def similarPhrases(TrainingPhrase phrase) {
+		var bot = phrase.eContainer.eContainer.eContainer;
+		if (bot instanceof Bot){
+			var trainingPhrases = (bot as Bot).eAllContents.filter(TrainingPhrase).toList
+			for (tp: trainingPhrases){
+				if (phrase.isSimilarTo(tp) && !phrase.equals(tp)){
+					warning("Two training phrases should not be equals", GeneratorPackage.Literals.TRAINING_PHRASE__TOKENS)
+				}
+			}
+		}
+	}
+	@Check
+	def atLeastTreeTrainingPhrases(IntentLanguageInputs intent){
+		if (intent.inputs.length <3){
+		 	var hasRegex=false;
+		 	for (intentInput: intent.inputs){
+		 		if (intentInput instanceof RegexInput){
+		 			hasRegex = true;
+		 		}
+		 	}
+		 	if (!hasRegex){
+		 		warning("The intents must contains at least tree training phrases or one regex per language", GeneratorPackage.Literals.INTENT_LANGUAGE_INPUTS__INPUTS)
+		 	}
+		}
+	}
+	@Check
+	def trainingPhraseWithOnlyTextEntity(TrainingPhrase phrase) {
+		var onlyTextEntity = true
+		for (token: phrase.tokens){
+			if (token instanceof Literal){
+				onlyTextEntity = false;
+			}else if (token instanceof ParameterReferenceToken){
+				if ((token as ParameterReferenceToken).parameter.defaultEntity === null || (token as ParameterReferenceToken).parameter.defaultEntity != DefaultEntity.TEXT){
+					onlyTextEntity = false;
+				}
+			}
+		}
+		if (onlyTextEntity){
+			warning("Training phrases should contains something different to a text parameter", GeneratorPackage.Literals.INTENT_LANGUAGE_INPUTS__INPUTS)
 		}
 	}
 }

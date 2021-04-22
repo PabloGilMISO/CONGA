@@ -8,7 +8,7 @@ Bundle-SymbolicName: botGenerator.dsl.ui.tests; singleton:=true
 Bundle-ActivationPolicy: lazy
 Require-Bundle: botGenerator.dsl.ui,
  botGenerator,
- org.junit.jupiter.api;bundle-version="[5.0.0,6.0.0)",
+ org.junit.jupiter.api;bundle-version="[5.1.0,6.0.0)",
  org.eclipse.xtext.testing,
  org.eclipse.xtext.xbase.testing,
  org.eclipse.xtext.xbase.junit,
