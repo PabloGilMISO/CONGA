@@ -204,12 +204,13 @@ public class BotGrammarAccess extends AbstractElementFinder.AbstractGrammarEleme
 		private final RuleCall cHTTPRequestParserRuleCall_1 = (RuleCall)cAlternatives.eContents().get(1);
 		private final RuleCall cImageParserRuleCall_2 = (RuleCall)cAlternatives.eContents().get(2);
 		private final RuleCall cHTTPResponseParserRuleCall_3 = (RuleCall)cAlternatives.eContents().get(3);
+		private final RuleCall cEmptyParserRuleCall_4 = (RuleCall)cAlternatives.eContents().get(4);
 		
 		//Action returns Action:
-		//    Text | HTTPRequest | Image | HTTPResponse;
+		//    Text | HTTPRequest | Image | HTTPResponse | Empty;
 		@Override public ParserRule getRule() { return rule; }
 		
-		//Text | HTTPRequest | Image | HTTPResponse
+		//Text | HTTPRequest | Image | HTTPResponse | Empty
 		public Alternatives getAlternatives() { return cAlternatives; }
 		
 		//Text
@@ -223,6 +224,9 @@ public class BotGrammarAccess extends AbstractElementFinder.AbstractGrammarEleme
 		
 		//HTTPResponse
 		public RuleCall getHTTPResponseParserRuleCall_3() { return cHTTPResponseParserRuleCall_3; }
+		
+		//Empty
+		public RuleCall getEmptyParserRuleCall_4() { return cEmptyParserRuleCall_4; }
 	}
 	public class TokenElements extends AbstractParserRuleElementFinder {
 		private final ParserRule rule = (ParserRule) GrammarUtil.findRuleForName(getGrammar(), "org.xtext.botGenerator.Bot.Token");
@@ -1996,6 +2000,34 @@ public class BotGrammarAccess extends AbstractElementFinder.AbstractGrammarEleme
 		//EString
 		public RuleCall getCaptionEStringParserRuleCall_7_2_0() { return cCaptionEStringParserRuleCall_7_2_0; }
 	}
+	public class EmptyElements extends AbstractParserRuleElementFinder {
+		private final ParserRule rule = (ParserRule) GrammarUtil.findRuleForName(getGrammar(), "org.xtext.botGenerator.Bot.Empty");
+		private final Group cGroup = (Group)rule.eContents().get(1);
+		private final Keyword cEmptyKeyword_0 = (Keyword)cGroup.eContents().get(0);
+		private final Keyword cResponseKeyword_1 = (Keyword)cGroup.eContents().get(1);
+		private final Assignment cNameAssignment_2 = (Assignment)cGroup.eContents().get(2);
+		private final RuleCall cNameEStringParserRuleCall_2_0 = (RuleCall)cNameAssignment_2.eContents().get(0);
+		
+		//Empty returns Empty:
+		//    'empty' 'response' name=EString
+		//;
+		@Override public ParserRule getRule() { return rule; }
+		
+		//'empty' 'response' name=EString
+		public Group getGroup() { return cGroup; }
+		
+		//'empty'
+		public Keyword getEmptyKeyword_0() { return cEmptyKeyword_0; }
+		
+		//'response'
+		public Keyword getResponseKeyword_1() { return cResponseKeyword_1; }
+		
+		//name=EString
+		public Assignment getNameAssignment_2() { return cNameAssignment_2; }
+		
+		//EString
+		public RuleCall getNameEStringParserRuleCall_2_0() { return cNameEStringParserRuleCall_2_0; }
+	}
 	public class TextLanguageInputHttpResponseElements extends AbstractParserRuleElementFinder {
 		private final ParserRule rule = (ParserRule) GrammarUtil.findRuleForName(getGrammar(), "org.xtext.botGenerator.Bot.TextLanguageInputHttpResponse");
 		private final Group cGroup = (Group)rule.eContents().get(1);
@@ -2596,6 +2628,7 @@ public class BotGrammarAccess extends AbstractElementFinder.AbstractGrammarEleme
 	private final HTTPResponseElements pHTTPResponse;
 	private final HTTPRequestElements pHTTPRequest;
 	private final ImageElements pImage;
+	private final EmptyElements pEmpty;
 	private final TextLanguageInputHttpResponseElements pTextLanguageInputHttpResponse;
 	private final TextInputHttpResponseElements pTextInputHttpResponse;
 	private final TextInputTextElements pTextInputText;
@@ -2653,6 +2686,7 @@ public class BotGrammarAccess extends AbstractElementFinder.AbstractGrammarEleme
 		this.pHTTPResponse = new HTTPResponseElements();
 		this.pHTTPRequest = new HTTPRequestElements();
 		this.pImage = new ImageElements();
+		this.pEmpty = new EmptyElements();
 		this.pTextLanguageInputHttpResponse = new TextLanguageInputHttpResponseElements();
 		this.pTextInputHttpResponse = new TextInputHttpResponseElements();
 		this.pTextInputText = new TextInputTextElements();
@@ -2706,7 +2740,7 @@ public class BotGrammarAccess extends AbstractElementFinder.AbstractGrammarEleme
 	}
 	
 	//Action returns Action:
-	//    Text | HTTPRequest | Image | HTTPResponse;
+	//    Text | HTTPRequest | Image | HTTPResponse | Empty;
 	public ActionElements getActionAccess() {
 		return pAction;
 	}
@@ -3127,6 +3161,17 @@ public class BotGrammarAccess extends AbstractElementFinder.AbstractGrammarEleme
 	
 	public ParserRule getImageRule() {
 		return getImageAccess().getRule();
+	}
+	
+	//Empty returns Empty:
+	//    'empty' 'response' name=EString
+	//;
+	public EmptyElements getEmptyAccess() {
+		return pEmpty;
+	}
+	
+	public ParserRule getEmptyRule() {
+		return getEmptyAccess().getRule();
 	}
 	
 	//TextLanguageInputHttpResponse returns TextLanguageInput:
