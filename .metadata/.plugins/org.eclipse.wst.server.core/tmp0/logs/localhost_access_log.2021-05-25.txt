@@ -1,0 +1,16 @@
+127.0.0.1 - - [25/May/2021:08:59:54 +0200] "GET / HTTP/1.1" 404 687
+0:0:0:0:0:0:0:1 - - [25/May/2021:09:00:09 +0200] "GET /botGenerator.web/ HTTP/1.1" 200 2993
+0:0:0:0:0:0:0:1 - - [25/May/2021:09:00:09 +0200] "GET /botGenerator.web/css/index.css HTTP/1.1" 200 1903
+0:0:0:0:0:0:0:1 - - [25/May/2021:09:00:09 +0200] "GET /botGenerator.web/js/login.js HTTP/1.1" 200 2275
+0:0:0:0:0:0:0:1 - - [25/May/2021:09:00:09 +0200] "GET /botGenerator.web/bootstrap/css/bootstrap.min.css HTTP/1.1" 200 160308
+0:0:0:0:0:0:0:1 - - [25/May/2021:09:00:10 +0200] "GET /favicon.ico HTTP/1.1" 404 698
+0:0:0:0:0:0:0:1 - - [25/May/2021:09:00:14 +0200] "POST /botGenerator.web/login HTTP/1.1" 200 8671
+0:0:0:0:0:0:0:1 - - [25/May/2021:09:00:14 +0200] "GET /botGenerator.web/bootstrap/js/bootstrap.min.js HTTP/1.1" 200 60050
+0:0:0:0:0:0:0:1 - - [25/May/2021:09:00:16 +0200] "GET /botGenerator.web/openProject?projectName=VeterinaryCenter HTTP/1.1" 200 11359
+0:0:0:0:0:0:0:1 - - [25/May/2021:09:00:16 +0200] "GET /botGenerator.web/css/style.css HTTP/1.1" 200 485
+0:0:0:0:0:0:0:1 - - [25/May/2021:09:00:16 +0200] "GET /botGenerator.web/img/legend.png HTTP/1.1" 200 75641
+0:0:0:0:0:0:0:1 - - [25/May/2021:09:00:17 +0200] "GET /botGenerator.web/xtext-resources/generated/mode-bot.js HTTP/1.1" 200 1572
+0:0:0:0:0:0:0:1 - - [25/May/2021:09:00:19 +0200] "GET /botGenerator.web/xtext-service/load?resource=admin%2FVeterinaryCenter.bot HTTP/1.1" 200 3649
+0:0:0:0:0:0:0:1 - - [25/May/2021:09:00:19 +0200] "GET /botGenerator.web/xtext-service/validate?resource=admin%2FVeterinaryCenter.bot&requiredStateId=-80000000 HTTP/1.1" 200 180
+0:0:0:0:0:0:0:1 - - [25/May/2021:09:00:20 +0200] "GET /botGenerator.web/xtext-service/occurrences?resource=admin%2FVeterinaryCenter.bot&caretOffset=0&requiredStateId=-80000000 HTTP/1.1" 200 58
+0:0:0:0:0:0:0:1 - - [25/May/2021:09:00:23 +0200] "GET /botGenerator.web/FileServlet?projectName=VeterinaryCenter HTTP/1.1" 200 23240

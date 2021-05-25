@@ -1,7 +1,2 @@
-INDEX VERSION 1.4+C:\Users\Pablo Gil\Documents\Proyecto CONGA\20210521 - CONGA\.metadata\.plugins\org.eclipse.wst.jsdt.core\indexes
+INDEX VERSION 1.4+C:\Users\Pablo Gil\Documents\Proyecto CONGA\CONGA\.metadata\.plugins\org.eclipse.wst.jsdt.core\indexes
 49348960.index
-3152866140.index
-623922541.index
-3007148241.index
-476608616.index
-2749005958.index
