@@ -1,5 +1,5 @@
 #Tomcat publish data
-#Tue May 25 09:06:41 CEST 2021
+#Wed May 26 11:57:38 CEST 2021
 org.eclipse.jst.j2ee.server\:botGenerator.dsl=WEB-INF/lib/botGenerator.dsl-1.0.0-SNAPSHOT.jar
 org.eclipse.jst.j2ee.server\:botGenerator.dsl.ide=WEB-INF/lib/botGenerator.dsl.ide-1.0.0-SNAPSHOT.jar
 org.eclipse.jst.j2ee.server\:botGenerator=WEB-INF/lib/botGenerator-0.0.1-SNAPSHOT.jar
