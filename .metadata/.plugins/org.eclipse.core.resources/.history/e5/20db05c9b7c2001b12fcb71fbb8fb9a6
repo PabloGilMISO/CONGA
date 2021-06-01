@@ -1,0 +1,5 @@
+package org.xtext.botGenerator.generator;
+
+public class NativeFilesReader {
+
+}

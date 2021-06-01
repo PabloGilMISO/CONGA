@@ -1,0 +1,10 @@
+package org.xtext.botGenerator.generator;
+
+import java.nio.file.Paths;
+
+public class NativeFilesReader {
+	public static String getUtilsFile() {
+		var utilsPath = Paths.get(pandorabots/utils.txt")
+		var utils = new String(Files.readAllBytes(utilsPath))
+	}
+}
