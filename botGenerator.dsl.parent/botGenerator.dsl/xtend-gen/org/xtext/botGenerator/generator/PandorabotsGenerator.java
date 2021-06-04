@@ -1,0 +1,743 @@
+package org.xtext.botGenerator.generator;
+
+import com.google.common.base.Objects;
+import com.google.common.collect.Iterators;
+import generator.Action;
+import generator.Bot;
+import generator.CompositeInput;
+import generator.Entity;
+import generator.EntityInput;
+import generator.EntityToken;
+import generator.Image;
+import generator.IntentInput;
+import generator.IntentLanguageInputs;
+import generator.Language;
+import generator.LanguageInput;
+import generator.Literal;
+import generator.ParameterReferenceToken;
+import generator.ParameterToken;
+import generator.RegexInput;
+import generator.SimpleInput;
+import generator.Text;
+import generator.TextInput;
+import generator.TextLanguageInput;
+import generator.Token;
+import generator.TrainingPhrase;
+import generator.UserInteraction;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
+import org.eclipse.emf.common.util.EList;
+import org.eclipse.emf.ecore.resource.Resource;
+import org.eclipse.xtend2.lib.StringConcatenation;
+import org.eclipse.xtext.generator.IFileSystemAccess2;
+import org.eclipse.xtext.generator.IGeneratorContext;
+import org.eclipse.xtext.xbase.lib.Conversions;
+import org.eclipse.xtext.xbase.lib.Exceptions;
+import org.eclipse.xtext.xbase.lib.IteratorExtensions;
+import zipUtils.Zip;
+
+@SuppressWarnings("all")
+public class PandorabotsGenerator {
+  private String path;
+  
+  protected static String uri;
+  
+  private Zip zip;
+  
+  public void doGenerate(final Resource resource, final IFileSystemAccess2 fsa, final IGeneratorContext context, final Zip zip) {
+    try {
+      String resourceName = resource.getURI().lastSegment().substring(0, resource.getURI().lastSegment().indexOf("."));
+      Bot bot = IteratorExtensions.<Bot>toList(Iterators.<Bot>filter(resource.getAllContents(), Bot.class)).get(0);
+      this.path = (resourceName + "/Pandorabots");
+      this.zip = zip;
+      String _replace = resourceName.toLowerCase().replace(" ", "_");
+      String _plus = ((this.path + "/system/") + _replace);
+      String systemPropertiesName = (_plus + ".properties");
+      fsa.generateFile(systemPropertiesName, this.systemFileFill());
+      InputStream systemPropertiesValue = fsa.readBinaryFile(systemPropertiesName);
+      String _replace_1 = resourceName.toLowerCase().replace(" ", "_");
+      String _plus_1 = (_replace_1 + ".properties");
+      zip.addFileToFolder("system", _plus_1, systemPropertiesValue);
+      String congaPath = "C:/CONGA/pandorabots/";
+      Path utilsPath = Paths.get((congaPath + "utils.aiml"));
+      byte[] _readAllBytes = Files.readAllBytes(utilsPath);
+      String utils = new String(_readAllBytes);
+      fsa.generateFile((this.path + "/files/utils.aiml"), utils);
+      InputStream utilsValue = fsa.readBinaryFile((this.path + "/files/utils.aiml"));
+      zip.addFileToFolder("files", "utils.aiml", utilsValue);
+      Path aimlSLPath = Paths.get((congaPath + "aimlstandardlibrary.aiml"));
+      byte[] _readAllBytes_1 = Files.readAllBytes(aimlSLPath);
+      String aimlSL = new String(_readAllBytes_1);
+      fsa.generateFile((this.path + "/files/aimlstandardlibrary.aiml"), aimlSL);
+      InputStream aimlSLValue = fsa.readBinaryFile((this.path + "/files/aimlstandardlibrary.aiml"));
+      zip.addFileToFolder("files", "aimlstandardlibrary.aiml", aimlSLValue);
+      List<Entity> entities = IteratorExtensions.<Entity>toList(Iterators.<Entity>filter(resource.getAllContents(), Entity.class));
+      for (final Entity entity : entities) {
+        {
+          String _name = entity.getName();
+          String _plus_2 = ((this.path + "/maps/") + _name);
+          String entityPath = (_plus_2 + ".map");
+          fsa.generateFile(entityPath, this.entityMapFill(entity));
+          InputStream entityValue = fsa.readBinaryFile(entityPath);
+          String _name_1 = entity.getName();
+          String _plus_3 = (_name_1 + ".map");
+          zip.addFileToFolder("maps", _plus_3, entityValue);
+          EList<LanguageInput> _inputs = entity.getInputs();
+          for (final LanguageInput language_input : _inputs) {
+            EList<EntityInput> _inputs_1 = language_input.getInputs();
+            for (final EntityInput input : _inputs_1) {
+              if ((input instanceof SimpleInput)) {
+                String _name_2 = ((SimpleInput)input).getName();
+                String _plus_4 = ((this.path + "/sets/") + _name_2);
+                String inputSetPath = (_plus_4 + ".set");
+                fsa.generateFile(inputSetPath, this.entitySetFill(((SimpleInput)input)));
+                InputStream inputSetValue = fsa.readBinaryFile(inputSetPath);
+                String _name_3 = ((SimpleInput)input).getName();
+                String _plus_5 = (_name_3 + ".set");
+                zip.addFileToFolder("sets", _plus_5, inputSetValue);
+              }
+            }
+          }
+        }
+      }
+      EList<UserInteraction> _flows = bot.getFlows();
+      for (final UserInteraction transition : _flows) {
+        this.createTransitionFiles(transition, "", fsa, bot);
+      }
+      zip.close();
+    } catch (Throwable _e) {
+      throw Exceptions.sneakyThrow(_e);
+    }
+  }
+  
+  public CharSequence systemFileFill() {
+    StringConcatenation _builder = new StringConcatenation();
+    _builder.append("[");
+    _builder.newLine();
+    _builder.append("[\"name\", \"set_when_loaded\"],");
+    _builder.newLine();
+    _builder.append("[\"default-get\", \"unknown\"],");
+    _builder.newLine();
+    _builder.append("[\"default-property\", \"unknown\"],");
+    _builder.newLine();
+    _builder.append("[\"default-map\", \"unknown\"],");
+    _builder.newLine();
+    _builder.append("[\"sentence-splitters\", \".!?\"],");
+    _builder.newLine();
+    _builder.append("[\"learn-filename\", \"pand_learn.aiml\"],");
+    _builder.newLine();
+    _builder.append("[\"max-learn-file-size\", \"1000000\"]");
+    _builder.newLine();
+    _builder.append("]");
+    _builder.newLine();
+    return _builder;
+  }
+  
+  public CharSequence entitySetFill(final SimpleInput input) {
+    StringConcatenation _builder = new StringConcatenation();
+    _builder.append("[");
+    _builder.newLine();
+    {
+      EList<String> _values = input.getValues();
+      for(final String synonym : _values) {
+        _builder.append("[\"");
+        _builder.append(synonym);
+        _builder.append("\"]");
+        {
+          boolean _isTheLast = PandorabotsGenerator.isTheLast(input.getValues(), synonym);
+          boolean _not = (!_isTheLast);
+          if (_not) {
+            _builder.append(",");
+          }
+        }
+        _builder.newLineIfNotEmpty();
+      }
+    }
+    _builder.append("]");
+    _builder.newLine();
+    return _builder;
+  }
+  
+  public CharSequence entityMapFill(final Entity entity) {
+    StringConcatenation _builder = new StringConcatenation();
+    _builder.append("[");
+    _builder.newLine();
+    {
+      EList<LanguageInput> _inputs = entity.getInputs();
+      for(final LanguageInput input : _inputs) {
+        {
+          EList<EntityInput> _inputs_1 = input.getInputs();
+          for(final EntityInput entry : _inputs_1) {
+            CharSequence _entry = this.entry(entry);
+            _builder.append(_entry);
+            _builder.newLineIfNotEmpty();
+          }
+        }
+      }
+    }
+    _builder.append("]");
+    _builder.newLine();
+    return _builder;
+  }
+  
+  public CharSequence entry(final EntityInput entry) {
+    if ((entry instanceof SimpleInput)) {
+      return this.entry(((SimpleInput)entry));
+    } else {
+      if ((entry instanceof CompositeInput)) {
+        return this.entry(((CompositeInput)entry));
+      } else {
+        if ((entry instanceof RegexInput)) {
+          return this.entry(((RegexInput)entry));
+        }
+      }
+    }
+    return null;
+  }
+  
+  public CharSequence entry(final SimpleInput entry) {
+    StringConcatenation _builder = new StringConcatenation();
+    {
+      EList<String> _values = entry.getValues();
+      for(final String synonym : _values) {
+        _builder.append("[\"");
+        _builder.append(synonym);
+        _builder.append("\", \"");
+        String _name = entry.getName();
+        _builder.append(_name);
+        _builder.append("\"]");
+        {
+          boolean _isTheLast = PandorabotsGenerator.isTheLast(entry.getValues(), synonym);
+          boolean _not = (!_isTheLast);
+          if (_not) {
+            _builder.append(",");
+          }
+        }
+        _builder.newLineIfNotEmpty();
+      }
+    }
+    return _builder;
+  }
+  
+  public CharSequence entry(final CompositeInput entry) {
+    StringConcatenation _builder = new StringConcatenation();
+    _builder.append("\"value\": \"");
+    String _compositeEntry = this.getCompositeEntry(entry);
+    _builder.append(_compositeEntry);
+    _builder.append("\",");
+    _builder.newLineIfNotEmpty();
+    _builder.append("\"synonyms\": [");
+    _builder.newLine();
+    _builder.append("\t");
+    _builder.append("\"");
+    String _compositeEntry_1 = this.getCompositeEntry(entry);
+    _builder.append(_compositeEntry_1, "\t");
+    _builder.append("\"");
+    _builder.newLineIfNotEmpty();
+    _builder.append("]");
+    _builder.newLine();
+    return _builder;
+  }
+  
+  public CharSequence entry(final RegexInput entry) {
+    StringConcatenation _builder = new StringConcatenation();
+    _builder.append("\"value\": \"");
+    String _expresion = entry.getExpresion();
+    _builder.append(_expresion);
+    _builder.append("\",");
+    _builder.newLineIfNotEmpty();
+    _builder.append("\"synonyms\": [");
+    _builder.newLine();
+    _builder.append("\t");
+    _builder.append("\"");
+    String _expresion_1 = entry.getExpresion();
+    _builder.append(_expresion_1, "\t");
+    _builder.append("\"");
+    _builder.newLineIfNotEmpty();
+    _builder.append("]");
+    _builder.newLine();
+    return _builder;
+  }
+  
+  public void createTransitionFiles(final UserInteraction transition, final String prefix, final IFileSystemAccess2 fsa, final Bot bot) {
+    String _name = transition.getIntent().getName();
+    String _plus = (((this.path + "/files/") + prefix) + _name);
+    String _plus_1 = (_plus + ".aiml");
+    fsa.generateFile(_plus_1, this.intentFile(transition, prefix, bot));
+    String _name_1 = transition.getIntent().getName();
+    String _plus_2 = (((this.path + "/files/") + prefix) + _name_1);
+    String _plus_3 = (_plus_2 + ".aiml");
+    InputStream intentValue = fsa.readBinaryFile(_plus_3);
+    String _name_2 = transition.getIntent().getName();
+    String _plus_4 = (prefix + _name_2);
+    String _plus_5 = (_plus_4 + ".aiml");
+    this.zip.addFileToFolder("files", _plus_5, intentValue);
+  }
+  
+  public ArrayList<String> getAllIntentResponses(final TextLanguageInput textAction) {
+    ArrayList<String> responses = new ArrayList<String>();
+    EList<TextInput> _inputs = textAction.getInputs();
+    for (final TextInput input : _inputs) {
+      {
+        String response = "";
+        EList<Token> _tokens = input.getTokens();
+        for (final Token token : _tokens) {
+          if ((token instanceof Literal)) {
+            String _response = response;
+            String _text = ((Literal)token).getText();
+            String _plus = (_text + " ");
+            response = (_response + _plus);
+          } else {
+            if ((token instanceof ParameterToken)) {
+              String _response_1 = response;
+              String _name = ((ParameterToken)token).getParameter().getName();
+              String _plus_1 = ("<get name=\"" + _name);
+              String _plus_2 = (_plus_1 + "\"/> ");
+              response = (_response_1 + _plus_2);
+            }
+          }
+        }
+        responses.add(response);
+      }
+    }
+    return responses;
+  }
+  
+  public CharSequence intentGenerator(final UserInteraction transition, final TextLanguageInput textAction, final Bot bot) {
+    StringConcatenation _builder = new StringConcatenation();
+    String lang = "";
+    _builder.newLineIfNotEmpty();
+    {
+      Language _language = textAction.getLanguage();
+      boolean _notEquals = (!Objects.equal(_language, Language.EMPTY));
+      if (_notEquals) {
+        String _xblockexpression = null;
+        {
+          lang = this.languageAbbreviation(textAction.getLanguage());
+          _xblockexpression = "";
+        }
+        _builder.append(_xblockexpression);
+        _builder.newLineIfNotEmpty();
+      } else {
+        String _xblockexpression_1 = null;
+        {
+          lang = this.languageAbbreviation(bot.getLanguages().get(0));
+          _xblockexpression_1 = "";
+        }
+        _builder.append(_xblockexpression_1);
+        _builder.newLineIfNotEmpty();
+      }
+    }
+    {
+      int _length = ((Object[])Conversions.unwrapArray(this.getAllIntentResponses(textAction), Object.class)).length;
+      boolean _greaterThan = (_length > 1);
+      if (_greaterThan) {
+        _builder.append("    ");
+        _builder.append("<category>");
+        _builder.newLineIfNotEmpty();
+        _builder.append("      ");
+        _builder.append("<pattern>");
+        String _name = transition.getIntent().getName();
+        String _plus = (_name + "_");
+        String _upperCase = (_plus + lang).toUpperCase();
+        _builder.append(_upperCase);
+        _builder.append("</pattern>");
+        _builder.newLineIfNotEmpty();
+        _builder.append("      ");
+        _builder.append("<template>");
+        _builder.newLineIfNotEmpty();
+        _builder.append("        ");
+        _builder.append("<random>");
+        _builder.newLineIfNotEmpty();
+        {
+          ArrayList<String> _allIntentResponses = this.getAllIntentResponses(textAction);
+          for(final String response : _allIntentResponses) {
+            _builder.append("          ");
+            _builder.append("<li>");
+            String _get = this.getAllIntentResponses(textAction).get(0);
+            _builder.append(_get);
+            _builder.append("</li>");
+            _builder.newLineIfNotEmpty();
+          }
+        }
+        _builder.append("        ");
+        _builder.append("</random>");
+        _builder.newLineIfNotEmpty();
+        _builder.append("      ");
+        _builder.append("</template>");
+        _builder.newLineIfNotEmpty();
+        _builder.append("    ");
+        _builder.append("</category>");
+        _builder.newLineIfNotEmpty();
+      } else {
+        _builder.append("    ");
+        _builder.append("<category>");
+        _builder.newLineIfNotEmpty();
+        _builder.append("      ");
+        _builder.append("<pattern>");
+        String _name_1 = transition.getIntent().getName();
+        String _plus_1 = (_name_1 + "_");
+        String _upperCase_1 = (_plus_1 + lang).toUpperCase();
+        _builder.append(_upperCase_1);
+        _builder.append("</pattern>");
+        _builder.newLineIfNotEmpty();
+        _builder.append("      ");
+        _builder.append("<template>");
+        String _get_1 = this.getAllIntentResponses(textAction).get(0);
+        _builder.append(_get_1);
+        _builder.append("</template>");
+        _builder.newLineIfNotEmpty();
+        _builder.append("    ");
+        _builder.append("</category>");
+        _builder.newLineIfNotEmpty();
+      }
+    }
+    return _builder;
+  }
+  
+  public CharSequence intentFile(final UserInteraction transition, final String prefix, final Bot bot) {
+    StringConcatenation _builder = new StringConcatenation();
+    _builder.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
+    _builder.newLine();
+    _builder.append("  ");
+    _builder.append("<aiml>");
+    _builder.newLineIfNotEmpty();
+    _builder.append("    ");
+    _builder.append("<!-- Intent -->");
+    _builder.newLineIfNotEmpty();
+    {
+      EList<Action> _actions = transition.getTarget().getActions();
+      for(final Action action : _actions) {
+        {
+          if ((action instanceof Text)) {
+            {
+              EList<TextLanguageInput> _inputs = ((Text)action).getInputs();
+              for(final TextLanguageInput texLanguage : _inputs) {
+                CharSequence _intentGenerator = this.intentGenerator(transition, texLanguage, bot);
+                _builder.append(_intentGenerator);
+                _builder.newLineIfNotEmpty();
+              }
+            }
+          } else {
+            if ((action instanceof Image)) {
+              _builder.append("    ");
+              _builder.append("<category>");
+              _builder.newLineIfNotEmpty();
+              _builder.append("\t  \t\t");
+              _builder.append("      ", "\t  \t\t");
+              _builder.append("<pattern>");
+              String _name = transition.getIntent().getName();
+              _builder.append(_name, "\t  \t\t");
+              _builder.append("</pattern>");
+              _builder.newLineIfNotEmpty();
+              _builder.append("\t  \t\t");
+              _builder.append("      ", "\t  \t\t");
+              _builder.append("<template><image>");
+              String _uRL = ((Image) action).getURL();
+              _builder.append(_uRL, "\t  \t\t");
+              _builder.append("</image></template>");
+              _builder.newLineIfNotEmpty();
+              _builder.append("\t  \t\t");
+              _builder.append("    ", "\t  \t\t");
+              _builder.append("</category>");
+              _builder.newLineIfNotEmpty();
+              _builder.append("\t\t");
+            }
+          }
+        }
+        {
+          boolean _isTheLast = PandorabotsGenerator.isTheLast(transition.getTarget().getActions(), action);
+          boolean _not = (!_isTheLast);
+          if (_not) {
+            _builder.append(",");
+          }
+        }
+        _builder.newLineIfNotEmpty();
+      }
+    }
+    _builder.append("    ");
+    _builder.append("<!-- Intent inputs -->");
+    _builder.newLineIfNotEmpty();
+    {
+      EList<IntentLanguageInputs> _inputs_1 = transition.getIntent().getInputs();
+      for(final IntentLanguageInputs language : _inputs_1) {
+        String lang = "";
+        _builder.newLineIfNotEmpty();
+        {
+          Language _language = language.getLanguage();
+          boolean _notEquals = (!Objects.equal(_language, Language.EMPTY));
+          if (_notEquals) {
+            String _xblockexpression = null;
+            {
+              lang = this.languageAbbreviation(language.getLanguage());
+              _xblockexpression = "";
+            }
+            _builder.append(_xblockexpression);
+            _builder.newLineIfNotEmpty();
+          } else {
+            String _xblockexpression_1 = null;
+            {
+              lang = this.languageAbbreviation(bot.getLanguages().get(0));
+              _xblockexpression_1 = "";
+            }
+            _builder.append(_xblockexpression_1);
+            _builder.newLineIfNotEmpty();
+          }
+        }
+        {
+          EList<IntentInput> _inputs_2 = language.getInputs();
+          for(final IntentInput input : _inputs_2) {
+            {
+              if ((input instanceof TrainingPhrase)) {
+                _builder.append("    ");
+                _builder.append("<category>");
+                _builder.newLineIfNotEmpty();
+                _builder.append("      ");
+                _builder.append("<pattern>");
+                {
+                  EList<Token> _tokens = ((TrainingPhrase)input).getTokens();
+                  for(final Token token : _tokens) {
+                    {
+                      if ((token instanceof Literal)) {
+                        String _text = ((Literal)token).getText();
+                        _builder.append(_text);
+                      } else {
+                        if ((token instanceof ParameterReferenceToken)) {
+                        }
+                      }
+                    }
+                  }
+                }
+                _builder.append("</pattern>");
+                _builder.newLineIfNotEmpty();
+                _builder.append("      ");
+                _builder.append("<template><srai>");
+                String _name_1 = transition.getIntent().getName();
+                String _plus = (_name_1 + "_");
+                String _upperCase = (_plus + lang).toUpperCase();
+                _builder.append(_upperCase);
+                _builder.append("</srai></template>");
+                _builder.newLineIfNotEmpty();
+                _builder.append("    ");
+                _builder.append("</category>");
+                _builder.newLineIfNotEmpty();
+              }
+            }
+          }
+        }
+      }
+    }
+    _builder.append("</aiml>");
+    _builder.newLine();
+    return _builder;
+  }
+  
+  public String returnText(final String value) {
+    boolean _isEmpty = value.isEmpty();
+    if (_isEmpty) {
+      return "";
+    }
+    return value;
+  }
+  
+  public String languageAbbreviation(final Language lan) {
+    if (lan != null) {
+      switch (lan) {
+        case ENGLISH:
+          return "en";
+        case SPANISH:
+          return "es";
+        case DANISH:
+          return "da";
+        case GERMAN:
+          return "de";
+        case FRENCH:
+          return "fr";
+        case HINDI:
+          return "hi";
+        case INDONESIAN:
+          return "id";
+        case ITALIAN:
+          return "it";
+        case JAPANESE:
+          return "ja";
+        case KOREAN:
+          return "ko";
+        case DUTCH:
+          return "nl";
+        case NORWEGIAN:
+          return "no";
+        case POLISH:
+          return "pl";
+        case PORTUGUESE:
+          return "pt";
+        case RUSIAN:
+          return "ru";
+        case SWEDISH:
+          return "sv";
+        case THAI:
+          return "th";
+        case TURKISH:
+          return "tr";
+        case UKRANIAN:
+          return "uk";
+        case CHINESE:
+          return "zh";
+        default:
+          return "en";
+      }
+    } else {
+      return "en";
+    }
+  }
+  
+  public CharSequence entityFile(final Entity entity) {
+    StringConcatenation _builder = new StringConcatenation();
+    _builder.newLine();
+    _builder.append("{");
+    _builder.newLine();
+    _builder.append("\t");
+    _builder.append("\"id\": \"");
+    String _string = UUID.randomUUID().toString();
+    _builder.append(_string, "\t");
+    _builder.append("\",");
+    _builder.newLineIfNotEmpty();
+    _builder.append("\t");
+    _builder.append("\"name\": \"");
+    String _name = entity.getName();
+    _builder.append(_name, "\t");
+    _builder.append("\",");
+    _builder.newLineIfNotEmpty();
+    _builder.append("\t");
+    _builder.append("\"isOverridable\": true,\t  ");
+    _builder.newLine();
+    {
+      int _entityType = BotGenerator.entityType(entity);
+      boolean _tripleEquals = (_entityType == BotGenerator.REGEX);
+      if (_tripleEquals) {
+        _builder.append("\t");
+        _builder.append("\"isEnum\": false,");
+        _builder.newLine();
+        _builder.append("\t");
+        _builder.append("\"isRegexp\":true,");
+        _builder.newLine();
+        _builder.append("\t");
+        _builder.append("\"automatedExpansion\": true,");
+        _builder.newLine();
+        _builder.append("\t");
+        _builder.append("\"allowFuzzyExtraction\": false");
+        _builder.newLine();
+      } else {
+        int _entityType_1 = BotGenerator.entityType(entity);
+        boolean _tripleEquals_1 = (_entityType_1 == BotGenerator.SIMPLE);
+        if (_tripleEquals_1) {
+          _builder.append("\t");
+          _builder.append("\"isEnum\": false,");
+          _builder.newLine();
+          _builder.append("\t");
+          _builder.append("\"isRegexp\": false,");
+          _builder.newLine();
+          _builder.append("\t");
+          _builder.append("\"automatedExpansion\": true,");
+          _builder.newLine();
+          _builder.append("\t");
+          _builder.append("\"allowFuzzyExtraction\": true");
+          _builder.newLine();
+        } else {
+          _builder.append("\t");
+          _builder.append("\"isEnum\": true,");
+          _builder.newLine();
+          _builder.append("\t");
+          _builder.append("\"isRegexp\": false,");
+          _builder.newLine();
+          _builder.append("\t");
+          _builder.append("\"automatedExpansion\": false,");
+          _builder.newLine();
+          _builder.append("\t");
+          _builder.append("\"allowFuzzyExtraction\": false");
+          _builder.newLine();
+        }
+      }
+    }
+    _builder.append("}");
+    _builder.newLine();
+    return _builder;
+  }
+  
+  public Object entityIsSimple(final Entity entity) {
+    return null;
+  }
+  
+  public CharSequence entriesFile(final LanguageInput entity) {
+    StringConcatenation _builder = new StringConcatenation();
+    _builder.append("[");
+    _builder.newLine();
+    {
+      EList<EntityInput> _inputs = entity.getInputs();
+      for(final EntityInput entry : _inputs) {
+        _builder.append("\t");
+        _builder.append("{");
+        _builder.newLine();
+        _builder.append("\t");
+        _builder.append("   ");
+        CharSequence _entry = this.entry(entry);
+        _builder.append(_entry, "\t   ");
+        _builder.newLineIfNotEmpty();
+        _builder.append("\t");
+        _builder.append("} ");
+        {
+          boolean _isTheLast = PandorabotsGenerator.isTheLast(entity.getInputs(), entry);
+          boolean _not = (!_isTheLast);
+          if (_not) {
+            _builder.append(",");
+          }
+        }
+        _builder.newLineIfNotEmpty();
+      }
+    }
+    _builder.append("]");
+    _builder.newLine();
+    return _builder;
+  }
+  
+  public static boolean isTheLast(final List<?> list, final Object object) {
+    int _indexOf = list.indexOf(object);
+    int _size = list.size();
+    int _minus = (_size - 1);
+    boolean _equals = (_indexOf == _minus);
+    if (_equals) {
+      return true;
+    }
+    return false;
+  }
+  
+  public String getCompositeEntry(final CompositeInput entry) {
+    String ret = "";
+    EList<Token> _expresion = entry.getExpresion();
+    for (final Token token : _expresion) {
+      if ((token instanceof Literal)) {
+        String _ret = ret;
+        String _text = ((Literal)token).getText();
+        String _plus = (_text + " ");
+        ret = (_ret + _plus);
+      } else {
+        if ((token instanceof EntityToken)) {
+          String _ret_1 = ret;
+          String _name = ((EntityToken)token).getEntity().getName();
+          String _plus_1 = ("@" + _name);
+          String _plus_2 = (_plus_1 + ":");
+          String _name_1 = ((EntityToken)token).getEntity().getName();
+          String _plus_3 = (_plus_2 + _name_1);
+          String _plus_4 = (_plus_3 + " ");
+          ret = (_ret_1 + _plus_4);
+        }
+      }
+    }
+    return ret;
+  }
+}

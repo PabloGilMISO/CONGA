@@ -1,7 +1,0 @@
-package org.xtext.botGenerator.generator;
-
-public class NativeFilesReader {
-	public String getUtilsFile() {
-		
-	}
-}

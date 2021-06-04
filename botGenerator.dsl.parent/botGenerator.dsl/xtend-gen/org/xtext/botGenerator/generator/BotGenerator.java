@@ -62,6 +62,10 @@ public class BotGenerator extends AbstractGenerator {
     Zip rasaZip = new Zip(rasaUri, resourceName);
     RasaGenerator rasa = new RasaGenerator();
     rasa.doGenerate(resource, fsa, context, rasaZip);
+    String pandorabotsUri = (uri + "/Pandorabots");
+    Zip pandorabotsZip = new Zip(pandorabotsUri, resourceName);
+    PandorabotsGenerator pandorabots = new PandorabotsGenerator();
+    pandorabots.doGenerate(resource, fsa, context, pandorabotsZip);
   }
   
   public static int entityType(final Entity entity) {

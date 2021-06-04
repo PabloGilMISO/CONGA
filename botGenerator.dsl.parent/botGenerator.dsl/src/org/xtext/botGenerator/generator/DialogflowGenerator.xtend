@@ -42,13 +42,14 @@ class DialogflowGenerator {
 		
 		path = resourceName + "/Dialogflow"
 		
-		
 		this.zip = zip;
 		
+		// Creacion de fichero de propiedades package.json
 		fsa.generateFile(path + '/package.json', "{\n \"version\": \"1.0.0\"\n}")
 		var packageValue = fsa.readBinaryFile(path + '/package.json')
 		zip.addFile("package.json", packageValue)
 
+		// Creacion de fichero de propiedades agent.json
 		if (!requests.isEmpty) {
 			var request = requests.get(0) as HTTPRequest
 			fsa.generateFile(path + '/agent.json', agentJSON(bot, request))
@@ -58,11 +59,15 @@ class DialogflowGenerator {
 		var agentValue = fsa.readBinaryFile(path + '/agent.json')
 		zip.addFile('agent.json', agentValue)
 
+		// Obtencion de todas las entities del modelo
 		var entities = resource.allContents.filter(Entity).toList;
 		for (Entity entity : entities) {
 			
+			// Creacion de un fichero de configuracion por cada entity y rellenado con la funcion entityFile
 			fsa.generateFile(path + '/entities/' + entity.name + '.json', entityFile(entity))
+			// Apertura de fichero concreto de la entity actual para rellenarlo
 			var entityValue = fsa.readBinaryFile(path + '/entities/' + entity.name + '.json')
+			// Añadido de la entity al zip
 			zip.addFileToFolder('entities', entity.name + '.json', entityValue)
 			
 			var lan = Language.ENGLISH;
@@ -72,6 +77,8 @@ class DialogflowGenerator {
 				if (input.language != Language.EMPTY) {
 					lan = input.language
 				}
+
+				// Creacion del fichero con la informacion de la entity y rellenado con la funcion entriesFile
 				fsa.generateFile(path + '/entities/' + entity.name + '_entries_' + lan.languageAbbreviation + '.json',
 					entriesFile(input))
 				var entityLanValue = fsa.readBinaryFile(path + '/entities/' + entity.name + '_entries_' + lan.languageAbbreviation + '.json')
@@ -79,6 +86,7 @@ class DialogflowGenerator {
 			}			
 		}
 
+		// En flows se guardan los flujos de conversacion
 		for (UserInteraction transition : bot.flows) {
 			createTransitionFiles(transition, "", fsa, bot)
 		}
@@ -86,19 +94,22 @@ class DialogflowGenerator {
 
 	}
 
+	// Guarda los intents en archivos separados dentro de la carpeta /intents, va recorriendo los flujos de conversacion y creando los intents
 	def void createTransitionFiles(UserInteraction transition, String prefix, IFileSystemAccess2 fsa, Bot bot) {
-
+		// Se crea el archivo principal del intent
 		fsa.generateFile(path + '/intents/' + prefix + transition.intent.name + '.json',
 			transition.intentFile(prefix, bot))
 		var intentValue = fsa.readBinaryFile(path + '/intents/' + prefix + transition.intent.name + '.json')
-			
+		
 		zip.addFileToFolder('intents', prefix + transition.intent.name + '.json', intentValue)
 
+		// Se crea y rellena un archivo con los inputs de cada intent
 		for (IntentLanguageInputs input : transition.intent.inputs) {
 			var lan = bot.languages.get(0)
 			if (input.language != Language.EMPTY) {
 				lan = input.language
 			}
+			// Creacion rellenado y apertura del archivo
 			fsa.generateFile(
 				path + '/intents/' + prefix + transition.intent.name + '_usersays_' + lan.languageAbbreviation +
 					'.json', input.usersayFile)
@@ -107,6 +118,8 @@ class DialogflowGenerator {
 			zip.addFileToFolder('intents',
 				prefix + transition.intent.name + '_usersays_' + lan.languageAbbreviation + '.json', intentLanValue)
 		}
+
+		// Se va recorriendo cada action y creando los intents que correspondan
 		if (transition.target !== null) {
 			var newPrefix = prefix + transition.intent.name + " - ";
 			for (UserInteraction t : transition.target.outcoming) {
@@ -166,6 +179,7 @@ class DialogflowGenerator {
 		}
 	}
 
+	// Generador de codigo de un intent
 	def intentFile(UserInteraction transition, String prefix, Bot bot) '''
 		«var webhook =false»
 		{
@@ -267,6 +281,7 @@ class DialogflowGenerator {
 		}
 	'''
 
+	// Generacion de codigo de la configuracion del agente (llamadas HTTP)
 	def agentJSON(Bot bot, HTTPRequest request) '''
 		{
 		  "language": "«bot.languages.get(0).languageAbbreviation»",
@@ -310,6 +325,7 @@ class DialogflowGenerator {
 		
 	'''
 
+	// Generacion de codigo de los inputs de cada intent
 	def usersayFile(IntentLanguageInputs intent) '''
 		[
 		«FOR phrase : intent.inputs»
@@ -400,6 +416,7 @@ class DialogflowGenerator {
 		}
 	}
 
+	// Generacion de codigo de configuracion de cada entity
 	def entityFile(Entity entity) '''
 		
 		{
@@ -430,6 +447,7 @@ class DialogflowGenerator {
 	def entityIsSimple(Entity entity) {
 	}
 
+	// Generador de codigo para cada lenguaje en que este configurada cada entity
 	def entriesFile(LanguageInput entity) '''
 		[
 			«FOR entry : entity.inputs»

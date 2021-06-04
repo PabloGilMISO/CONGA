@@ -51,6 +51,11 @@ class BotGenerator extends AbstractGenerator {
 		var rasaZip = new Zip(rasaUri, resourceName)
 		var rasa = new RasaGenerator()
 	    rasa.doGenerate(resource, fsa, context, rasaZip)
+	    
+		var pandorabotsUri = uri+"/Pandorabots"
+		var pandorabotsZip = new Zip(pandorabotsUri, resourceName)
+		var pandorabots = new PandorabotsGenerator()
+	    pandorabots.doGenerate(resource, fsa, context, pandorabotsZip)
 	}
 
 	def static entityType(Entity entity) {
