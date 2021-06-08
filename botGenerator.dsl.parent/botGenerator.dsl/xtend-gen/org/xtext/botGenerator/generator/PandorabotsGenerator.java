@@ -5,10 +5,14 @@ import com.google.common.collect.Iterators;
 import generator.Action;
 import generator.Bot;
 import generator.CompositeInput;
+import generator.DefaultEntity;
 import generator.Entity;
 import generator.EntityInput;
 import generator.EntityToken;
+import generator.HTTPRequest;
+import generator.HTTPResponse;
 import generator.Image;
+import generator.Intent;
 import generator.IntentInput;
 import generator.IntentLanguageInputs;
 import generator.Language;
@@ -29,7 +33,9 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.resource.Resource;
@@ -265,10 +271,24 @@ public class PandorabotsGenerator {
   }
   
   public void createTransitionFiles(final UserInteraction transition, final String prefix, final IFileSystemAccess2 fsa, final Bot bot) {
+    StringConcatenation _builder = new StringConcatenation();
+    _builder.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
+    _builder.newLine();
+    _builder.append("<aiml>");
+    _builder.newLine();
+    String intentFileContent = _builder.toString();
+    String _intentFileContent = intentFileContent;
+    String _createSaveParameter = this.createSaveParameter(transition.getIntent());
+    intentFileContent = (_intentFileContent + _createSaveParameter);
+    String _intentFileContent_1 = intentFileContent;
+    CharSequence _intentFile = this.intentFile(transition, prefix, bot);
+    intentFileContent = (_intentFileContent_1 + _intentFile);
+    String _intentFileContent_2 = intentFileContent;
+    intentFileContent = (_intentFileContent_2 + "</aiml>");
     String _name = transition.getIntent().getName();
     String _plus = (((this.path + "/files/") + prefix) + _name);
     String _plus_1 = (_plus + ".aiml");
-    fsa.generateFile(_plus_1, this.intentFile(transition, prefix, bot));
+    fsa.generateFile(_plus_1, intentFileContent);
     String _name_1 = transition.getIntent().getName();
     String _plus_2 = (((this.path + "/files/") + prefix) + _name_1);
     String _plus_3 = (_plus_2 + ".aiml");
@@ -290,15 +310,20 @@ public class PandorabotsGenerator {
           if ((token instanceof Literal)) {
             String _response = response;
             String _text = ((Literal)token).getText();
-            String _plus = (_text + " ");
-            response = (_response + _plus);
+            response = (_response + _text);
+            boolean _isTheLast = PandorabotsGenerator.isTheLast(input.getTokens(), token);
+            boolean _not = (!_isTheLast);
+            if (_not) {
+              String _response_1 = response;
+              response = (_response_1 + " ");
+            }
           } else {
             if ((token instanceof ParameterToken)) {
-              String _response_1 = response;
+              String _response_2 = response;
               String _name = ((ParameterToken)token).getParameter().getName();
-              String _plus_1 = ("<get name=\"" + _name);
-              String _plus_2 = (_plus_1 + "\"/> ");
-              response = (_response_1 + _plus_2);
+              String _plus = ("<get name=\"" + _name);
+              String _plus_1 = (_plus + "\"/> ");
+              response = (_response_2 + _plus_1);
             }
           }
         }
@@ -308,164 +333,20 @@ public class PandorabotsGenerator {
     return responses;
   }
   
-  public CharSequence intentGenerator(final UserInteraction transition, final TextLanguageInput textAction, final Bot bot) {
-    StringConcatenation _builder = new StringConcatenation();
-    String lang = "";
-    _builder.newLineIfNotEmpty();
-    {
-      Language _language = textAction.getLanguage();
-      boolean _notEquals = (!Objects.equal(_language, Language.EMPTY));
-      if (_notEquals) {
-        String _xblockexpression = null;
-        {
-          lang = this.languageAbbreviation(textAction.getLanguage());
-          _xblockexpression = "";
-        }
-        _builder.append(_xblockexpression);
-        _builder.newLineIfNotEmpty();
-      } else {
-        String _xblockexpression_1 = null;
-        {
-          lang = this.languageAbbreviation(bot.getLanguages().get(0));
-          _xblockexpression_1 = "";
-        }
-        _builder.append(_xblockexpression_1);
-        _builder.newLineIfNotEmpty();
-      }
-    }
-    {
-      int _length = ((Object[])Conversions.unwrapArray(this.getAllIntentResponses(textAction), Object.class)).length;
-      boolean _greaterThan = (_length > 1);
-      if (_greaterThan) {
-        _builder.append("    ");
-        _builder.append("<category>");
-        _builder.newLineIfNotEmpty();
-        _builder.append("      ");
-        _builder.append("<pattern>");
-        String _name = transition.getIntent().getName();
-        String _plus = (_name + "_");
-        String _upperCase = (_plus + lang).toUpperCase();
-        _builder.append(_upperCase);
-        _builder.append("</pattern>");
-        _builder.newLineIfNotEmpty();
-        _builder.append("      ");
-        _builder.append("<template>");
-        _builder.newLineIfNotEmpty();
-        _builder.append("        ");
-        _builder.append("<random>");
-        _builder.newLineIfNotEmpty();
-        {
-          ArrayList<String> _allIntentResponses = this.getAllIntentResponses(textAction);
-          for(final String response : _allIntentResponses) {
-            _builder.append("          ");
-            _builder.append("<li>");
-            String _get = this.getAllIntentResponses(textAction).get(0);
-            _builder.append(_get);
-            _builder.append("</li>");
-            _builder.newLineIfNotEmpty();
-          }
-        }
-        _builder.append("        ");
-        _builder.append("</random>");
-        _builder.newLineIfNotEmpty();
-        _builder.append("      ");
-        _builder.append("</template>");
-        _builder.newLineIfNotEmpty();
-        _builder.append("    ");
-        _builder.append("</category>");
-        _builder.newLineIfNotEmpty();
-      } else {
-        _builder.append("    ");
-        _builder.append("<category>");
-        _builder.newLineIfNotEmpty();
-        _builder.append("      ");
-        _builder.append("<pattern>");
-        String _name_1 = transition.getIntent().getName();
-        String _plus_1 = (_name_1 + "_");
-        String _upperCase_1 = (_plus_1 + lang).toUpperCase();
-        _builder.append(_upperCase_1);
-        _builder.append("</pattern>");
-        _builder.newLineIfNotEmpty();
-        _builder.append("      ");
-        _builder.append("<template>");
-        String _get_1 = this.getAllIntentResponses(textAction).get(0);
-        _builder.append(_get_1);
-        _builder.append("</template>");
-        _builder.newLineIfNotEmpty();
-        _builder.append("    ");
-        _builder.append("</category>");
-        _builder.newLineIfNotEmpty();
-      }
-    }
-    return _builder;
-  }
-  
   public CharSequence intentFile(final UserInteraction transition, final String prefix, final Bot bot) {
     StringConcatenation _builder = new StringConcatenation();
-    _builder.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
-    _builder.newLine();
     _builder.append("  ");
-    _builder.append("<aiml>");
-    _builder.newLineIfNotEmpty();
-    _builder.append("    ");
     _builder.append("<!-- Intent -->");
     _builder.newLineIfNotEmpty();
-    {
-      EList<Action> _actions = transition.getTarget().getActions();
-      for(final Action action : _actions) {
-        {
-          if ((action instanceof Text)) {
-            {
-              EList<TextLanguageInput> _inputs = ((Text)action).getInputs();
-              for(final TextLanguageInput texLanguage : _inputs) {
-                CharSequence _intentGenerator = this.intentGenerator(transition, texLanguage, bot);
-                _builder.append(_intentGenerator);
-                _builder.newLineIfNotEmpty();
-              }
-            }
-          } else {
-            if ((action instanceof Image)) {
-              _builder.append("    ");
-              _builder.append("<category>");
-              _builder.newLineIfNotEmpty();
-              _builder.append("\t  \t\t");
-              _builder.append("      ", "\t  \t\t");
-              _builder.append("<pattern>");
-              String _name = transition.getIntent().getName();
-              _builder.append(_name, "\t  \t\t");
-              _builder.append("</pattern>");
-              _builder.newLineIfNotEmpty();
-              _builder.append("\t  \t\t");
-              _builder.append("      ", "\t  \t\t");
-              _builder.append("<template><image>");
-              String _uRL = ((Image) action).getURL();
-              _builder.append(_uRL, "\t  \t\t");
-              _builder.append("</image></template>");
-              _builder.newLineIfNotEmpty();
-              _builder.append("\t  \t\t");
-              _builder.append("    ", "\t  \t\t");
-              _builder.append("</category>");
-              _builder.newLineIfNotEmpty();
-              _builder.append("\t\t");
-            }
-          }
-        }
-        {
-          boolean _isTheLast = PandorabotsGenerator.isTheLast(transition.getTarget().getActions(), action);
-          boolean _not = (!_isTheLast);
-          if (_not) {
-            _builder.append(",");
-          }
-        }
-        _builder.newLineIfNotEmpty();
-      }
-    }
-    _builder.append("    ");
+    CharSequence _intentGenerator = this.intentGenerator(transition, bot);
+    _builder.append(_intentGenerator);
+    _builder.newLineIfNotEmpty();
+    _builder.append("  ");
     _builder.append("<!-- Intent inputs -->");
     _builder.newLineIfNotEmpty();
     {
-      EList<IntentLanguageInputs> _inputs_1 = transition.getIntent().getInputs();
-      for(final IntentLanguageInputs language : _inputs_1) {
+      EList<IntentLanguageInputs> _inputs = transition.getIntent().getInputs();
+      for(final IntentLanguageInputs language : _inputs) {
         String lang = "";
         _builder.newLineIfNotEmpty();
         {
@@ -490,14 +371,14 @@ public class PandorabotsGenerator {
           }
         }
         {
-          EList<IntentInput> _inputs_2 = language.getInputs();
-          for(final IntentInput input : _inputs_2) {
+          EList<IntentInput> _inputs_1 = language.getInputs();
+          for(final IntentInput input : _inputs_1) {
             {
               if ((input instanceof TrainingPhrase)) {
-                _builder.append("    ");
+                _builder.append("  ");
                 _builder.append("<category>");
                 _builder.newLineIfNotEmpty();
-                _builder.append("      ");
+                _builder.append("    ");
                 _builder.append("<pattern>");
                 {
                   EList<Token> _tokens = ((TrainingPhrase)input).getTokens();
@@ -508,6 +389,7 @@ public class PandorabotsGenerator {
                         _builder.append(_text);
                       } else {
                         if ((token instanceof ParameterReferenceToken)) {
+                          _builder.append("*");
                         }
                       }
                     }
@@ -515,15 +397,25 @@ public class PandorabotsGenerator {
                 }
                 _builder.append("</pattern>");
                 _builder.newLineIfNotEmpty();
-                _builder.append("      ");
+                _builder.append("    ");
                 _builder.append("<template><srai>");
-                String _name_1 = transition.getIntent().getName();
-                String _plus = (_name_1 + "_");
+                String _replace = transition.getIntent().getName().toUpperCase().replace(" ", "_");
+                String _plus = (_replace + "_");
                 String _upperCase = (_plus + lang).toUpperCase();
                 _builder.append(_upperCase);
+                {
+                  EList<Token> _tokens_1 = ((TrainingPhrase)input).getTokens();
+                  for(final Token token_1 : _tokens_1) {
+                    {
+                      if ((token_1 instanceof ParameterReferenceToken)) {
+                        _builder.append(" <star/>");
+                      }
+                    }
+                  }
+                }
                 _builder.append("</srai></template>");
                 _builder.newLineIfNotEmpty();
-                _builder.append("    ");
+                _builder.append("  ");
                 _builder.append("</category>");
                 _builder.newLineIfNotEmpty();
               }
@@ -532,8 +424,576 @@ public class PandorabotsGenerator {
         }
       }
     }
-    _builder.append("</aiml>");
-    _builder.newLine();
+    return _builder;
+  }
+  
+  public HashMap<String, ParameterReferenceToken> getIntentParameters(final Intent intent) {
+    HashMap<String, ParameterReferenceToken> ret = new HashMap<String, ParameterReferenceToken>();
+    EList<IntentLanguageInputs> _inputs = intent.getInputs();
+    for (final IntentLanguageInputs language : _inputs) {
+      EList<IntentInput> _inputs_1 = language.getInputs();
+      for (final IntentInput input : _inputs_1) {
+        if ((input instanceof TrainingPhrase)) {
+          EList<Token> _tokens = ((TrainingPhrase) input).getTokens();
+          for (final Token token : _tokens) {
+            if ((token instanceof ParameterReferenceToken)) {
+              boolean _contains = ret.keySet().contains(((ParameterReferenceToken)token).getParameter().getName());
+              boolean _not = (!_contains);
+              if (_not) {
+                ret.put(((ParameterReferenceToken)token).getParameter().getName(), ((ParameterReferenceToken)token));
+              }
+            }
+          }
+        }
+      }
+    }
+    return ret;
+  }
+  
+  public String createSaveParameter(final Intent intent) {
+    HashMap<String, ParameterReferenceToken> parameters = this.getIntentParameters(intent);
+    boolean _isEmpty = parameters.isEmpty();
+    if (_isEmpty) {
+      return "";
+    } else {
+      String ret = "";
+      Set<String> _keySet = parameters.keySet();
+      for (final String key : _keySet) {
+        {
+          ParameterReferenceToken value = parameters.get(key);
+          Entity _entity = value.getParameter().getEntity();
+          boolean _tripleEquals = (_entity == null);
+          if (_tripleEquals) {
+            DefaultEntity _defaultEntity = value.getParameter().getDefaultEntity();
+            if (_defaultEntity != null) {
+              switch (_defaultEntity) {
+                case TEXT:
+                  String _ret = ret;
+                  StringConcatenation _builder = new StringConcatenation();
+                  _builder.append("<category>");
+                  _builder.newLine();
+                  _builder.append("<pattern>SAVE_");
+                  String _upperCase = value.getParameter().getName().toUpperCase();
+                  _builder.append(_upperCase);
+                  _builder.append(" *</pattern>");
+                  _builder.newLineIfNotEmpty();
+                  _builder.append("<template>");
+                  _builder.newLine();
+                  _builder.append("<think><set name=\"");
+                  String _name = value.getParameter().getName();
+                  _builder.append(_name);
+                  _builder.append("\"</set></think>");
+                  _builder.newLineIfNotEmpty();
+                  _builder.append("</template>");
+                  _builder.newLine();
+                  _builder.append("<category>");
+                  _builder.newLine();
+                  ret = (_ret + _builder);
+                  break;
+                case TIME:
+                  String _ret_1 = ret;
+                  StringConcatenation _builder_1 = new StringConcatenation();
+                  _builder_1.append("<category>");
+                  _builder_1.newLine();
+                  _builder_1.append("<pattern>SAVE_");
+                  String _upperCase_1 = value.getParameter().getName().toUpperCase();
+                  _builder_1.append(_upperCase_1);
+                  _builder_1.append(" * colon *</pattern>");
+                  _builder_1.newLineIfNotEmpty();
+                  _builder_1.append("<template>");
+                  _builder_1.newLine();
+                  _builder_1.append("<think>");
+                  _builder_1.newLine();
+                  _builder_1.append("<set name=\"");
+                  String _name_1 = value.getParameter().getName();
+                  _builder_1.append(_name_1);
+                  _builder_1.append("_is_valid\"><srai>ISVALIDHOUR <star index=\"1\"/> colon <star index=\"2\"/></srai></set>");
+                  _builder_1.newLineIfNotEmpty();
+                  _builder_1.append("</think>");
+                  _builder_1.newLine();
+                  _builder_1.append("<condition name=\"");
+                  String _name_2 = value.getParameter().getName();
+                  _builder_1.append(_name_2);
+                  _builder_1.append("_is_valid\">");
+                  _builder_1.newLineIfNotEmpty();
+                  _builder_1.append("<li value=\"TRUE\">");
+                  _builder_1.newLine();
+                  _builder_1.append("<think>");
+                  _builder_1.newLine();
+                  _builder_1.append("<set name=\"");
+                  String _name_3 = value.getParameter().getName();
+                  _builder_1.append(_name_3);
+                  _builder_1.append("\"><star index=\"1\"/>:<star index=\"2\"/></set>");
+                  _builder_1.newLineIfNotEmpty();
+                  _builder_1.append("</think>");
+                  _builder_1.newLine();
+                  _builder_1.append("</li>");
+                  _builder_1.newLine();
+                  _builder_1.append("</condition>");
+                  _builder_1.newLine();
+                  _builder_1.append("</template>");
+                  _builder_1.newLine();
+                  _builder_1.append("</category>");
+                  _builder_1.newLine();
+                  ret = (_ret_1 + _builder_1);
+                  break;
+                case DATE:
+                  String _ret_2 = ret;
+                  StringConcatenation _builder_2 = new StringConcatenation();
+                  _builder_2.append("<category>");
+                  _builder_2.newLine();
+                  _builder_2.append("<pattern>SAVE_");
+                  String _name_4 = value.getParameter().getName();
+                  _builder_2.append(_name_4);
+                  _builder_2.append(" * slash * slash *</pattern>");
+                  _builder_2.newLineIfNotEmpty();
+                  _builder_2.append("<template>");
+                  _builder_2.newLine();
+                  _builder_2.append("<think>");
+                  _builder_2.newLine();
+                  _builder_2.append("<set name=\"");
+                  String _name_5 = value.getParameter().getName();
+                  _builder_2.append(_name_5);
+                  _builder_2.append("_is_valid\"><srai>VALIDDATE <star index=\"1\"/>/<star index=\"2\"/>/<star index=\"3\"/></srai></set>");
+                  _builder_2.newLineIfNotEmpty();
+                  _builder_2.append("</think>");
+                  _builder_2.newLine();
+                  _builder_2.append("<condition name=\"");
+                  String _name_6 = value.getParameter().getName();
+                  _builder_2.append(_name_6);
+                  _builder_2.append("_is_valid\">");
+                  _builder_2.newLineIfNotEmpty();
+                  _builder_2.append("<li value=\"TRUE\"><think><set name=\"");
+                  String _name_7 = value.getParameter().getName();
+                  _builder_2.append(_name_7);
+                  _builder_2.append("\"><star index=\"1\"/>/<star index=\"2\"/>/<star index=\"3\"/></set></think></li>");
+                  _builder_2.newLineIfNotEmpty();
+                  _builder_2.append("</condition>");
+                  _builder_2.newLine();
+                  _builder_2.append("</template>");
+                  _builder_2.newLine();
+                  _builder_2.append("</category>");
+                  _builder_2.newLine();
+                  ret = (_ret_2 + _builder_2);
+                  break;
+                case NUMBER:
+                  String _ret_3 = ret;
+                  StringConcatenation _builder_3 = new StringConcatenation();
+                  _builder_3.append("<category>");
+                  _builder_3.newLine();
+                  _builder_3.append("<pattern>SAVE_");
+                  String _name_8 = value.getParameter().getName();
+                  _builder_3.append(_name_8);
+                  _builder_3.append(" <set>number</set></pattern>");
+                  _builder_3.newLineIfNotEmpty();
+                  _builder_3.append("<template>");
+                  _builder_3.newLine();
+                  _builder_3.append("<think><set name=\"");
+                  String _name_9 = value.getParameter().getName();
+                  _builder_3.append(_name_9);
+                  _builder_3.append("\"><star/></set></think>");
+                  _builder_3.newLineIfNotEmpty();
+                  _builder_3.append("</template>");
+                  _builder_3.newLine();
+                  _builder_3.append("</category>");
+                  _builder_3.newLine();
+                  ret = (_ret_3 + _builder_3);
+                  break;
+                default:
+                  String _ret_4 = ret;
+                  StringConcatenation _builder_4 = new StringConcatenation();
+                  _builder_4.append("<category>");
+                  _builder_4.newLine();
+                  _builder_4.append("<pattern>SAVE_");
+                  String _upperCase_2 = value.getParameter().getName().toUpperCase();
+                  _builder_4.append(_upperCase_2);
+                  _builder_4.append(" *</pattern>");
+                  _builder_4.newLineIfNotEmpty();
+                  _builder_4.append("<template>");
+                  _builder_4.newLine();
+                  _builder_4.append("<think><set name=\"");
+                  String _name_10 = value.getParameter().getName();
+                  _builder_4.append(_name_10);
+                  _builder_4.append("\"</set></think>");
+                  _builder_4.newLineIfNotEmpty();
+                  _builder_4.append("</template>");
+                  _builder_4.newLine();
+                  _builder_4.append("<category>");
+                  _builder_4.newLine();
+                  ret = (_ret_4 + _builder_4);
+                  break;
+              }
+            } else {
+              String _ret_4 = ret;
+              StringConcatenation _builder_4 = new StringConcatenation();
+              _builder_4.append("<category>");
+              _builder_4.newLine();
+              _builder_4.append("<pattern>SAVE_");
+              String _upperCase_2 = value.getParameter().getName().toUpperCase();
+              _builder_4.append(_upperCase_2);
+              _builder_4.append(" *</pattern>");
+              _builder_4.newLineIfNotEmpty();
+              _builder_4.append("<template>");
+              _builder_4.newLine();
+              _builder_4.append("<think><set name=\"");
+              String _name_10 = value.getParameter().getName();
+              _builder_4.append(_name_10);
+              _builder_4.append("\"</set></think>");
+              _builder_4.newLineIfNotEmpty();
+              _builder_4.append("</template>");
+              _builder_4.newLine();
+              _builder_4.append("<category>");
+              _builder_4.newLine();
+              ret = (_ret_4 + _builder_4);
+            }
+          } else {
+            String _ret_5 = ret;
+            StringConcatenation _builder_5 = new StringConcatenation();
+            _builder_5.append("<category>");
+            _builder_5.newLine();
+            _builder_5.append("<pattern>SAVESAVE_");
+            String _name_11 = value.getParameter().getName();
+            _builder_5.append(_name_11);
+            _builder_5.append(" *</pattern>");
+            _builder_5.newLineIfNotEmpty();
+            _builder_5.append("<template>");
+            _builder_5.newLine();
+            _builder_5.append("<think>");
+            _builder_5.newLine();
+            _builder_5.append("<set name=\"");
+            String _name_12 = value.getParameter().getName();
+            _builder_5.append(_name_12);
+            _builder_5.append("_temp\"><map name=\"animals\"><star/></map></set>");
+            _builder_5.newLineIfNotEmpty();
+            _builder_5.append("</think>");
+            _builder_5.newLine();
+            _builder_5.append("<condition name=\"");
+            String _name_13 = value.getParameter().getName();
+            _builder_5.append(_name_13);
+            _builder_5.append("_temp\">");
+            _builder_5.newLineIfNotEmpty();
+            _builder_5.append("<li value=\"unknown\"></li>");
+            _builder_5.newLine();
+            _builder_5.append("<li><set name=\"");
+            String _name_14 = value.getParameter().getName();
+            _builder_5.append(_name_14);
+            _builder_5.append("\"><get name=\"");
+            String _name_15 = value.getParameter().getName();
+            _builder_5.append(_name_15);
+            _builder_5.append("_temp\"/></set></li>");
+            _builder_5.newLineIfNotEmpty();
+            _builder_5.append("</condition>");
+            _builder_5.newLine();
+            _builder_5.append("</template>");
+            _builder_5.newLine();
+            _builder_5.append("</category>");
+            _builder_5.newLine();
+            ret = (_ret_5 + _builder_5);
+          }
+        }
+      }
+    }
+    return null;
+  }
+  
+  public ArrayList<String> getActionLanguages(final Action action) {
+    ArrayList<String> languageList = new ArrayList<String>();
+    if ((action instanceof Text)) {
+      EList<TextLanguageInput> _inputs = ((Text)action).getInputs();
+      for (final TextLanguageInput language : _inputs) {
+        languageList.add(this.languageAbbreviation(language.getLanguage()));
+      }
+    }
+    return languageList;
+  }
+  
+  public ArrayList<TextLanguageInput> getLanguageActions(final List<Action> actions, final String lang) {
+    ArrayList<TextLanguageInput> ret = new ArrayList<TextLanguageInput>();
+    for (final Action action : actions) {
+      if ((action instanceof Text)) {
+        EList<TextLanguageInput> _inputs = ((Text)action).getInputs();
+        for (final TextLanguageInput language : _inputs) {
+          String _languageAbbreviation = this.languageAbbreviation(language.getLanguage());
+          boolean _equals = Objects.equal(_languageAbbreviation, lang);
+          if (_equals) {
+            ret.add(language);
+          }
+        }
+      }
+    }
+    return ret;
+  }
+  
+  public CharSequence intentGenerator(final UserInteraction transition, final Bot bot) {
+    StringConcatenation _builder = new StringConcatenation();
+    String intentName = "";
+    _builder.newLineIfNotEmpty();
+    _builder.append("  ");
+    _builder.append("<!-- Main intents -->");
+    _builder.newLineIfNotEmpty();
+    String _xblockexpression = null;
+    {
+      intentName = transition.getIntent().getName().toUpperCase().replace(" ", "_");
+      _xblockexpression = "";
+    }
+    _builder.append(_xblockexpression);
+    _builder.newLineIfNotEmpty();
+    {
+      EList<IntentLanguageInputs> _inputs = transition.getIntent().getInputs();
+      for(final IntentLanguageInputs language : _inputs) {
+        String lang = "";
+        _builder.newLineIfNotEmpty();
+        {
+          Language _language = language.getLanguage();
+          boolean _notEquals = (!Objects.equal(_language, Language.EMPTY));
+          if (_notEquals) {
+            String _xblockexpression_1 = null;
+            {
+              lang = this.languageAbbreviation(language.getLanguage());
+              _xblockexpression_1 = "";
+            }
+            _builder.append(_xblockexpression_1);
+            _builder.newLineIfNotEmpty();
+          } else {
+            String _xblockexpression_2 = null;
+            {
+              lang = this.languageAbbreviation(bot.getLanguages().get(0));
+              _xblockexpression_2 = "";
+            }
+            _builder.append(_xblockexpression_2);
+            _builder.newLineIfNotEmpty();
+          }
+        }
+        _builder.append("  ");
+        _builder.append("<category>");
+        _builder.newLineIfNotEmpty();
+        _builder.append("    ");
+        _builder.append("<pattern>");
+        _builder.append(intentName);
+        _builder.append("</category>");
+        _builder.newLineIfNotEmpty();
+        _builder.append("    ");
+        _builder.append("<template>");
+        _builder.newLineIfNotEmpty();
+        {
+          EList<Action> _actions = transition.getTarget().getActions();
+          for(final Action action : _actions) {
+            {
+              if ((action instanceof Text)) {
+                _builder.append("      ");
+                _builder.append("<srai>");
+                String _upperCase = lang.toUpperCase();
+                String _plus = ((intentName + "_") + _upperCase);
+                _builder.append(_plus);
+                _builder.append("</srai>");
+                _builder.newLineIfNotEmpty();
+              } else {
+                _builder.append("      ");
+                _builder.append("<srai>");
+                String _replace = action.getName().toUpperCase().replace(" ", "_");
+                String _plus_1 = ((intentName + "_") + _replace);
+                _builder.append(_plus_1);
+                _builder.append("</srai>");
+                _builder.newLineIfNotEmpty();
+              }
+            }
+          }
+        }
+        _builder.append("    ");
+        _builder.append("</template>");
+        _builder.newLineIfNotEmpty();
+        _builder.append("  ");
+        _builder.append("<category>");
+        _builder.newLineIfNotEmpty();
+      }
+    }
+    _builder.append("  ");
+    _builder.append("<!-- Action intents -->");
+    _builder.newLineIfNotEmpty();
+    {
+      EList<Action> _actions_1 = transition.getTarget().getActions();
+      for(final Action action_1 : _actions_1) {
+        {
+          if ((action_1 instanceof Text)) {
+            {
+              EList<TextLanguageInput> _inputs_1 = ((Text)action_1).getInputs();
+              for(final TextLanguageInput language_1 : _inputs_1) {
+                String lang_1 = "";
+                _builder.newLineIfNotEmpty();
+                {
+                  Language _language_1 = language_1.getLanguage();
+                  boolean _notEquals_1 = (!Objects.equal(_language_1, Language.EMPTY));
+                  if (_notEquals_1) {
+                    String _xblockexpression_3 = null;
+                    {
+                      lang_1 = this.languageAbbreviation(language_1.getLanguage()).toUpperCase();
+                      _xblockexpression_3 = "";
+                    }
+                    _builder.append(_xblockexpression_3);
+                    _builder.newLineIfNotEmpty();
+                  } else {
+                    String _xblockexpression_4 = null;
+                    {
+                      lang_1 = this.languageAbbreviation(bot.getLanguages().get(0)).toUpperCase();
+                      _xblockexpression_4 = "";
+                    }
+                    _builder.append(_xblockexpression_4);
+                    _builder.newLineIfNotEmpty();
+                  }
+                }
+                {
+                  int _length = ((Object[])Conversions.unwrapArray(this.getAllIntentResponses(language_1), Object.class)).length;
+                  boolean _greaterThan = (_length > 1);
+                  if (_greaterThan) {
+                    _builder.append("  ");
+                    _builder.append("<category>");
+                    _builder.newLineIfNotEmpty();
+                    _builder.append("    ");
+                    _builder.append("<pattern>");
+                    String _upperCase_1 = ((intentName + "_") + lang_1).toUpperCase();
+                    _builder.append(_upperCase_1);
+                    _builder.append("</pattern>");
+                    _builder.newLineIfNotEmpty();
+                    _builder.append("    ");
+                    _builder.append("<template>");
+                    _builder.newLineIfNotEmpty();
+                    _builder.append("      ");
+                    _builder.append("<random>");
+                    _builder.newLineIfNotEmpty();
+                    {
+                      ArrayList<String> _allIntentResponses = this.getAllIntentResponses(language_1);
+                      for(final String response : _allIntentResponses) {
+                        _builder.append("        ");
+                        _builder.append("<li>");
+                        _builder.append(response);
+                        _builder.append("</li>");
+                        _builder.newLineIfNotEmpty();
+                      }
+                    }
+                    _builder.append("      ");
+                    _builder.append("</random>");
+                    _builder.newLineIfNotEmpty();
+                    _builder.append("    ");
+                    _builder.append("</template>");
+                    _builder.newLineIfNotEmpty();
+                    _builder.append("  ");
+                    _builder.append("</category>");
+                    _builder.newLineIfNotEmpty();
+                  } else {
+                    _builder.append("  ");
+                    _builder.append("<category>");
+                    _builder.newLineIfNotEmpty();
+                    _builder.append("    ");
+                    _builder.append("<pattern>");
+                    String _upperCase_2 = ((intentName + "_") + lang_1).toUpperCase();
+                    _builder.append(_upperCase_2);
+                    _builder.append("</pattern>");
+                    _builder.newLineIfNotEmpty();
+                    _builder.append("    ");
+                    _builder.append("<template>");
+                    String _get = this.getAllIntentResponses(language_1).get(0);
+                    _builder.append(_get);
+                    _builder.append("</template>");
+                    _builder.newLineIfNotEmpty();
+                    _builder.append("  ");
+                    _builder.append("</category>");
+                    _builder.newLineIfNotEmpty();
+                  }
+                }
+              }
+            }
+          } else {
+            if ((action_1 instanceof Image)) {
+              _builder.append("  ");
+              _builder.append("<category>");
+              _builder.newLineIfNotEmpty();
+              _builder.append("    ");
+              _builder.append("<pattern>");
+              String _replace_1 = ((Image)action_1).getName().toUpperCase().replace(" ", "_");
+              String _plus_2 = ((intentName + "_") + _replace_1);
+              _builder.append(_plus_2);
+              _builder.append("</pattern>");
+              _builder.newLineIfNotEmpty();
+              _builder.append("    ");
+              _builder.append("<template><image>");
+              String _uRL = ((Image)action_1).getURL();
+              _builder.append(_uRL);
+              _builder.append("</image></template>");
+              _builder.newLineIfNotEmpty();
+              _builder.append("  ");
+              _builder.append("</category>");
+              _builder.newLineIfNotEmpty();
+            } else {
+              if ((action_1 instanceof HTTPRequest)) {
+                _builder.append("  ");
+                _builder.append("<category>");
+                _builder.newLineIfNotEmpty();
+                _builder.append("    ");
+                _builder.append("<pattern>");
+                String _replace_2 = ((HTTPRequest)action_1).getName().toUpperCase().replace(" ", "_");
+                String _plus_3 = ((intentName + "_") + _replace_2);
+                _builder.append(_plus_3);
+                _builder.append("</pattern>");
+                _builder.newLineIfNotEmpty();
+                _builder.append("    ");
+                _builder.append("<template>");
+                _builder.newLineIfNotEmpty();
+                _builder.append("      ");
+                _builder.append("<callapi response_code_var=\"response");
+                String _name = ((HTTPRequest)action_1).getName();
+                String _plus_4 = ("_" + _name);
+                _builder.append(_plus_4);
+                _builder.append("\">");
+                _builder.newLineIfNotEmpty();
+                _builder.append("        ");
+                _builder.append("<url>");
+                String _uRL_1 = ((HTTPRequest) action_1).getURL();
+                _builder.append(_uRL_1);
+                _builder.append("</url>");
+                _builder.newLineIfNotEmpty();
+                _builder.append("      ");
+                _builder.append("</callapi>");
+                _builder.newLineIfNotEmpty();
+                _builder.append("    ");
+                _builder.append("</template>");
+                _builder.newLineIfNotEmpty();
+                _builder.append("  ");
+                _builder.append("</category>");
+                _builder.newLineIfNotEmpty();
+              } else {
+                if ((action_1 instanceof HTTPResponse)) {
+                  _builder.append("  ");
+                  _builder.append("<category>");
+                  _builder.newLineIfNotEmpty();
+                  _builder.append("    ");
+                  _builder.append("<pattern>");
+                  String _replace_3 = ((HTTPResponse)action_1).getName().toUpperCase().replace(" ", "_");
+                  String _plus_5 = ((intentName + "_") + _replace_3);
+                  _builder.append(_plus_5);
+                  _builder.append("</pattern>");
+                  _builder.newLineIfNotEmpty();
+                  _builder.append("    ");
+                  _builder.append("<template>");
+                  _builder.newLineIfNotEmpty();
+                  _builder.append("      ");
+                  _builder.append("<get name=\"response_");
+                  String _name_1 = ((HTTPResponse) action_1).getHTTPRequest().getName();
+                  _builder.append(_name_1);
+                  _builder.append("\"/>");
+                  _builder.newLineIfNotEmpty();
+                  _builder.append("    ");
+                  _builder.append("</template>");
+                  _builder.newLineIfNotEmpty();
+                  _builder.append("  ");
+                  _builder.append("</category>");
+                  _builder.newLineIfNotEmpty();
+                }
+              }
+            }
+          }
+        }
+      }
+    }
     return _builder;
   }
   
