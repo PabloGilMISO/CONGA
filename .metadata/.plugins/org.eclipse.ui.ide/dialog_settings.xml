@@ -6,6 +6,7 @@
 		<item key="SmartImportRootWizardPage.STORE_NESTED_PROJECTS" value="true"/>
 		<item key="SmartImportRootWizardPage.STORE_CONFIGURE_NATURES" value="true"/>
 		<list key="org.eclipse.ui.internal.wizards.datatransfer.SmartImportRootWizardPage.knownSources">
+			<item value="C:\Users\Pablo Gil\Documents\Proyecto CONGA\CONGA"/>
 			<item value="C:\Users\Pablo Gil\Documents\Proyecto CONGA\20210521 - CONGA\botGenerator.web"/>
 			<item value="C:\Users\Pablo Gil\Documents\Proyecto CONGA\20210521 - CONGA\botGenerator.dsl.parent"/>
 			<item value="C:\Users\Pablo Gil\Documents\Proyecto CONGA\20210521 - CONGA\botGenerator"/>

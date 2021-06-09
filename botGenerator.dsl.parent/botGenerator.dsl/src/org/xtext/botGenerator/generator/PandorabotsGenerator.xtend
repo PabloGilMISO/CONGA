@@ -55,6 +55,12 @@ class PandorabotsGenerator {
 		var systemPropertiesValue = fsa.readBinaryFile(systemPropertiesName)
 		zip.addFileToFolder("system", resourceName.toLowerCase().replace(' ', '_') + ".properties", systemPropertiesValue)
 
+		// Creacion de fichero UDC
+		var udcName = path + "/files/" + "udc.aiml"
+		fsa.generateFile(udcName, udcFileFill())
+		var udcValue = fsa.readBinaryFile(udcName)
+		zip.addFileToFolder("files", "udc.aiml", udcValue)
+		
 		// Creacion de ficheros de utils y funciones externas comunes entre todos los proyectos
 		var congaPath = "C:/CONGA/pandorabots/"
 		
@@ -119,6 +125,11 @@ class PandorabotsGenerator {
 		]
 	'''
 
+	def udcFileFill() '''
+		<?xml version="1.0" encoding="UTF-8"?>
+		<aiml>
+		</aiml>
+	'''
 	// Llena el set correspondiente al input concreto (entity->inputs->inputs)
 	def entitySetFill(SimpleInput input) '''
 		[
@@ -133,7 +144,7 @@ class PandorabotsGenerator {
 		[
 		«FOR input : entity.inputs»
 			«FOR entry: input.inputs»
-				«entry(entry)»
+				«entry(entry)»«IF !isTheLast(input.inputs, entry)»,«ENDIF»
 			«ENDFOR»
 		«ENDFOR»
 		]
@@ -156,23 +167,15 @@ class PandorabotsGenerator {
 	// Escribe las posibles opciones de un entity dentro de un fichero set
 	def entry(SimpleInput entry) '''
 		«FOR synonym : entry.values»
-			["«synonym»", "«entry.name»"]«IF !entry.values.isTheLast(synonym)»,«ENDIF»
+			["«synonym»", "«entry.name»"]«IF !isTheLast(entry.values, synonym)»,«ENDIF»
 		«ENDFOR»
 	'''
 
 	// TODO: No soportadas
 	def entry(CompositeInput entry) '''
-		"value": "«entry.compositeEntry»",
-		"synonyms": [
-			"«entry.compositeEntry»"
-		]
 	'''
 	// TODO: No soportadas
 	def entry(RegexInput entry)'''
-		"value": "«entry.expresion»",
-		"synonyms": [
-			"«entry.expresion»"
-		]
 	'''
 
 	// Guarda los intents durante el recorrido de los flujos de conversación
@@ -188,9 +191,10 @@ class PandorabotsGenerator {
 		// Generacion de intents
 		intentFileContent += transition.intentFile(prefix, bot)
 		intentFileContent += "</aiml>"
-		fsa.generateFile(path + "/files/" + prefix + transition.intent.name + ".aiml", intentFileContent)
-		var intentValue = fsa.readBinaryFile(path + "/files/" + prefix + transition.intent.name + ".aiml")
-		zip.addFileToFolder("files", prefix + transition.intent.name + ".aiml", intentValue)
+		var intentFileName = (prefix + transition.intent.name).toLowerCase().replace(' ', '')
+		fsa.generateFile(path + "/files/" + intentFileName + ".aiml", intentFileContent)
+		var intentValue = fsa.readBinaryFile(path + "/files/" + intentFileName + ".aiml")
+		zip.addFileToFolder("files", intentFileName + ".aiml", intentValue)
 		// Se crea y rellena un archivo con los inputs de cada intent
 //		for (IntentLanguageInputs input : transition.intent.inputs) {
 //			// Rellenado y apertura del archivo con los posibles inputs
@@ -267,8 +271,8 @@ class PandorabotsGenerator {
   		«FOR input: language.inputs»
   			«IF input instanceof TrainingPhrase»
 				«"  "»<category>
-				«"    "»<pattern>«FOR token: input.tokens»«IF token instanceof Literal»«token.text»«ELSEIF token instanceof ParameterReferenceToken»*«ENDIF»«ENDFOR»</pattern>
-				«"    "»<template><srai>«(transition.intent.name.toUpperCase().replace(' ', '_') + "_" + lang).toUpperCase()»«FOR token: input.tokens»«IF token instanceof ParameterReferenceToken» <star/>«ENDIF»«ENDFOR»</srai></template>
+				«"    "»<pattern>«FOR token: input.tokens»«IF token instanceof Literal»«token.text.replace('?', ' #')»«ELSEIF token instanceof ParameterReferenceToken»*«ENDIF»«ENDFOR»</pattern>
+				«"    "»<template><srai>«(transition.intent.name.toUpperCase().replace(' ', '') + lang).toUpperCase()»«FOR token: input.tokens»«IF token instanceof ParameterReferenceToken» <star/>«ENDIF»«ENDFOR»</srai></template>
 				«"  "»</category>
 		  	«ENDIF»
 	  	«ENDFOR»
@@ -314,7 +318,7 @@ class PandorabotsGenerator {
 							ret += 
 							'''
 							«  »<category>
-							«    »<pattern>SAVE_«value.parameter.name.toUpperCase()» *</pattern>
+							«    »<pattern>SAVE«value.parameter.name.toUpperCase()» *</pattern>
 							«    »<template>
 							«      »<think><set name="«value.parameter.name»"</set></think>
 							«    »</template>
@@ -324,7 +328,7 @@ class PandorabotsGenerator {
 							ret +=
 							'''
 							«  »<category>
-							«    »<pattern>SAVE_«value.parameter.name.toUpperCase()» * colon *</pattern>
+							«    »<pattern>SAVE«value.parameter.name.toUpperCase()» * colon *</pattern>
 							«    »<template>
 							«      »<think>
 							«        »<set name="«value.parameter.name»_is_valid"><srai>ISVALIDHOUR <star index="1"/> colon <star index="2"/></srai></set>
@@ -343,7 +347,7 @@ class PandorabotsGenerator {
 							ret +=
 							'''
 							«  »<category>
-							«    »<pattern>SAVE_«value.parameter.name» * slash * slash *</pattern>
+							«    »<pattern>SAVE«value.parameter.name» * slash * slash *</pattern>
 							«    »<template>
 							«      »<think>
 							«        »<set name="«value.parameter.name»_is_valid"><srai>VALIDDATE <star index="1"/>/<star index="2"/>/<star index="3"/></srai></set>
@@ -358,7 +362,7 @@ class PandorabotsGenerator {
 							ret +=
 							'''
 							«  »<category>
-							«    »<pattern>SAVE_«value.parameter.name» <set>number</set></pattern>
+							«    »<pattern>SAVE«value.parameter.name» <set>number</set></pattern>
 							«    »<template>
 							«      »<think><set name="«value.parameter.name»"><star/></set></think>
 							«    »</template>
@@ -368,7 +372,7 @@ class PandorabotsGenerator {
 							ret += 
 							'''
 							«  »<category>
-							«    »<pattern>SAVE_«value.parameter.name.toUpperCase()» *</pattern>
+							«    »<pattern>SAVE«value.parameter.name.toUpperCase()» *</pattern>
 							«    »<template>
 							«      »<think><set name="«value.parameter.name»"</set></think>
 							«    »</template>
@@ -379,7 +383,7 @@ class PandorabotsGenerator {
 					ret +=
 					'''
 					«  »<category>
-					«    »<pattern>SAVESAVE_«value.parameter.name» *</pattern>
+					«    »<pattern>SAVESAVE«value.parameter.name» *</pattern>
 					«    »<template>
 					«      »<think>
 					«        »<set name="«value.parameter.name»_temp"><map name="animals"><star/></map></set>
@@ -425,7 +429,7 @@ class PandorabotsGenerator {
 	'''
 		«var intentName = ""»
 		«"  "»<!-- Main intents -->
-		«{intentName = transition.intent.name.toUpperCase().replace(' ', '_'); ""}»
+		«{intentName = transition.intent.name.toUpperCase().replace(' ', ''); ""}»
 		«FOR language: transition.intent.inputs»
 			«var lang = ""»
 		  	«IF language.language != Language.EMPTY»
@@ -434,17 +438,17 @@ class PandorabotsGenerator {
 		    	«{lang = bot.languages.get(0).languageAbbreviation; ""}»
 		    «ENDIF»
 			«"  "»<category>
-			«"    "»<pattern>«intentName»</category>
+			«"    "»<pattern>«intentName»</pattern>
 			«"    "»<template>
 			«FOR action: transition.target.actions»
 				«IF action instanceof Text»
-					«"      "»<srai>«intentName + "_" + lang.toUpperCase()»</srai>
+					«"      "»<srai>«intentName + lang.toUpperCase()»</srai>
 				«ELSE»
-					«"      "»<srai>«intentName + "_" + action.name.toUpperCase().replace(' ', '_')»</srai>
+					«"      "»<srai>«intentName + action.name.toUpperCase().replace(' ', '')»</srai>
 				«ENDIF»
 			«ENDFOR»
 			«"    "»</template>
-			«"  "»<category>
+			«"  "»</category>
 	    «ENDFOR»
 		«"  "»<!-- Action intents -->
 		«FOR action: transition.target.actions»
@@ -458,7 +462,7 @@ class PandorabotsGenerator {
 					«ENDIF»
 					«IF language.getAllIntentResponses().length > 1»
 						«"  "»<category>
-						«"    "»<pattern>«(intentName + "_" + lang).toUpperCase()»</pattern>
+						«"    "»<pattern>«(intentName + lang).toUpperCase()»</pattern>
 						«"    "»<template>
 						«"      "»<random>
 						«FOR response: language.getAllIntentResponses()»
@@ -469,19 +473,19 @@ class PandorabotsGenerator {
 						«"  "»</category>
 					«ELSE»
 						«"  "»<category>
-						«"    "»<pattern>«(intentName + "_" + lang).toUpperCase()»</pattern>
+						«"    "»<pattern>«(intentName + lang).toUpperCase()»</pattern>
 						«"    "»<template>«language.getAllIntentResponses().get(0)»</template>
 						«"  "»</category>
 					«ENDIF»
 				«ENDFOR»
 			«ELSEIF action instanceof Image»
 				«"  "»<category>
-				«"    "»<pattern>«intentName + "_" + action.name.toUpperCase().replace(' ', '_')»</pattern>
+				«"    "»<pattern>«intentName + action.name.toUpperCase().replace(' ', '')»</pattern>
 				«"    "»<template><image>«action.URL»</image></template>
 				«"  "»</category>
 			«ELSEIF action instanceof HTTPRequest»
 				«"  "»<category>
-				«"    "»<pattern>«intentName + "_" + action.name.toUpperCase().replace(' ', '_')»</pattern>
+				«"    "»<pattern>«intentName + action.name.toUpperCase().replace(' ', '')»</pattern>
 				«"    "»<template>
 				«"      "»<callapi response_code_var="response«"_" + action.name»">
 				«"        "»<url>«(action as HTTPRequest).getURL()»</url>
@@ -490,7 +494,7 @@ class PandorabotsGenerator {
 				«"  "»</category>
 			«ELSEIF action instanceof HTTPResponse»
 				«"  "»<category>
-				«"    "»<pattern>«intentName + "_" + action.name.toUpperCase().replace(' ', '_')»</pattern>
+				«"    "»<pattern>«intentName + action.name.toUpperCase().replace(' ', '')»</pattern>
 				«"    "»<template>
 				«"      "»<get name="response_«(action as HTTPResponse).HTTPRequest.name»"/>
 				«"    "»</template>

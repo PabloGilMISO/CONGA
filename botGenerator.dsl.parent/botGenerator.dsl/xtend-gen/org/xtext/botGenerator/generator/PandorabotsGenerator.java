@@ -69,6 +69,10 @@ public class PandorabotsGenerator {
       String _replace_1 = resourceName.toLowerCase().replace(" ", "_");
       String _plus_1 = (_replace_1 + ".properties");
       zip.addFileToFolder("system", _plus_1, systemPropertiesValue);
+      String udcName = ((this.path + "/files/") + "udc.aiml");
+      fsa.generateFile(udcName, this.udcFileFill());
+      InputStream udcValue = fsa.readBinaryFile(udcName);
+      zip.addFileToFolder("files", "udc.aiml", udcValue);
       String congaPath = "C:/CONGA/pandorabots/";
       Path utilsPath = Paths.get((congaPath + "utils.aiml"));
       byte[] _readAllBytes = Files.readAllBytes(utilsPath);
@@ -144,6 +148,17 @@ public class PandorabotsGenerator {
     return _builder;
   }
   
+  public CharSequence udcFileFill() {
+    StringConcatenation _builder = new StringConcatenation();
+    _builder.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
+    _builder.newLine();
+    _builder.append("<aiml>");
+    _builder.newLine();
+    _builder.append("</aiml>");
+    _builder.newLine();
+    return _builder;
+  }
+  
   public CharSequence entitySetFill(final SimpleInput input) {
     StringConcatenation _builder = new StringConcatenation();
     _builder.append("[");
@@ -181,6 +196,13 @@ public class PandorabotsGenerator {
           for(final EntityInput entry : _inputs_1) {
             CharSequence _entry = this.entry(entry);
             _builder.append(_entry);
+            {
+              boolean _isTheLast = PandorabotsGenerator.isTheLast(input.getInputs(), entry);
+              boolean _not = (!_isTheLast);
+              if (_not) {
+                _builder.append(",");
+              }
+            }
             _builder.newLineIfNotEmpty();
           }
         }
@@ -232,41 +254,11 @@ public class PandorabotsGenerator {
   
   public CharSequence entry(final CompositeInput entry) {
     StringConcatenation _builder = new StringConcatenation();
-    _builder.append("\"value\": \"");
-    String _compositeEntry = this.getCompositeEntry(entry);
-    _builder.append(_compositeEntry);
-    _builder.append("\",");
-    _builder.newLineIfNotEmpty();
-    _builder.append("\"synonyms\": [");
-    _builder.newLine();
-    _builder.append("\t");
-    _builder.append("\"");
-    String _compositeEntry_1 = this.getCompositeEntry(entry);
-    _builder.append(_compositeEntry_1, "\t");
-    _builder.append("\"");
-    _builder.newLineIfNotEmpty();
-    _builder.append("]");
-    _builder.newLine();
     return _builder;
   }
   
   public CharSequence entry(final RegexInput entry) {
     StringConcatenation _builder = new StringConcatenation();
-    _builder.append("\"value\": \"");
-    String _expresion = entry.getExpresion();
-    _builder.append(_expresion);
-    _builder.append("\",");
-    _builder.newLineIfNotEmpty();
-    _builder.append("\"synonyms\": [");
-    _builder.newLine();
-    _builder.append("\t");
-    _builder.append("\"");
-    String _expresion_1 = entry.getExpresion();
-    _builder.append(_expresion_1, "\t");
-    _builder.append("\"");
-    _builder.newLineIfNotEmpty();
-    _builder.append("]");
-    _builder.newLine();
     return _builder;
   }
   
@@ -286,17 +278,10 @@ public class PandorabotsGenerator {
     String _intentFileContent_2 = intentFileContent;
     intentFileContent = (_intentFileContent_2 + "</aiml>");
     String _name = transition.getIntent().getName();
-    String _plus = (((this.path + "/files/") + prefix) + _name);
-    String _plus_1 = (_plus + ".aiml");
-    fsa.generateFile(_plus_1, intentFileContent);
-    String _name_1 = transition.getIntent().getName();
-    String _plus_2 = (((this.path + "/files/") + prefix) + _name_1);
-    String _plus_3 = (_plus_2 + ".aiml");
-    InputStream intentValue = fsa.readBinaryFile(_plus_3);
-    String _name_2 = transition.getIntent().getName();
-    String _plus_4 = (prefix + _name_2);
-    String _plus_5 = (_plus_4 + ".aiml");
-    this.zip.addFileToFolder("files", _plus_5, intentValue);
+    String intentFileName = (prefix + _name).toLowerCase().replace(" ", "");
+    fsa.generateFile((((this.path + "/files/") + intentFileName) + ".aiml"), intentFileContent);
+    InputStream intentValue = fsa.readBinaryFile((((this.path + "/files/") + intentFileName) + ".aiml"));
+    this.zip.addFileToFolder("files", (intentFileName + ".aiml"), intentValue);
   }
   
   public ArrayList<String> getAllIntentResponses(final TextLanguageInput textAction) {
@@ -385,8 +370,8 @@ public class PandorabotsGenerator {
                   for(final Token token : _tokens) {
                     {
                       if ((token instanceof Literal)) {
-                        String _text = ((Literal)token).getText();
-                        _builder.append(_text);
+                        String _replace = ((Literal)token).getText().replace("?", " #");
+                        _builder.append(_replace);
                       } else {
                         if ((token instanceof ParameterReferenceToken)) {
                           _builder.append("*");
@@ -399,9 +384,8 @@ public class PandorabotsGenerator {
                 _builder.newLineIfNotEmpty();
                 _builder.append("    ");
                 _builder.append("<template><srai>");
-                String _replace = transition.getIntent().getName().toUpperCase().replace(" ", "_");
-                String _plus = (_replace + "_");
-                String _upperCase = (_plus + lang).toUpperCase();
+                String _replace_1 = transition.getIntent().getName().toUpperCase().replace(" ", "");
+                String _upperCase = (_replace_1 + lang).toUpperCase();
                 _builder.append(_upperCase);
                 {
                   EList<Token> _tokens_1 = ((TrainingPhrase)input).getTokens();
@@ -472,7 +456,7 @@ public class PandorabotsGenerator {
                   StringConcatenation _builder = new StringConcatenation();
                   _builder.append("<category>");
                   _builder.newLine();
-                  _builder.append("<pattern>SAVE_");
+                  _builder.append("<pattern>SAVE");
                   String _upperCase = value.getParameter().getName().toUpperCase();
                   _builder.append(_upperCase);
                   _builder.append(" *</pattern>");
@@ -495,7 +479,7 @@ public class PandorabotsGenerator {
                   StringConcatenation _builder_1 = new StringConcatenation();
                   _builder_1.append("<category>");
                   _builder_1.newLine();
-                  _builder_1.append("<pattern>SAVE_");
+                  _builder_1.append("<pattern>SAVE");
                   String _upperCase_1 = value.getParameter().getName().toUpperCase();
                   _builder_1.append(_upperCase_1);
                   _builder_1.append(" * colon *</pattern>");
@@ -542,7 +526,7 @@ public class PandorabotsGenerator {
                   StringConcatenation _builder_2 = new StringConcatenation();
                   _builder_2.append("<category>");
                   _builder_2.newLine();
-                  _builder_2.append("<pattern>SAVE_");
+                  _builder_2.append("<pattern>SAVE");
                   String _name_4 = value.getParameter().getName();
                   _builder_2.append(_name_4);
                   _builder_2.append(" * slash * slash *</pattern>");
@@ -581,7 +565,7 @@ public class PandorabotsGenerator {
                   StringConcatenation _builder_3 = new StringConcatenation();
                   _builder_3.append("<category>");
                   _builder_3.newLine();
-                  _builder_3.append("<pattern>SAVE_");
+                  _builder_3.append("<pattern>SAVE");
                   String _name_8 = value.getParameter().getName();
                   _builder_3.append(_name_8);
                   _builder_3.append(" <set>number</set></pattern>");
@@ -604,7 +588,7 @@ public class PandorabotsGenerator {
                   StringConcatenation _builder_4 = new StringConcatenation();
                   _builder_4.append("<category>");
                   _builder_4.newLine();
-                  _builder_4.append("<pattern>SAVE_");
+                  _builder_4.append("<pattern>SAVE");
                   String _upperCase_2 = value.getParameter().getName().toUpperCase();
                   _builder_4.append(_upperCase_2);
                   _builder_4.append(" *</pattern>");
@@ -628,7 +612,7 @@ public class PandorabotsGenerator {
               StringConcatenation _builder_4 = new StringConcatenation();
               _builder_4.append("<category>");
               _builder_4.newLine();
-              _builder_4.append("<pattern>SAVE_");
+              _builder_4.append("<pattern>SAVE");
               String _upperCase_2 = value.getParameter().getName().toUpperCase();
               _builder_4.append(_upperCase_2);
               _builder_4.append(" *</pattern>");
@@ -651,7 +635,7 @@ public class PandorabotsGenerator {
             StringConcatenation _builder_5 = new StringConcatenation();
             _builder_5.append("<category>");
             _builder_5.newLine();
-            _builder_5.append("<pattern>SAVESAVE_");
+            _builder_5.append("<pattern>SAVESAVE");
             String _name_11 = value.getParameter().getName();
             _builder_5.append(_name_11);
             _builder_5.append(" *</pattern>");
@@ -733,7 +717,7 @@ public class PandorabotsGenerator {
     _builder.newLineIfNotEmpty();
     String _xblockexpression = null;
     {
-      intentName = transition.getIntent().getName().toUpperCase().replace(" ", "_");
+      intentName = transition.getIntent().getName().toUpperCase().replace(" ", "");
       _xblockexpression = "";
     }
     _builder.append(_xblockexpression);
@@ -770,7 +754,7 @@ public class PandorabotsGenerator {
         _builder.append("    ");
         _builder.append("<pattern>");
         _builder.append(intentName);
-        _builder.append("</category>");
+        _builder.append("</pattern>");
         _builder.newLineIfNotEmpty();
         _builder.append("    ");
         _builder.append("<template>");
@@ -783,15 +767,15 @@ public class PandorabotsGenerator {
                 _builder.append("      ");
                 _builder.append("<srai>");
                 String _upperCase = lang.toUpperCase();
-                String _plus = ((intentName + "_") + _upperCase);
+                String _plus = (intentName + _upperCase);
                 _builder.append(_plus);
                 _builder.append("</srai>");
                 _builder.newLineIfNotEmpty();
               } else {
                 _builder.append("      ");
                 _builder.append("<srai>");
-                String _replace = action.getName().toUpperCase().replace(" ", "_");
-                String _plus_1 = ((intentName + "_") + _replace);
+                String _replace = action.getName().toUpperCase().replace(" ", "");
+                String _plus_1 = (intentName + _replace);
                 _builder.append(_plus_1);
                 _builder.append("</srai>");
                 _builder.newLineIfNotEmpty();
@@ -803,7 +787,7 @@ public class PandorabotsGenerator {
         _builder.append("</template>");
         _builder.newLineIfNotEmpty();
         _builder.append("  ");
-        _builder.append("<category>");
+        _builder.append("</category>");
         _builder.newLineIfNotEmpty();
       }
     }
@@ -850,7 +834,7 @@ public class PandorabotsGenerator {
                     _builder.newLineIfNotEmpty();
                     _builder.append("    ");
                     _builder.append("<pattern>");
-                    String _upperCase_1 = ((intentName + "_") + lang_1).toUpperCase();
+                    String _upperCase_1 = (intentName + lang_1).toUpperCase();
                     _builder.append(_upperCase_1);
                     _builder.append("</pattern>");
                     _builder.newLineIfNotEmpty();
@@ -885,7 +869,7 @@ public class PandorabotsGenerator {
                     _builder.newLineIfNotEmpty();
                     _builder.append("    ");
                     _builder.append("<pattern>");
-                    String _upperCase_2 = ((intentName + "_") + lang_1).toUpperCase();
+                    String _upperCase_2 = (intentName + lang_1).toUpperCase();
                     _builder.append(_upperCase_2);
                     _builder.append("</pattern>");
                     _builder.newLineIfNotEmpty();
@@ -909,8 +893,8 @@ public class PandorabotsGenerator {
               _builder.newLineIfNotEmpty();
               _builder.append("    ");
               _builder.append("<pattern>");
-              String _replace_1 = ((Image)action_1).getName().toUpperCase().replace(" ", "_");
-              String _plus_2 = ((intentName + "_") + _replace_1);
+              String _replace_1 = ((Image)action_1).getName().toUpperCase().replace(" ", "");
+              String _plus_2 = (intentName + _replace_1);
               _builder.append(_plus_2);
               _builder.append("</pattern>");
               _builder.newLineIfNotEmpty();
@@ -930,8 +914,8 @@ public class PandorabotsGenerator {
                 _builder.newLineIfNotEmpty();
                 _builder.append("    ");
                 _builder.append("<pattern>");
-                String _replace_2 = ((HTTPRequest)action_1).getName().toUpperCase().replace(" ", "_");
-                String _plus_3 = ((intentName + "_") + _replace_2);
+                String _replace_2 = ((HTTPRequest)action_1).getName().toUpperCase().replace(" ", "");
+                String _plus_3 = (intentName + _replace_2);
                 _builder.append(_plus_3);
                 _builder.append("</pattern>");
                 _builder.newLineIfNotEmpty();
@@ -967,8 +951,8 @@ public class PandorabotsGenerator {
                   _builder.newLineIfNotEmpty();
                   _builder.append("    ");
                   _builder.append("<pattern>");
-                  String _replace_3 = ((HTTPResponse)action_1).getName().toUpperCase().replace(" ", "_");
-                  String _plus_5 = ((intentName + "_") + _replace_3);
+                  String _replace_3 = ((HTTPResponse)action_1).getName().toUpperCase().replace(" ", "");
+                  String _plus_5 = (intentName + _replace_3);
                   _builder.append(_plus_5);
                   _builder.append("</pattern>");
                   _builder.newLineIfNotEmpty();
