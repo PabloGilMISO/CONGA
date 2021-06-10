@@ -264,6 +264,33 @@ class PandorabotsGenerator {
 		return ret
 	}
 	
+	def getIntentParameterPrompts(Intent intent) {
+		var ret = new ArrayList<Pair<String, String>>()
+		
+		for (parameter: intent.parameters)
+			ret.add(new Pair(parameter.name, parameter.prompts.get(0).prompts.get(0)))
+	
+		return ret
+	}
+	
+	def getNextParamPetition(Intent intent, TrainingPhrase phrase) {
+		var entities = getPhraseEntities(phrase)
+		var parameters = getIntentParameterPrompts(intent)
+		var ret = new ArrayList<Pair<String, String>>()
+		
+		for (parameter: parameters) {
+			for(entity: entities) {
+				if (parameter.key != entity)
+					ret.add(parameter)
+				
+				else 
+					ret.remove(parameter)
+			}
+		}
+		
+		return ret.length > 0 ? ret.get(0) : new Pair("", "")
+	}
+	
 	// Generador de codigo de un intent
 	// TODO: 
 	// 1. Mirar funcionamiento del webhook.
@@ -283,17 +310,25 @@ class PandorabotsGenerator {
 	    «ENDIF»
   		«FOR input: language.inputs»
   			«IF input instanceof TrainingPhrase»
-  				«IF transition.intent.inputs.length > 1»
-					«"  "»<category>
-					«"    "»<pattern>«FOR token: input.tokens»«IF token instanceof Literal»«token.text.replace('?', ' #')»«ELSEIF token instanceof ParameterReferenceToken»*«ENDIF»«ENDFOR»</pattern>
-					«"    "»<template><srai>«(transition.intent.name.toUpperCase().replace(' ', '') + lang).toUpperCase()»«FOR token: input.tokens»«IF token instanceof ParameterReferenceToken» <star/>«ENDIF»«ENDFOR»</srai></template>
-					«"  "»</category>
+				«"  "»<category>
+				«"    "»<pattern>«FOR token: input.tokens»«IF token instanceof Literal»«token.text.replace('?', ' #')»«ELSEIF token instanceof ParameterReferenceToken»*«ENDIF»«ENDFOR»</pattern>
+				«"    "»<think>
+				«var List<String> entities»
+				«{entities = getPhraseEntities(input); ""}»
+				«FOR entity: entities»
+					«"      "»<srai>
+					«"        "»SAVE«entity.toUpperCase()» <star index="«entities.indexOf(entity) + 1»"/>
+					«"      "»</srai>
+				«ENDFOR»
+				«"    "»</think>
+				«var String nextPrompt»
+				«{nextPrompt = getNextParamPetition(transition.intent, input).getValue(); ""}»
+				«IF nextPrompt !== ""»
+				«"    "»<template>«nextPrompt»</template>
 				«ELSE»
-					«"  "»<category>
-					«"    "»<pattern>«FOR token: input.tokens»«IF token instanceof Literal»«token.text.replace('?', ' #')»«ELSEIF token instanceof ParameterReferenceToken»*«ENDIF»«ENDFOR»</pattern>
-					«"    "»<template><srai>«(transition.intent.name.toUpperCase().replace(' ', '')).toUpperCase()»«FOR token: input.tokens»«IF token instanceof ParameterReferenceToken» <star/>«ENDIF»«ENDFOR»</srai></template>
-					«"  "»</category>
+				«"    "»<template></template>
 				«ENDIF»
+				«"  "»</category>
 		  	«ENDIF»
 	  	«ENDFOR»
 	«ENDFOR»

@@ -18,6 +18,7 @@ import generator.IntentLanguageInputs;
 import generator.Language;
 import generator.LanguageInput;
 import generator.Literal;
+import generator.Parameter;
 import generator.ParameterReferenceToken;
 import generator.ParameterToken;
 import generator.RegexInput;
@@ -45,6 +46,7 @@ import org.eclipse.xtext.generator.IGeneratorContext;
 import org.eclipse.xtext.xbase.lib.Conversions;
 import org.eclipse.xtext.xbase.lib.Exceptions;
 import org.eclipse.xtext.xbase.lib.IteratorExtensions;
+import org.eclipse.xtext.xbase.lib.Pair;
 import zipUtils.Zip;
 
 @SuppressWarnings("all")
@@ -329,6 +331,45 @@ public class PandorabotsGenerator {
     return ret;
   }
   
+  public ArrayList<Pair<String, String>> getIntentParameterPrompts(final Intent intent) {
+    ArrayList<Pair<String, String>> ret = new ArrayList<Pair<String, String>>();
+    EList<Parameter> _parameters = intent.getParameters();
+    for (final Parameter parameter : _parameters) {
+      String _name = parameter.getName();
+      String _get = parameter.getPrompts().get(0).getPrompts().get(0);
+      Pair<String, String> _pair = new Pair<String, String>(_name, _get);
+      ret.add(_pair);
+    }
+    return ret;
+  }
+  
+  public Pair<String, String> getNextParamPetition(final Intent intent, final TrainingPhrase phrase) {
+    ArrayList<String> entities = this.getPhraseEntities(phrase);
+    ArrayList<Pair<String, String>> parameters = this.getIntentParameterPrompts(intent);
+    ArrayList<Pair<String, String>> ret = new ArrayList<Pair<String, String>>();
+    for (final Pair<String, String> parameter : parameters) {
+      for (final String entity : entities) {
+        String _key = parameter.getKey();
+        boolean _notEquals = (!Objects.equal(_key, entity));
+        if (_notEquals) {
+          ret.add(parameter);
+        } else {
+          ret.remove(parameter);
+        }
+      }
+    }
+    Pair<String, String> _xifexpression = null;
+    final ArrayList<Pair<String, String>> _converted_ret = (ArrayList<Pair<String, String>>)ret;
+    int _length = ((Object[])Conversions.unwrapArray(_converted_ret, Object.class)).length;
+    boolean _greaterThan = (_length > 0);
+    if (_greaterThan) {
+      _xifexpression = ret.get(0);
+    } else {
+      _xifexpression = new Pair<String, String>("", "");
+    }
+    return _xifexpression;
+  }
+  
   public CharSequence intentFile(final UserInteraction transition, final String prefix, final Bot bot) {
     StringConcatenation _builder = new StringConcatenation();
     _builder.append("  ");
@@ -371,96 +412,88 @@ public class PandorabotsGenerator {
           for(final IntentInput input : _inputs_1) {
             {
               if ((input instanceof TrainingPhrase)) {
+                _builder.append("  ");
+                _builder.append("<category>");
+                _builder.newLineIfNotEmpty();
+                _builder.append("    ");
+                _builder.append("<pattern>");
                 {
-                  int _length = ((Object[])Conversions.unwrapArray(transition.getIntent().getInputs(), Object.class)).length;
-                  boolean _greaterThan = (_length > 1);
-                  if (_greaterThan) {
-                    _builder.append("  ");
-                    _builder.append("<category>");
-                    _builder.newLineIfNotEmpty();
-                    _builder.append("    ");
-                    _builder.append("<pattern>");
+                  EList<Token> _tokens = ((TrainingPhrase)input).getTokens();
+                  for(final Token token : _tokens) {
                     {
-                      EList<Token> _tokens = ((TrainingPhrase)input).getTokens();
-                      for(final Token token : _tokens) {
-                        {
-                          if ((token instanceof Literal)) {
-                            String _replace = ((Literal)token).getText().replace("?", " #");
-                            _builder.append(_replace);
-                          } else {
-                            if ((token instanceof ParameterReferenceToken)) {
-                              _builder.append("*");
-                            }
-                          }
+                      if ((token instanceof Literal)) {
+                        String _replace = ((Literal)token).getText().replace("?", " #");
+                        _builder.append(_replace);
+                      } else {
+                        if ((token instanceof ParameterReferenceToken)) {
+                          _builder.append("*");
                         }
                       }
                     }
-                    _builder.append("</pattern>");
+                  }
+                }
+                _builder.append("</pattern>");
+                _builder.newLineIfNotEmpty();
+                _builder.append("    ");
+                _builder.append("<think>");
+                _builder.newLineIfNotEmpty();
+                List<String> entities = null;
+                _builder.newLineIfNotEmpty();
+                String _xblockexpression_2 = null;
+                {
+                  entities = this.getPhraseEntities(((TrainingPhrase)input));
+                  _xblockexpression_2 = "";
+                }
+                _builder.append(_xblockexpression_2);
+                _builder.newLineIfNotEmpty();
+                {
+                  for(final String entity : entities) {
+                    _builder.append("      ");
+                    _builder.append("<srai>");
                     _builder.newLineIfNotEmpty();
-                    _builder.append("    ");
-                    _builder.append("<template><srai>");
-                    String _replace_1 = transition.getIntent().getName().toUpperCase().replace(" ", "");
-                    String _upperCase = (_replace_1 + lang).toUpperCase();
+                    _builder.append("        ");
+                    _builder.append("SAVE");
+                    String _upperCase = entity.toUpperCase();
                     _builder.append(_upperCase);
-                    {
-                      EList<Token> _tokens_1 = ((TrainingPhrase)input).getTokens();
-                      for(final Token token_1 : _tokens_1) {
-                        {
-                          if ((token_1 instanceof ParameterReferenceToken)) {
-                            _builder.append(" <star/>");
-                          }
-                        }
-                      }
-                    }
-                    _builder.append("</srai></template>");
+                    _builder.append(" <star index=\"");
+                    int _indexOf = entities.indexOf(entity);
+                    int _plus = (_indexOf + 1);
+                    _builder.append(_plus);
+                    _builder.append("\"/>");
                     _builder.newLineIfNotEmpty();
-                    _builder.append("  ");
-                    _builder.append("</category>");
-                    _builder.newLineIfNotEmpty();
-                  } else {
-                    _builder.append("  ");
-                    _builder.append("<category>");
-                    _builder.newLineIfNotEmpty();
-                    _builder.append("    ");
-                    _builder.append("<pattern>");
-                    {
-                      EList<Token> _tokens_2 = ((TrainingPhrase)input).getTokens();
-                      for(final Token token_2 : _tokens_2) {
-                        {
-                          if ((token_2 instanceof Literal)) {
-                            String _replace_2 = ((Literal)token_2).getText().replace("?", " #");
-                            _builder.append(_replace_2);
-                          } else {
-                            if ((token_2 instanceof ParameterReferenceToken)) {
-                              _builder.append("*");
-                            }
-                          }
-                        }
-                      }
-                    }
-                    _builder.append("</pattern>");
-                    _builder.newLineIfNotEmpty();
-                    _builder.append("    ");
-                    _builder.append("<template><srai>");
-                    String _upperCase_1 = transition.getIntent().getName().toUpperCase().replace(" ", "").toUpperCase();
-                    _builder.append(_upperCase_1);
-                    {
-                      EList<Token> _tokens_3 = ((TrainingPhrase)input).getTokens();
-                      for(final Token token_3 : _tokens_3) {
-                        {
-                          if ((token_3 instanceof ParameterReferenceToken)) {
-                            _builder.append(" <star/>");
-                          }
-                        }
-                      }
-                    }
-                    _builder.append("</srai></template>");
-                    _builder.newLineIfNotEmpty();
-                    _builder.append("  ");
-                    _builder.append("</category>");
+                    _builder.append("      ");
+                    _builder.append("</srai>");
                     _builder.newLineIfNotEmpty();
                   }
                 }
+                _builder.append("    ");
+                _builder.append("</think>");
+                _builder.newLineIfNotEmpty();
+                String nextPrompt = null;
+                _builder.newLineIfNotEmpty();
+                String _xblockexpression_3 = null;
+                {
+                  nextPrompt = this.getNextParamPetition(transition.getIntent(), ((TrainingPhrase)input)).getValue();
+                  _xblockexpression_3 = "";
+                }
+                _builder.append(_xblockexpression_3);
+                _builder.newLineIfNotEmpty();
+                {
+                  if ((nextPrompt != "")) {
+                    _builder.append("    ");
+                    _builder.append("<template>");
+                    _builder.append(nextPrompt);
+                    _builder.append("</template>");
+                    _builder.newLineIfNotEmpty();
+                  } else {
+                    _builder.append("    ");
+                    _builder.append("<template></template>");
+                    _builder.newLineIfNotEmpty();
+                  }
+                }
+                _builder.append("  ");
+                _builder.append("</category>");
+                _builder.newLineIfNotEmpty();
               }
             }
           }
