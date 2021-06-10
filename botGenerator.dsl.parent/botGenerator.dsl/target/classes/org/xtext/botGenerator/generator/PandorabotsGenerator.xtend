@@ -107,12 +107,10 @@ class PandorabotsGenerator {
 			createTransitionFiles(transition, "", fsa, bot)
 		}
 		
-		// TODO: Generacion del archivo udc.aiml
-		////////////////////////////////////////
-		
 		zip.close
 	}
 
+	// Genera el codigo para rellenar el archivo de propiedades del bot
 	def systemFileFill() '''
 		[
 		["name", "set_when_loaded"],
@@ -125,12 +123,14 @@ class PandorabotsGenerator {
 		]
 	'''
 
+	// Genera el codigo para rellenar el archivo udc principal del bot
 	def udcFileFill() '''
 		<?xml version="1.0" encoding="UTF-8"?>
 		<aiml>
 		</aiml>
 	'''
-	// Llena el set correspondiente al input concreto (entity->inputs->inputs)
+	
+	// Rellena el set correspondiente al input concreto (entity->inputs->inputs)
 	def entitySetFill(SimpleInput input) '''
 		[
 		«FOR synonym : input.values»
@@ -139,7 +139,7 @@ class PandorabotsGenerator {
 		]
 	'''
 
-	// Llena el map con todas las entities de pandorabots y su set asociado
+	// Rellena el map con todas las entities de pandorabots y su set asociado
 	def entityMapFill(Entity entity) '''
 		[
 		«FOR input : entity.inputs»
@@ -150,6 +150,7 @@ class PandorabotsGenerator {
 		]
 	'''
 
+	// Genera codigo distinto dependiendo del tipo de input
 	def entry(EntityInput entry) {
 		if (entry instanceof SimpleInput) {
 			return entry(entry)
@@ -174,6 +175,7 @@ class PandorabotsGenerator {
 	// TODO: No soportadas
 	def entry(CompositeInput entry) '''
 	'''
+	
 	// TODO: No soportadas
 	def entry(RegexInput entry)'''
 	'''
@@ -251,11 +253,22 @@ class PandorabotsGenerator {
 		return responses
 	}
 	
+	// Devuelve las entidades conetenidas en una frase concreta
+	def getPhraseEntities(TrainingPhrase phrase) {
+		var ret = new ArrayList<String>()
+		
+		for (token: phrase.tokens)
+			if (token instanceof ParameterReferenceToken)
+				ret.add(token.parameter.name)
+		
+		return ret
+	}
+	
 	// Generador de codigo de un intent
 	// TODO: 
 	// 1. Mirar funcionamiento del webhook.
 	// 2. Implementar recogida de parametros a enviar en HttpRequest
-	// 3. Revisar impresion de parametros etc en HttpResponse
+	// 3. Revisar impresion de parametros etc en HttpResponse <- Necesarias pruebas con callapi
 	def intentFile(UserInteraction transition, String prefix, Bot bot)
 	'''
 	«"  "»<!-- Intent -->
@@ -270,10 +283,17 @@ class PandorabotsGenerator {
 	    «ENDIF»
   		«FOR input: language.inputs»
   			«IF input instanceof TrainingPhrase»
-				«"  "»<category>
-				«"    "»<pattern>«FOR token: input.tokens»«IF token instanceof Literal»«token.text.replace('?', ' #')»«ELSEIF token instanceof ParameterReferenceToken»*«ENDIF»«ENDFOR»</pattern>
-				«"    "»<template><srai>«(transition.intent.name.toUpperCase().replace(' ', '') + lang).toUpperCase()»«FOR token: input.tokens»«IF token instanceof ParameterReferenceToken» <star/>«ENDIF»«ENDFOR»</srai></template>
-				«"  "»</category>
+  				«IF transition.intent.inputs.length > 1»
+					«"  "»<category>
+					«"    "»<pattern>«FOR token: input.tokens»«IF token instanceof Literal»«token.text.replace('?', ' #')»«ELSEIF token instanceof ParameterReferenceToken»*«ENDIF»«ENDFOR»</pattern>
+					«"    "»<template><srai>«(transition.intent.name.toUpperCase().replace(' ', '') + lang).toUpperCase()»«FOR token: input.tokens»«IF token instanceof ParameterReferenceToken» <star/>«ENDIF»«ENDFOR»</srai></template>
+					«"  "»</category>
+				«ELSE»
+					«"  "»<category>
+					«"    "»<pattern>«FOR token: input.tokens»«IF token instanceof Literal»«token.text.replace('?', ' #')»«ELSEIF token instanceof ParameterReferenceToken»*«ENDIF»«ENDFOR»</pattern>
+					«"    "»<template><srai>«(transition.intent.name.toUpperCase().replace(' ', '')).toUpperCase()»«FOR token: input.tokens»«IF token instanceof ParameterReferenceToken» <star/>«ENDIF»«ENDFOR»</srai></template>
+					«"  "»</category>
+				«ENDIF»
 		  	«ENDIF»
 	  	«ENDFOR»
 	«ENDFOR»
@@ -281,22 +301,16 @@ class PandorabotsGenerator {
 	
 	// Devuelve los parametros que se quieren recoger con un intent
 	def getIntentParameters(Intent intent) {
-		var ret = new HashMap<String, ParameterReferenceToken>()
+		var ret = new HashMap<String, DefaultEntity>()
 		
-		for (IntentLanguageInputs language: intent.inputs) {
-			for (input: language.inputs) {
-				if (input instanceof TrainingPhrase) {
-					for (token: (input as TrainingPhrase).tokens) {
-						if (token instanceof ParameterReferenceToken) {
+		for (IntentLanguageInputs language: intent.inputs)
+			for (input: language.inputs)
+				if (input instanceof TrainingPhrase)
+					for (token: (input as TrainingPhrase).tokens)
+						if (token instanceof ParameterReferenceToken)
 							// Si no contiene el parametros por otro input, lo introduce en el diccionario
-							if (!ret.keySet.contains(token.parameter.name)) {
-								ret.put(token.parameter.name, token)
-							}
-						}
-					}
-				}
-			}
-		}
+							if (!ret.keySet.contains(token.parameter.name))
+								ret.put(token.parameter.name, token.parameter.defaultEntity)
 		
 		return ret
 	}
@@ -309,94 +323,82 @@ class PandorabotsGenerator {
 			return ""
 		
 		else {
-			var ret = ""
+			var ret = "  <!-- Entity saving -->\n"
 			for (key: parameters.keySet) {
 				var value = parameters.get(key)
-				if (value.parameter.entity === null) {
-					switch (value.parameter.defaultEntity) {
-						case DefaultEntity.TEXT:
-							ret += 
-							'''
-							«  »<category>
-							«    »<pattern>SAVE«value.parameter.name.toUpperCase()» *</pattern>
-							«    »<template>
-							«      »<think><set name="«value.parameter.name»"</set></think>
-							«    »</template>
-							«  »<category>
-							'''
-						case DefaultEntity.TIME:
-							ret +=
-							'''
-							«  »<category>
-							«    »<pattern>SAVE«value.parameter.name.toUpperCase()» * colon *</pattern>
-							«    »<template>
-							«      »<think>
-							«        »<set name="«value.parameter.name»_is_valid"><srai>ISVALIDHOUR <star index="1"/> colon <star index="2"/></srai></set>
-							«      »</think>
-							«      »<condition name="«value.parameter.name»_is_valid">
-							«        »<li value="TRUE">
-							«          »<think>
-							«            »<set name="«value.parameter.name»"><star index="1"/>:<star index="2"/></set>
-							«          »</think>
-							«        »</li>
-							«      »</condition>
-							«    »</template>
-							«  »</category>
-							'''
-						case DefaultEntity.DATE:
-							ret +=
-							'''
-							«  »<category>
-							«    »<pattern>SAVE«value.parameter.name» * slash * slash *</pattern>
-							«    »<template>
-							«      »<think>
-							«        »<set name="«value.parameter.name»_is_valid"><srai>VALIDDATE <star index="1"/>/<star index="2"/>/<star index="3"/></srai></set>
-							«      »</think>
-							«      »<condition name="«value.parameter.name»_is_valid">
-							«        »<li value="TRUE"><think><set name="«value.parameter.name»"><star index="1"/>/<star index="2"/>/<star index="3"/></set></think></li>
-							«      »</condition>
-							«    »</template>
-							«  »</category>
-							'''
-						case DefaultEntity.NUMBER:
-							ret +=
-							'''
-							«  »<category>
-							«    »<pattern>SAVE«value.parameter.name» <set>number</set></pattern>
-							«    »<template>
-							«      »<think><set name="«value.parameter.name»"><star/></set></think>
-							«    »</template>
-							«  »</category>
-							'''
-						default: 
-							ret += 
-							'''
-							«  »<category>
-							«    »<pattern>SAVE«value.parameter.name.toUpperCase()» *</pattern>
-							«    »<template>
-							«      »<think><set name="«value.parameter.name»"</set></think>
-							«    »</template>
-							«  »<category>
-							'''
-					}
-				} else {
-					ret +=
-					'''
-					«  »<category>
-					«    »<pattern>SAVESAVE«value.parameter.name» *</pattern>
-					«    »<template>
-					«      »<think>
-					«        »<set name="«value.parameter.name»_temp"><map name="animals"><star/></map></set>
-					«      »</think>
-					«      »<condition name="«value.parameter.name»_temp">
-					«        »<li value="unknown"></li>
-					«        »<li><set name="«value.parameter.name»"><get name="«value.parameter.name»_temp"/></set></li>
-					«      »</condition>
-					«    »</template>
-					«  »</category>
-					'''
+				switch (value) {
+					case DefaultEntity.TEXT:
+						ret += 
+						'''
+						«"  "»<category>
+						«"    "»<pattern>SAVE«key.toUpperCase()» *</pattern>
+						«"    "»<template>
+						«"      "»<think><set name="«key»"><star/></set></think>
+						«"    "»</template>
+						«"  "»</category>
+						'''
+					case DefaultEntity.TIME:
+						ret +=
+						'''
+						«"  "»<category>
+						«"    "»<pattern>SAVE«key.toUpperCase()» * colon *</pattern>
+						«"    "»<template>
+						«"      "»<think>
+						«"        "»<set name="«key»_is_valid"><srai>ISVALIDHOUR <star index="1"/>:<star index="2"/></srai></set>
+						«"      "»</think>
+						«"      "»<condition name="«key»_is_valid">
+						«"        "»<li value="TRUE">
+						«"          "»<think>
+						«"            "»<set name="«key»"><star index="1"/>:<star index="2"/></set>
+						«"          "»</think>
+						«"        "»</li>
+						«"      "»</condition>
+						«"    "»</template>
+						«"  "»</category>
+						'''
+					case DefaultEntity.DATE:
+						ret +=
+						'''
+						«"  "»<category>
+						«"    "»<pattern>SAVE«key.toUpperCase()» * slash * slash *</pattern>
+						«"    "»<template>
+						«"      "»<think>
+						«"        "»<set name="«key»_is_valid">
+						«"          "»<srai>VALIDDATE <star index="1"/>/<star index="2"/>/<star index="3"/></srai>
+						«"        "»</set>
+						«"      "»</think>
+						«"      "»<condition name="«key»_is_valid">
+						«"        "»<li value="TRUE">
+						«"          "»<think><set name="«key»"><star index="1"/>/<star index="2"/>/<star index="3"/></set></think>
+						«"        "»</li>
+						«"      "»</condition>
+						«"    "»</template>
+						«"  "»</category>
+						'''
+					case DefaultEntity.NUMBER:
+						ret +=
+						'''
+						«"  "»<category>
+						«"    "»<pattern>SAVE«key.toUpperCase()» <set>number</set></pattern>
+						«"    "»<template>
+						«"      "»<think><set name="«key»"><star/></set></think>
+						«"    "»</template>
+						«"  "»</category>
+						'''
+					default: 
+						ret += 
+						'''
+						«"  "»<category>
+						«"    "»<pattern>SAVE«key.toUpperCase()» *</pattern>
+						«"    "»<template>
+						«"      "»<think><set name="«key»"><star/></set></think>
+						«"    "»</template>
+						«"  "»</category>
+						'''
 				}
 			}
+			
+			return ret
 		}
 	}
 	

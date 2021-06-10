@@ -318,6 +318,17 @@ public class PandorabotsGenerator {
     return responses;
   }
   
+  public ArrayList<String> getPhraseEntities(final TrainingPhrase phrase) {
+    ArrayList<String> ret = new ArrayList<String>();
+    EList<Token> _tokens = phrase.getTokens();
+    for (final Token token : _tokens) {
+      if ((token instanceof ParameterReferenceToken)) {
+        ret.add(((ParameterReferenceToken)token).getParameter().getName());
+      }
+    }
+    return ret;
+  }
+  
   public CharSequence intentFile(final UserInteraction transition, final String prefix, final Bot bot) {
     StringConcatenation _builder = new StringConcatenation();
     _builder.append("  ");
@@ -360,48 +371,96 @@ public class PandorabotsGenerator {
           for(final IntentInput input : _inputs_1) {
             {
               if ((input instanceof TrainingPhrase)) {
-                _builder.append("  ");
-                _builder.append("<category>");
-                _builder.newLineIfNotEmpty();
-                _builder.append("    ");
-                _builder.append("<pattern>");
                 {
-                  EList<Token> _tokens = ((TrainingPhrase)input).getTokens();
-                  for(final Token token : _tokens) {
+                  int _length = ((Object[])Conversions.unwrapArray(transition.getIntent().getInputs(), Object.class)).length;
+                  boolean _greaterThan = (_length > 1);
+                  if (_greaterThan) {
+                    _builder.append("  ");
+                    _builder.append("<category>");
+                    _builder.newLineIfNotEmpty();
+                    _builder.append("    ");
+                    _builder.append("<pattern>");
                     {
-                      if ((token instanceof Literal)) {
-                        String _replace = ((Literal)token).getText().replace("?", " #");
-                        _builder.append(_replace);
-                      } else {
-                        if ((token instanceof ParameterReferenceToken)) {
-                          _builder.append("*");
+                      EList<Token> _tokens = ((TrainingPhrase)input).getTokens();
+                      for(final Token token : _tokens) {
+                        {
+                          if ((token instanceof Literal)) {
+                            String _replace = ((Literal)token).getText().replace("?", " #");
+                            _builder.append(_replace);
+                          } else {
+                            if ((token instanceof ParameterReferenceToken)) {
+                              _builder.append("*");
+                            }
+                          }
                         }
                       }
                     }
-                  }
-                }
-                _builder.append("</pattern>");
-                _builder.newLineIfNotEmpty();
-                _builder.append("    ");
-                _builder.append("<template><srai>");
-                String _replace_1 = transition.getIntent().getName().toUpperCase().replace(" ", "");
-                String _upperCase = (_replace_1 + lang).toUpperCase();
-                _builder.append(_upperCase);
-                {
-                  EList<Token> _tokens_1 = ((TrainingPhrase)input).getTokens();
-                  for(final Token token_1 : _tokens_1) {
+                    _builder.append("</pattern>");
+                    _builder.newLineIfNotEmpty();
+                    _builder.append("    ");
+                    _builder.append("<template><srai>");
+                    String _replace_1 = transition.getIntent().getName().toUpperCase().replace(" ", "");
+                    String _upperCase = (_replace_1 + lang).toUpperCase();
+                    _builder.append(_upperCase);
                     {
-                      if ((token_1 instanceof ParameterReferenceToken)) {
-                        _builder.append(" <star/>");
+                      EList<Token> _tokens_1 = ((TrainingPhrase)input).getTokens();
+                      for(final Token token_1 : _tokens_1) {
+                        {
+                          if ((token_1 instanceof ParameterReferenceToken)) {
+                            _builder.append(" <star/>");
+                          }
+                        }
                       }
                     }
+                    _builder.append("</srai></template>");
+                    _builder.newLineIfNotEmpty();
+                    _builder.append("  ");
+                    _builder.append("</category>");
+                    _builder.newLineIfNotEmpty();
+                  } else {
+                    _builder.append("  ");
+                    _builder.append("<category>");
+                    _builder.newLineIfNotEmpty();
+                    _builder.append("    ");
+                    _builder.append("<pattern>");
+                    {
+                      EList<Token> _tokens_2 = ((TrainingPhrase)input).getTokens();
+                      for(final Token token_2 : _tokens_2) {
+                        {
+                          if ((token_2 instanceof Literal)) {
+                            String _replace_2 = ((Literal)token_2).getText().replace("?", " #");
+                            _builder.append(_replace_2);
+                          } else {
+                            if ((token_2 instanceof ParameterReferenceToken)) {
+                              _builder.append("*");
+                            }
+                          }
+                        }
+                      }
+                    }
+                    _builder.append("</pattern>");
+                    _builder.newLineIfNotEmpty();
+                    _builder.append("    ");
+                    _builder.append("<template><srai>");
+                    String _upperCase_1 = transition.getIntent().getName().toUpperCase().replace(" ", "").toUpperCase();
+                    _builder.append(_upperCase_1);
+                    {
+                      EList<Token> _tokens_3 = ((TrainingPhrase)input).getTokens();
+                      for(final Token token_3 : _tokens_3) {
+                        {
+                          if ((token_3 instanceof ParameterReferenceToken)) {
+                            _builder.append(" <star/>");
+                          }
+                        }
+                      }
+                    }
+                    _builder.append("</srai></template>");
+                    _builder.newLineIfNotEmpty();
+                    _builder.append("  ");
+                    _builder.append("</category>");
+                    _builder.newLineIfNotEmpty();
                   }
                 }
-                _builder.append("</srai></template>");
-                _builder.newLineIfNotEmpty();
-                _builder.append("  ");
-                _builder.append("</category>");
-                _builder.newLineIfNotEmpty();
               }
             }
           }
@@ -411,8 +470,8 @@ public class PandorabotsGenerator {
     return _builder;
   }
   
-  public HashMap<String, ParameterReferenceToken> getIntentParameters(final Intent intent) {
-    HashMap<String, ParameterReferenceToken> ret = new HashMap<String, ParameterReferenceToken>();
+  public HashMap<String, DefaultEntity> getIntentParameters(final Intent intent) {
+    HashMap<String, DefaultEntity> ret = new HashMap<String, DefaultEntity>();
     EList<IntentLanguageInputs> _inputs = intent.getInputs();
     for (final IntentLanguageInputs language : _inputs) {
       EList<IntentInput> _inputs_1 = language.getInputs();
@@ -424,7 +483,7 @@ public class PandorabotsGenerator {
               boolean _contains = ret.keySet().contains(((ParameterReferenceToken)token).getParameter().getName());
               boolean _not = (!_contains);
               if (_not) {
-                ret.put(((ParameterReferenceToken)token).getParameter().getName(), ((ParameterReferenceToken)token));
+                ret.put(((ParameterReferenceToken)token).getParameter().getName(), ((ParameterReferenceToken)token).getParameter().getDefaultEntity());
               }
             }
           }
@@ -435,249 +494,253 @@ public class PandorabotsGenerator {
   }
   
   public String createSaveParameter(final Intent intent) {
-    HashMap<String, ParameterReferenceToken> parameters = this.getIntentParameters(intent);
+    HashMap<String, DefaultEntity> parameters = this.getIntentParameters(intent);
     boolean _isEmpty = parameters.isEmpty();
     if (_isEmpty) {
       return "";
     } else {
-      String ret = "";
+      String ret = "  <!-- Entity saving -->\n";
       Set<String> _keySet = parameters.keySet();
       for (final String key : _keySet) {
         {
-          ParameterReferenceToken value = parameters.get(key);
-          Entity _entity = value.getParameter().getEntity();
-          boolean _tripleEquals = (_entity == null);
-          if (_tripleEquals) {
-            DefaultEntity _defaultEntity = value.getParameter().getDefaultEntity();
-            if (_defaultEntity != null) {
-              switch (_defaultEntity) {
-                case TEXT:
-                  String _ret = ret;
-                  StringConcatenation _builder = new StringConcatenation();
-                  _builder.append("<category>");
-                  _builder.newLine();
-                  _builder.append("<pattern>SAVE");
-                  String _upperCase = value.getParameter().getName().toUpperCase();
-                  _builder.append(_upperCase);
-                  _builder.append(" *</pattern>");
-                  _builder.newLineIfNotEmpty();
-                  _builder.append("<template>");
-                  _builder.newLine();
-                  _builder.append("<think><set name=\"");
-                  String _name = value.getParameter().getName();
-                  _builder.append(_name);
-                  _builder.append("\"</set></think>");
-                  _builder.newLineIfNotEmpty();
-                  _builder.append("</template>");
-                  _builder.newLine();
-                  _builder.append("<category>");
-                  _builder.newLine();
-                  ret = (_ret + _builder);
-                  break;
-                case TIME:
-                  String _ret_1 = ret;
-                  StringConcatenation _builder_1 = new StringConcatenation();
-                  _builder_1.append("<category>");
-                  _builder_1.newLine();
-                  _builder_1.append("<pattern>SAVE");
-                  String _upperCase_1 = value.getParameter().getName().toUpperCase();
-                  _builder_1.append(_upperCase_1);
-                  _builder_1.append(" * colon *</pattern>");
-                  _builder_1.newLineIfNotEmpty();
-                  _builder_1.append("<template>");
-                  _builder_1.newLine();
-                  _builder_1.append("<think>");
-                  _builder_1.newLine();
-                  _builder_1.append("<set name=\"");
-                  String _name_1 = value.getParameter().getName();
-                  _builder_1.append(_name_1);
-                  _builder_1.append("_is_valid\"><srai>ISVALIDHOUR <star index=\"1\"/> colon <star index=\"2\"/></srai></set>");
-                  _builder_1.newLineIfNotEmpty();
-                  _builder_1.append("</think>");
-                  _builder_1.newLine();
-                  _builder_1.append("<condition name=\"");
-                  String _name_2 = value.getParameter().getName();
-                  _builder_1.append(_name_2);
-                  _builder_1.append("_is_valid\">");
-                  _builder_1.newLineIfNotEmpty();
-                  _builder_1.append("<li value=\"TRUE\">");
-                  _builder_1.newLine();
-                  _builder_1.append("<think>");
-                  _builder_1.newLine();
-                  _builder_1.append("<set name=\"");
-                  String _name_3 = value.getParameter().getName();
-                  _builder_1.append(_name_3);
-                  _builder_1.append("\"><star index=\"1\"/>:<star index=\"2\"/></set>");
-                  _builder_1.newLineIfNotEmpty();
-                  _builder_1.append("</think>");
-                  _builder_1.newLine();
-                  _builder_1.append("</li>");
-                  _builder_1.newLine();
-                  _builder_1.append("</condition>");
-                  _builder_1.newLine();
-                  _builder_1.append("</template>");
-                  _builder_1.newLine();
-                  _builder_1.append("</category>");
-                  _builder_1.newLine();
-                  ret = (_ret_1 + _builder_1);
-                  break;
-                case DATE:
-                  String _ret_2 = ret;
-                  StringConcatenation _builder_2 = new StringConcatenation();
-                  _builder_2.append("<category>");
-                  _builder_2.newLine();
-                  _builder_2.append("<pattern>SAVE");
-                  String _name_4 = value.getParameter().getName();
-                  _builder_2.append(_name_4);
-                  _builder_2.append(" * slash * slash *</pattern>");
-                  _builder_2.newLineIfNotEmpty();
-                  _builder_2.append("<template>");
-                  _builder_2.newLine();
-                  _builder_2.append("<think>");
-                  _builder_2.newLine();
-                  _builder_2.append("<set name=\"");
-                  String _name_5 = value.getParameter().getName();
-                  _builder_2.append(_name_5);
-                  _builder_2.append("_is_valid\"><srai>VALIDDATE <star index=\"1\"/>/<star index=\"2\"/>/<star index=\"3\"/></srai></set>");
-                  _builder_2.newLineIfNotEmpty();
-                  _builder_2.append("</think>");
-                  _builder_2.newLine();
-                  _builder_2.append("<condition name=\"");
-                  String _name_6 = value.getParameter().getName();
-                  _builder_2.append(_name_6);
-                  _builder_2.append("_is_valid\">");
-                  _builder_2.newLineIfNotEmpty();
-                  _builder_2.append("<li value=\"TRUE\"><think><set name=\"");
-                  String _name_7 = value.getParameter().getName();
-                  _builder_2.append(_name_7);
-                  _builder_2.append("\"><star index=\"1\"/>/<star index=\"2\"/>/<star index=\"3\"/></set></think></li>");
-                  _builder_2.newLineIfNotEmpty();
-                  _builder_2.append("</condition>");
-                  _builder_2.newLine();
-                  _builder_2.append("</template>");
-                  _builder_2.newLine();
-                  _builder_2.append("</category>");
-                  _builder_2.newLine();
-                  ret = (_ret_2 + _builder_2);
-                  break;
-                case NUMBER:
-                  String _ret_3 = ret;
-                  StringConcatenation _builder_3 = new StringConcatenation();
-                  _builder_3.append("<category>");
-                  _builder_3.newLine();
-                  _builder_3.append("<pattern>SAVE");
-                  String _name_8 = value.getParameter().getName();
-                  _builder_3.append(_name_8);
-                  _builder_3.append(" <set>number</set></pattern>");
-                  _builder_3.newLineIfNotEmpty();
-                  _builder_3.append("<template>");
-                  _builder_3.newLine();
-                  _builder_3.append("<think><set name=\"");
-                  String _name_9 = value.getParameter().getName();
-                  _builder_3.append(_name_9);
-                  _builder_3.append("\"><star/></set></think>");
-                  _builder_3.newLineIfNotEmpty();
-                  _builder_3.append("</template>");
-                  _builder_3.newLine();
-                  _builder_3.append("</category>");
-                  _builder_3.newLine();
-                  ret = (_ret_3 + _builder_3);
-                  break;
-                default:
-                  String _ret_4 = ret;
-                  StringConcatenation _builder_4 = new StringConcatenation();
-                  _builder_4.append("<category>");
-                  _builder_4.newLine();
-                  _builder_4.append("<pattern>SAVE");
-                  String _upperCase_2 = value.getParameter().getName().toUpperCase();
-                  _builder_4.append(_upperCase_2);
-                  _builder_4.append(" *</pattern>");
-                  _builder_4.newLineIfNotEmpty();
-                  _builder_4.append("<template>");
-                  _builder_4.newLine();
-                  _builder_4.append("<think><set name=\"");
-                  String _name_10 = value.getParameter().getName();
-                  _builder_4.append(_name_10);
-                  _builder_4.append("\"</set></think>");
-                  _builder_4.newLineIfNotEmpty();
-                  _builder_4.append("</template>");
-                  _builder_4.newLine();
-                  _builder_4.append("<category>");
-                  _builder_4.newLine();
-                  ret = (_ret_4 + _builder_4);
-                  break;
-              }
-            } else {
-              String _ret_4 = ret;
-              StringConcatenation _builder_4 = new StringConcatenation();
-              _builder_4.append("<category>");
-              _builder_4.newLine();
-              _builder_4.append("<pattern>SAVE");
-              String _upperCase_2 = value.getParameter().getName().toUpperCase();
-              _builder_4.append(_upperCase_2);
-              _builder_4.append(" *</pattern>");
-              _builder_4.newLineIfNotEmpty();
-              _builder_4.append("<template>");
-              _builder_4.newLine();
-              _builder_4.append("<think><set name=\"");
-              String _name_10 = value.getParameter().getName();
-              _builder_4.append(_name_10);
-              _builder_4.append("\"</set></think>");
-              _builder_4.newLineIfNotEmpty();
-              _builder_4.append("</template>");
-              _builder_4.newLine();
-              _builder_4.append("<category>");
-              _builder_4.newLine();
-              ret = (_ret_4 + _builder_4);
+          DefaultEntity value = parameters.get(key);
+          if (value != null) {
+            switch (value) {
+              case TEXT:
+                String _ret = ret;
+                StringConcatenation _builder = new StringConcatenation();
+                _builder.append("  ");
+                _builder.append("<category>");
+                _builder.newLineIfNotEmpty();
+                _builder.append("    ");
+                _builder.append("<pattern>SAVE");
+                String _upperCase = key.toUpperCase();
+                _builder.append(_upperCase);
+                _builder.append(" *</pattern>");
+                _builder.newLineIfNotEmpty();
+                _builder.append("    ");
+                _builder.append("<template>");
+                _builder.newLineIfNotEmpty();
+                _builder.append("      ");
+                _builder.append("<think><set name=\"");
+                _builder.append(key);
+                _builder.append("\"><star/></set></think>");
+                _builder.newLineIfNotEmpty();
+                _builder.append("    ");
+                _builder.append("</template>");
+                _builder.newLineIfNotEmpty();
+                _builder.append("  ");
+                _builder.append("</category>");
+                _builder.newLineIfNotEmpty();
+                ret = (_ret + _builder);
+                break;
+              case TIME:
+                String _ret_1 = ret;
+                StringConcatenation _builder_1 = new StringConcatenation();
+                _builder_1.append("  ");
+                _builder_1.append("<category>");
+                _builder_1.newLineIfNotEmpty();
+                _builder_1.append("    ");
+                _builder_1.append("<pattern>SAVE");
+                String _upperCase_1 = key.toUpperCase();
+                _builder_1.append(_upperCase_1);
+                _builder_1.append(" * colon *</pattern>");
+                _builder_1.newLineIfNotEmpty();
+                _builder_1.append("    ");
+                _builder_1.append("<template>");
+                _builder_1.newLineIfNotEmpty();
+                _builder_1.append("      ");
+                _builder_1.append("<think>");
+                _builder_1.newLineIfNotEmpty();
+                _builder_1.append("        ");
+                _builder_1.append("<set name=\"");
+                _builder_1.append(key);
+                _builder_1.append("_is_valid\"><srai>ISVALIDHOUR <star index=\"1\"/>:<star index=\"2\"/></srai></set>");
+                _builder_1.newLineIfNotEmpty();
+                _builder_1.append("      ");
+                _builder_1.append("</think>");
+                _builder_1.newLineIfNotEmpty();
+                _builder_1.append("      ");
+                _builder_1.append("<condition name=\"");
+                _builder_1.append(key);
+                _builder_1.append("_is_valid\">");
+                _builder_1.newLineIfNotEmpty();
+                _builder_1.append("        ");
+                _builder_1.append("<li value=\"TRUE\">");
+                _builder_1.newLineIfNotEmpty();
+                _builder_1.append("          ");
+                _builder_1.append("<think>");
+                _builder_1.newLineIfNotEmpty();
+                _builder_1.append("            ");
+                _builder_1.append("<set name=\"");
+                _builder_1.append(key);
+                _builder_1.append("\"><star index=\"1\"/>:<star index=\"2\"/></set>");
+                _builder_1.newLineIfNotEmpty();
+                _builder_1.append("          ");
+                _builder_1.append("</think>");
+                _builder_1.newLineIfNotEmpty();
+                _builder_1.append("        ");
+                _builder_1.append("</li>");
+                _builder_1.newLineIfNotEmpty();
+                _builder_1.append("      ");
+                _builder_1.append("</condition>");
+                _builder_1.newLineIfNotEmpty();
+                _builder_1.append("    ");
+                _builder_1.append("</template>");
+                _builder_1.newLineIfNotEmpty();
+                _builder_1.append("  ");
+                _builder_1.append("</category>");
+                _builder_1.newLineIfNotEmpty();
+                ret = (_ret_1 + _builder_1);
+                break;
+              case DATE:
+                String _ret_2 = ret;
+                StringConcatenation _builder_2 = new StringConcatenation();
+                _builder_2.append("  ");
+                _builder_2.append("<category>");
+                _builder_2.newLineIfNotEmpty();
+                _builder_2.append("    ");
+                _builder_2.append("<pattern>SAVE");
+                String _upperCase_2 = key.toUpperCase();
+                _builder_2.append(_upperCase_2);
+                _builder_2.append(" * slash * slash *</pattern>");
+                _builder_2.newLineIfNotEmpty();
+                _builder_2.append("    ");
+                _builder_2.append("<template>");
+                _builder_2.newLineIfNotEmpty();
+                _builder_2.append("      ");
+                _builder_2.append("<think>");
+                _builder_2.newLineIfNotEmpty();
+                _builder_2.append("        ");
+                _builder_2.append("<set name=\"");
+                _builder_2.append(key);
+                _builder_2.append("_is_valid\">");
+                _builder_2.newLineIfNotEmpty();
+                _builder_2.append("          ");
+                _builder_2.append("<srai>VALIDDATE <star index=\"1\"/>/<star index=\"2\"/>/<star index=\"3\"/></srai>");
+                _builder_2.newLineIfNotEmpty();
+                _builder_2.append("        ");
+                _builder_2.append("</set>");
+                _builder_2.newLineIfNotEmpty();
+                _builder_2.append("      ");
+                _builder_2.append("</think>");
+                _builder_2.newLineIfNotEmpty();
+                _builder_2.append("      ");
+                _builder_2.append("<condition name=\"");
+                _builder_2.append(key);
+                _builder_2.append("_is_valid\">");
+                _builder_2.newLineIfNotEmpty();
+                _builder_2.append("        ");
+                _builder_2.append("<li value=\"TRUE\">");
+                _builder_2.newLineIfNotEmpty();
+                _builder_2.append("          ");
+                _builder_2.append("<think><set name=\"");
+                _builder_2.append(key);
+                _builder_2.append("\"><star index=\"1\"/>/<star index=\"2\"/>/<star index=\"3\"/></set></think>");
+                _builder_2.newLineIfNotEmpty();
+                _builder_2.append("        ");
+                _builder_2.append("</li>");
+                _builder_2.newLineIfNotEmpty();
+                _builder_2.append("      ");
+                _builder_2.append("</condition>");
+                _builder_2.newLineIfNotEmpty();
+                _builder_2.append("    ");
+                _builder_2.append("</template>");
+                _builder_2.newLineIfNotEmpty();
+                _builder_2.append("  ");
+                _builder_2.append("</category>");
+                _builder_2.newLineIfNotEmpty();
+                ret = (_ret_2 + _builder_2);
+                break;
+              case NUMBER:
+                String _ret_3 = ret;
+                StringConcatenation _builder_3 = new StringConcatenation();
+                _builder_3.append("  ");
+                _builder_3.append("<category>");
+                _builder_3.newLineIfNotEmpty();
+                _builder_3.append("    ");
+                _builder_3.append("<pattern>SAVE");
+                String _upperCase_3 = key.toUpperCase();
+                _builder_3.append(_upperCase_3);
+                _builder_3.append(" <set>number</set></pattern>");
+                _builder_3.newLineIfNotEmpty();
+                _builder_3.append("    ");
+                _builder_3.append("<template>");
+                _builder_3.newLineIfNotEmpty();
+                _builder_3.append("      ");
+                _builder_3.append("<think><set name=\"");
+                _builder_3.append(key);
+                _builder_3.append("\"><star/></set></think>");
+                _builder_3.newLineIfNotEmpty();
+                _builder_3.append("    ");
+                _builder_3.append("</template>");
+                _builder_3.newLineIfNotEmpty();
+                _builder_3.append("  ");
+                _builder_3.append("</category>");
+                _builder_3.newLineIfNotEmpty();
+                ret = (_ret_3 + _builder_3);
+                break;
+              default:
+                String _ret_4 = ret;
+                StringConcatenation _builder_4 = new StringConcatenation();
+                _builder_4.append("  ");
+                _builder_4.append("<category>");
+                _builder_4.newLineIfNotEmpty();
+                _builder_4.append("    ");
+                _builder_4.append("<pattern>SAVE");
+                String _upperCase_4 = key.toUpperCase();
+                _builder_4.append(_upperCase_4);
+                _builder_4.append(" *</pattern>");
+                _builder_4.newLineIfNotEmpty();
+                _builder_4.append("    ");
+                _builder_4.append("<template>");
+                _builder_4.newLineIfNotEmpty();
+                _builder_4.append("      ");
+                _builder_4.append("<think><set name=\"");
+                _builder_4.append(key);
+                _builder_4.append("\"><star/></set></think>");
+                _builder_4.newLineIfNotEmpty();
+                _builder_4.append("    ");
+                _builder_4.append("</template>");
+                _builder_4.newLineIfNotEmpty();
+                _builder_4.append("  ");
+                _builder_4.append("</category>");
+                _builder_4.newLineIfNotEmpty();
+                ret = (_ret_4 + _builder_4);
+                break;
             }
           } else {
-            String _ret_5 = ret;
-            StringConcatenation _builder_5 = new StringConcatenation();
-            _builder_5.append("<category>");
-            _builder_5.newLine();
-            _builder_5.append("<pattern>SAVESAVE");
-            String _name_11 = value.getParameter().getName();
-            _builder_5.append(_name_11);
-            _builder_5.append(" *</pattern>");
-            _builder_5.newLineIfNotEmpty();
-            _builder_5.append("<template>");
-            _builder_5.newLine();
-            _builder_5.append("<think>");
-            _builder_5.newLine();
-            _builder_5.append("<set name=\"");
-            String _name_12 = value.getParameter().getName();
-            _builder_5.append(_name_12);
-            _builder_5.append("_temp\"><map name=\"animals\"><star/></map></set>");
-            _builder_5.newLineIfNotEmpty();
-            _builder_5.append("</think>");
-            _builder_5.newLine();
-            _builder_5.append("<condition name=\"");
-            String _name_13 = value.getParameter().getName();
-            _builder_5.append(_name_13);
-            _builder_5.append("_temp\">");
-            _builder_5.newLineIfNotEmpty();
-            _builder_5.append("<li value=\"unknown\"></li>");
-            _builder_5.newLine();
-            _builder_5.append("<li><set name=\"");
-            String _name_14 = value.getParameter().getName();
-            _builder_5.append(_name_14);
-            _builder_5.append("\"><get name=\"");
-            String _name_15 = value.getParameter().getName();
-            _builder_5.append(_name_15);
-            _builder_5.append("_temp\"/></set></li>");
-            _builder_5.newLineIfNotEmpty();
-            _builder_5.append("</condition>");
-            _builder_5.newLine();
-            _builder_5.append("</template>");
-            _builder_5.newLine();
-            _builder_5.append("</category>");
-            _builder_5.newLine();
-            ret = (_ret_5 + _builder_5);
+            String _ret_4 = ret;
+            StringConcatenation _builder_4 = new StringConcatenation();
+            _builder_4.append("  ");
+            _builder_4.append("<category>");
+            _builder_4.newLineIfNotEmpty();
+            _builder_4.append("    ");
+            _builder_4.append("<pattern>SAVE");
+            String _upperCase_4 = key.toUpperCase();
+            _builder_4.append(_upperCase_4);
+            _builder_4.append(" *</pattern>");
+            _builder_4.newLineIfNotEmpty();
+            _builder_4.append("    ");
+            _builder_4.append("<template>");
+            _builder_4.newLineIfNotEmpty();
+            _builder_4.append("      ");
+            _builder_4.append("<think><set name=\"");
+            _builder_4.append(key);
+            _builder_4.append("\"><star/></set></think>");
+            _builder_4.newLineIfNotEmpty();
+            _builder_4.append("    ");
+            _builder_4.append("</template>");
+            _builder_4.newLineIfNotEmpty();
+            _builder_4.append("  ");
+            _builder_4.append("</category>");
+            _builder_4.newLineIfNotEmpty();
+            ret = (_ret_4 + _builder_4);
           }
         }
       }
+      return ret;
     }
-    return null;
   }
   
   public ArrayList<String> getActionLanguages(final Action action) {
