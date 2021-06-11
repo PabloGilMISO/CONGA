@@ -265,23 +265,9 @@ public class PandorabotsGenerator {
   }
   
   public void createTransitionFiles(final UserInteraction transition, final String prefix, final IFileSystemAccess2 fsa, final Bot bot) {
-    StringConcatenation _builder = new StringConcatenation();
-    _builder.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
-    _builder.newLine();
-    _builder.append("<aiml>");
-    _builder.newLine();
-    String intentFileContent = _builder.toString();
-    String _intentFileContent = intentFileContent;
-    String _createSaveParameter = this.createSaveParameter(transition.getIntent());
-    intentFileContent = (_intentFileContent + _createSaveParameter);
-    String _intentFileContent_1 = intentFileContent;
-    CharSequence _intentFile = this.intentFile(transition, prefix, bot);
-    intentFileContent = (_intentFileContent_1 + _intentFile);
-    String _intentFileContent_2 = intentFileContent;
-    intentFileContent = (_intentFileContent_2 + "</aiml>");
     String _name = transition.getIntent().getName();
     String intentFileName = (prefix + _name).toLowerCase().replace(" ", "");
-    fsa.generateFile((((this.path + "/files/") + intentFileName) + ".aiml"), intentFileContent);
+    fsa.generateFile((((this.path + "/files/") + intentFileName) + ".aiml"), this.intentFile(transition, prefix, bot));
     InputStream intentValue = fsa.readBinaryFile((((this.path + "/files/") + intentFileName) + ".aiml"));
     this.zip.addFileToFolder("files", (intentFileName + ".aiml"), intentValue);
   }
@@ -375,6 +361,13 @@ public class PandorabotsGenerator {
   
   public CharSequence intentFile(final UserInteraction transition, final String prefix, final Bot bot) {
     StringConcatenation _builder = new StringConcatenation();
+    _builder.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
+    _builder.newLine();
+    _builder.append("<aiml>");
+    _builder.newLine();
+    String _createSaveParameter = this.createSaveParameter(transition.getIntent());
+    _builder.append(_createSaveParameter);
+    _builder.newLineIfNotEmpty();
     _builder.append("  ");
     _builder.append("<!-- Intent -->");
     _builder.newLineIfNotEmpty();
@@ -516,7 +509,329 @@ public class PandorabotsGenerator {
         }
       }
     }
+    String _createChainedParamIntents = this.createChainedParamIntents(transition);
+    _builder.append(_createChainedParamIntents);
+    _builder.newLineIfNotEmpty();
+    _builder.append("</aiml>");
+    _builder.newLine();
     return _builder;
+  }
+  
+  public String createChainedParamIntents(final UserInteraction transition) {
+    HashMap<String, DefaultEntity> parameters = this.getIntentParameters(transition.getIntent());
+    boolean _isEmpty = parameters.isEmpty();
+    if (_isEmpty) {
+      return "";
+    } else {
+      StringConcatenation _builder = new StringConcatenation();
+      _builder.append("  ");
+      _builder.append("<!-- Chained param intents -->");
+      _builder.newLineIfNotEmpty();
+      String ret = _builder.toString();
+      Set<String> _keySet = parameters.keySet();
+      for (final String key : _keySet) {
+        {
+          DefaultEntity value = parameters.get(key);
+          Intent _intent = transition.getIntent();
+          Set<String> _keySet_1 = parameters.keySet();
+          ArrayList<String> _arrayList = new ArrayList<String>(_keySet_1);
+          String paramConditions = this.generateParamConditionsRec(_intent, _arrayList, "  ");
+          if (value != null) {
+            switch (value) {
+              case TEXT:
+                String _ret = ret;
+                StringConcatenation _builder_1 = new StringConcatenation();
+                _builder_1.append("  ");
+                _builder_1.append("<category>");
+                _builder_1.newLineIfNotEmpty();
+                _builder_1.append("    ");
+                _builder_1.append("<pattern>*</pattern>");
+                _builder_1.newLineIfNotEmpty();
+                _builder_1.append("    ");
+                _builder_1.append("<that>");
+                String _paramPromptByName = this.getParamPromptByName(transition.getIntent(), key);
+                _builder_1.append(_paramPromptByName);
+                _builder_1.append("</that>");
+                _builder_1.newLineIfNotEmpty();
+                _builder_1.append("    ");
+                _builder_1.append("<template>");
+                _builder_1.newLineIfNotEmpty();
+                _builder_1.append("      ");
+                _builder_1.append("<think>");
+                _builder_1.newLineIfNotEmpty();
+                _builder_1.append("        ");
+                _builder_1.append("<srai>SAVE");
+                String _upperCase = key.toUpperCase();
+                _builder_1.append(_upperCase);
+                _builder_1.append(" <star/></set>");
+                _builder_1.newLineIfNotEmpty();
+                _builder_1.append("      ");
+                _builder_1.append("</think>");
+                _builder_1.newLineIfNotEmpty();
+                _builder_1.append(paramConditions);
+                _builder_1.newLineIfNotEmpty();
+                _builder_1.append("    ");
+                _builder_1.append("</template>");
+                _builder_1.newLineIfNotEmpty();
+                _builder_1.append("  ");
+                _builder_1.append("</category>");
+                _builder_1.newLineIfNotEmpty();
+                ret = (_ret + _builder_1);
+                break;
+              case TIME:
+                String _ret_1 = ret;
+                StringConcatenation _builder_2 = new StringConcatenation();
+                _builder_2.append("  ");
+                _builder_2.append("<category>");
+                _builder_2.newLineIfNotEmpty();
+                _builder_2.append("    ");
+                _builder_2.append("<pattern>* colon *</pattern>");
+                _builder_2.newLineIfNotEmpty();
+                _builder_2.append("    ");
+                _builder_2.append("<that>");
+                String _paramPromptByName_1 = this.getParamPromptByName(transition.getIntent(), key);
+                _builder_2.append(_paramPromptByName_1);
+                _builder_2.append("</that>");
+                _builder_2.newLineIfNotEmpty();
+                _builder_2.append("    ");
+                _builder_2.append("<template>");
+                _builder_2.newLineIfNotEmpty();
+                _builder_2.append("      ");
+                _builder_2.append("<think>");
+                _builder_2.newLineIfNotEmpty();
+                _builder_2.append("        ");
+                _builder_2.append("<srai>SAVE");
+                String _upperCase_1 = key.toUpperCase();
+                _builder_2.append(_upperCase_1);
+                _builder_2.append(" <star index=\"1\"/>:<star index=\"2\"/></srai>");
+                _builder_2.newLineIfNotEmpty();
+                _builder_2.append("      ");
+                _builder_2.append("</think>");
+                _builder_2.newLineIfNotEmpty();
+                _builder_2.append(paramConditions);
+                _builder_2.newLineIfNotEmpty();
+                _builder_2.append("    ");
+                _builder_2.append("</template>");
+                _builder_2.newLineIfNotEmpty();
+                _builder_2.append("  ");
+                _builder_2.append("</category>");
+                _builder_2.newLineIfNotEmpty();
+                ret = (_ret_1 + _builder_2);
+                break;
+              case DATE:
+                String _ret_2 = ret;
+                StringConcatenation _builder_3 = new StringConcatenation();
+                _builder_3.append("  ");
+                _builder_3.append("<category>");
+                _builder_3.newLineIfNotEmpty();
+                _builder_3.append("    ");
+                _builder_3.append("<pattern>* slash * slash *</pattern>");
+                _builder_3.newLineIfNotEmpty();
+                _builder_3.append("    ");
+                _builder_3.append("<that>");
+                String _paramPromptByName_2 = this.getParamPromptByName(transition.getIntent(), key);
+                _builder_3.append(_paramPromptByName_2);
+                _builder_3.append("</that>");
+                _builder_3.newLineIfNotEmpty();
+                _builder_3.append("    ");
+                _builder_3.append("<template>");
+                _builder_3.newLineIfNotEmpty();
+                _builder_3.append("      ");
+                _builder_3.append("<think>");
+                _builder_3.newLineIfNotEmpty();
+                _builder_3.append("        ");
+                _builder_3.append("<srai>SAVE");
+                String _upperCase_2 = key.toUpperCase();
+                _builder_3.append(_upperCase_2);
+                _builder_3.append(" <star index=\"1\"/>/<star index=\"2\"/>/<star index=\"3\"/></srai>");
+                _builder_3.newLineIfNotEmpty();
+                _builder_3.append("      ");
+                _builder_3.append("</think>");
+                _builder_3.newLineIfNotEmpty();
+                _builder_3.append(paramConditions);
+                _builder_3.newLineIfNotEmpty();
+                _builder_3.append("    ");
+                _builder_3.append("</template>");
+                _builder_3.newLineIfNotEmpty();
+                _builder_3.append("  ");
+                _builder_3.append("</category>");
+                _builder_3.newLineIfNotEmpty();
+                ret = (_ret_2 + _builder_3);
+                break;
+              case NUMBER:
+                String _ret_3 = ret;
+                StringConcatenation _builder_4 = new StringConcatenation();
+                _builder_4.append("  ");
+                _builder_4.append("<category>");
+                _builder_4.newLineIfNotEmpty();
+                _builder_4.append("    ");
+                _builder_4.append("<pattern><set>number</set></pattern>");
+                _builder_4.newLineIfNotEmpty();
+                _builder_4.append("    ");
+                _builder_4.append("<template>");
+                _builder_4.newLineIfNotEmpty();
+                _builder_4.append("      ");
+                _builder_4.append("<think>");
+                _builder_4.newLineIfNotEmpty();
+                _builder_4.append("        ");
+                _builder_4.append("<srai>SAVE");
+                String _upperCase_3 = key.toUpperCase();
+                _builder_4.append(_upperCase_3);
+                _builder_4.append(" <star/></srai>");
+                _builder_4.newLineIfNotEmpty();
+                _builder_4.append("      ");
+                _builder_4.append("</think>");
+                _builder_4.newLineIfNotEmpty();
+                _builder_4.append(paramConditions);
+                _builder_4.newLineIfNotEmpty();
+                _builder_4.append("    ");
+                _builder_4.append("</template>");
+                _builder_4.newLineIfNotEmpty();
+                _builder_4.append("  ");
+                _builder_4.append("</category>");
+                _builder_4.newLineIfNotEmpty();
+                ret = (_ret_3 + _builder_4);
+                break;
+              default:
+                String _ret_4 = ret;
+                StringConcatenation _builder_5 = new StringConcatenation();
+                _builder_5.append("  ");
+                _builder_5.append("<category>");
+                _builder_5.newLineIfNotEmpty();
+                _builder_5.append("    ");
+                _builder_5.append("<pattern>*</pattern>");
+                _builder_5.newLineIfNotEmpty();
+                _builder_5.append("    ");
+                _builder_5.append("<that>");
+                String _paramPromptByName_3 = this.getParamPromptByName(transition.getIntent(), key);
+                _builder_5.append(_paramPromptByName_3);
+                _builder_5.append("</that>");
+                _builder_5.newLineIfNotEmpty();
+                _builder_5.append("    ");
+                _builder_5.append("<template>");
+                _builder_5.newLineIfNotEmpty();
+                _builder_5.append("      ");
+                _builder_5.append("<think>");
+                _builder_5.newLineIfNotEmpty();
+                _builder_5.append("        ");
+                _builder_5.append("<srai>SAVE");
+                String _upperCase_4 = key.toUpperCase();
+                _builder_5.append(_upperCase_4);
+                _builder_5.append(" <star/></set>");
+                _builder_5.newLineIfNotEmpty();
+                _builder_5.append("      ");
+                _builder_5.append("</think>");
+                _builder_5.newLineIfNotEmpty();
+                _builder_5.append(paramConditions);
+                _builder_5.newLineIfNotEmpty();
+                _builder_5.append("    ");
+                _builder_5.append("</template>");
+                _builder_5.newLineIfNotEmpty();
+                _builder_5.append("  ");
+                _builder_5.append("</category>");
+                _builder_5.newLineIfNotEmpty();
+                ret = (_ret_4 + _builder_5);
+                break;
+            }
+          } else {
+            String _ret_4 = ret;
+            StringConcatenation _builder_5 = new StringConcatenation();
+            _builder_5.append("  ");
+            _builder_5.append("<category>");
+            _builder_5.newLineIfNotEmpty();
+            _builder_5.append("    ");
+            _builder_5.append("<pattern>*</pattern>");
+            _builder_5.newLineIfNotEmpty();
+            _builder_5.append("    ");
+            _builder_5.append("<that>");
+            String _paramPromptByName_3 = this.getParamPromptByName(transition.getIntent(), key);
+            _builder_5.append(_paramPromptByName_3);
+            _builder_5.append("</that>");
+            _builder_5.newLineIfNotEmpty();
+            _builder_5.append("    ");
+            _builder_5.append("<template>");
+            _builder_5.newLineIfNotEmpty();
+            _builder_5.append("      ");
+            _builder_5.append("<think>");
+            _builder_5.newLineIfNotEmpty();
+            _builder_5.append("        ");
+            _builder_5.append("<srai>SAVE");
+            String _upperCase_4 = key.toUpperCase();
+            _builder_5.append(_upperCase_4);
+            _builder_5.append(" <star/></set>");
+            _builder_5.newLineIfNotEmpty();
+            _builder_5.append("      ");
+            _builder_5.append("</think>");
+            _builder_5.newLineIfNotEmpty();
+            _builder_5.append(paramConditions);
+            _builder_5.newLineIfNotEmpty();
+            _builder_5.append("    ");
+            _builder_5.append("</template>");
+            _builder_5.newLineIfNotEmpty();
+            _builder_5.append("  ");
+            _builder_5.append("</category>");
+            _builder_5.newLineIfNotEmpty();
+            ret = (_ret_4 + _builder_5);
+          }
+        }
+      }
+      return ret;
+    }
+  }
+  
+  public String generateParamConditionsRec(final Intent intent, final List<String> params, final String indent) {
+    boolean _isEmpty = params.isEmpty();
+    if (_isEmpty) {
+      StringConcatenation _builder = new StringConcatenation();
+      _builder.append((indent + "    "));
+      _builder.append("<srai>");
+      String _upperCase = intent.getName().toUpperCase().replace(" ", "").toUpperCase();
+      _builder.append(_upperCase);
+      _builder.append("</srai>");
+      _builder.newLineIfNotEmpty();
+      return _builder.toString();
+    } else {
+      String currentParam = params.get(0);
+      String newIndent = (indent + "    ");
+      params.remove(currentParam);
+      StringConcatenation _builder_1 = new StringConcatenation();
+      _builder_1.append(newIndent);
+      _builder_1.append("<condition name=\"");
+      _builder_1.append(currentParam);
+      _builder_1.append("\">");
+      _builder_1.newLineIfNotEmpty();
+      _builder_1.append((newIndent + "  "));
+      _builder_1.append("<li value=\"unknown\">");
+      String _paramPromptByName = this.getParamPromptByName(intent, currentParam);
+      _builder_1.append(_paramPromptByName);
+      _builder_1.append("</li>");
+      _builder_1.newLineIfNotEmpty();
+      _builder_1.append((newIndent + "  "));
+      _builder_1.append("<li>");
+      _builder_1.newLineIfNotEmpty();
+      Object _generateParamConditionsRec = this.generateParamConditionsRec(intent, params, newIndent);
+      _builder_1.append(_generateParamConditionsRec);
+      _builder_1.newLineIfNotEmpty();
+      _builder_1.append((newIndent + "  "));
+      _builder_1.append("</li>");
+      _builder_1.newLineIfNotEmpty();
+      _builder_1.append(newIndent);
+      _builder_1.append("</condition>");
+      _builder_1.newLineIfNotEmpty();
+      return _builder_1.toString();
+    }
+  }
+  
+  public String getParamPromptByName(final Intent intent, final String name) {
+    ArrayList<Pair<String, String>> params = this.getIntentParameterPrompts(intent);
+    for (final Pair<String, String> param : params) {
+      String _key = param.getKey();
+      boolean _equals = Objects.equal(_key, name);
+      if (_equals) {
+        return param.getValue();
+      }
+    }
+    return null;
   }
   
   public HashMap<String, DefaultEntity> getIntentParameters(final Intent intent) {

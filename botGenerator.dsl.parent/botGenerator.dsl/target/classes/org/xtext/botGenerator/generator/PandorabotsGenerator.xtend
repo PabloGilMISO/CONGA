@@ -182,55 +182,12 @@ class PandorabotsGenerator {
 
 	// Guarda los intents durante el recorrido de los flujos de conversación
 	def void createTransitionFiles(UserInteraction transition, String prefix, IFileSystemAccess2 fsa, Bot bot) {
-		// Generacion del archivo del intent del que parte el flujo concreto
-		var intentFileContent = 
-		'''
-		<?xml version="1.0" encoding="UTF-8"?>
-		«  »<aiml>
-		'''
-		// Generacion de intents de Pandorabots para guardar los parametros
-		intentFileContent += createSaveParameter(transition.intent)
-		// Generacion de intents
-		intentFileContent += transition.intentFile(prefix, bot)
-		intentFileContent += "</aiml>"
 		var intentFileName = (prefix + transition.intent.name).toLowerCase().replace(' ', '')
-		fsa.generateFile(path + "/files/" + intentFileName + ".aiml", intentFileContent)
+		fsa.generateFile(path + "/files/" + intentFileName + ".aiml", transition.intentFile(prefix, bot))
 		var intentValue = fsa.readBinaryFile(path + "/files/" + intentFileName + ".aiml")
 		zip.addFileToFolder("files", intentFileName + ".aiml", intentValue)
-		// Se crea y rellena un archivo con los inputs de cada intent
-//		for (IntentLanguageInputs input : transition.intent.inputs) {
-//			// Rellenado y apertura del archivo con los posibles inputs
-//			var intentLanValue = fsa.readBinaryFile(
-//				path + '/intents/' + prefix + transition.intent.name + '_usersays_' + lan.languageAbbreviation +
-//					'.json')
-//			zip.addFileToFolder('intents',
-//				prefix + transition.intent.name + '_usersays_' + lan.languageAbbreviation + '.json', intentLanValue)
-//		}
-//
-//		zip.addFileToFolder('intents', prefix + transition.intent.name + '.aiml', intentValue)
-//
-//		// Se va recorriendo cada action y creando los intents que correspondan
-//		if (transition.target !== null) {
-//			var newPrefix = prefix + transition.intent.name + " - ";
-//			for (UserInteraction t : transition.target.outcoming) {
-//				createTransitionFiles(t, newPrefix, fsa, bot)
-//			}
-//		}
 	}
 
-	// Para manejo de contextos en Dialogflow
-//	def contextName(UserInteraction transition, String prefix) {
-//		var name = prefix + transition.intent.name + " - " + "followup"
-//		name = name.replaceAll(" ", "");
-//		return name
-//	}
-//
-//	def contextName(String prefix) {
-//		var name = prefix + "followup"
-//		name = name.replaceAll(" ", "");
-//		return name
-//	}
-	
 	// Devuelve todas las posibles respuestas a un intent para un lenguage concreto
 	def getAllIntentResponses(TextLanguageInput textAction) {
 		var responses = new ArrayList<String>()
@@ -309,6 +266,9 @@ class PandorabotsGenerator {
 	// 3. Revisar impresion de parametros etc en HttpResponse <- Necesarias pruebas con callapi
 	def intentFile(UserInteraction transition, String prefix, Bot bot)
 	'''
+	<?xml version="1.0" encoding="UTF-8"?>
+	«  »<aiml>
+	«createSaveParameter(transition.intent)»
 	«"  "»<!-- Intent -->
 	«intentGenerator(transition, bot)»
 	«"  "»<!-- Intent inputs -->
@@ -347,7 +307,130 @@ class PandorabotsGenerator {
 		  	«ENDIF»
 	  	«ENDFOR»
 	«ENDFOR»
+	«createChainedParamIntents(transition)»
+	</aiml>
 	'''
+	
+	def createChainedParamIntents(UserInteraction transition) {
+		var parameters = getIntentParameters(transition.intent)
+		if (parameters.isEmpty())
+			return ""
+		
+		else {
+			var ret = 
+			'''
+			«"  "»<!-- Chained param intents -->
+			'''
+			for (key: parameters.keySet) {
+				var value = parameters.get(key)
+				var paramConditions = generateParamConditionsRec(transition.intent, new ArrayList<String>(parameters.keySet), "  ")
+				switch (value) {
+					case DefaultEntity.TEXT:
+						ret += 
+						'''
+						«"  "»<category>
+						«"    "»<pattern>*</pattern>
+						«"    "»<that>«getParamPromptByName(transition.intent, key)»</that>
+						«"    "»<template>
+						«"      "»<think>
+						«"        "»<srai>SAVE«key.toUpperCase()» <star/></set>
+						«"      "»</think>
+						«paramConditions»
+						«"    "»</template>
+						«"  "»</category>
+						'''
+					case DefaultEntity.TIME:
+						ret +=
+						'''
+						«"  "»<category>
+						«"    "»<pattern>* colon *</pattern>
+						«"    "»<that>«getParamPromptByName(transition.intent, key)»</that>
+						«"    "»<template>
+						«"      "»<think>
+						«"        "»<srai>SAVE«key.toUpperCase()» <star index="1"/>:<star index="2"/></srai>
+						«"      "»</think>
+						«paramConditions»
+						«"    "»</template>
+						«"  "»</category>
+						'''
+					case DefaultEntity.DATE:
+						ret +=
+						'''
+						«"  "»<category>
+						«"    "»<pattern>* slash * slash *</pattern>
+						«"    "»<that>«getParamPromptByName(transition.intent, key)»</that>
+						«"    "»<template>
+						«"      "»<think>
+						«"        "»<srai>SAVE«key.toUpperCase()» <star index="1"/>/<star index="2"/>/<star index="3"/></srai>
+						«"      "»</think>
+						«paramConditions»
+						«"    "»</template>
+						«"  "»</category>
+						'''
+					case DefaultEntity.NUMBER:
+						ret +=
+						'''
+						«"  "»<category>
+						«"    "»<pattern><set>number</set></pattern>
+						«"    "»<template>
+						«"      "»<think>
+						«"        "»<srai>SAVE«key.toUpperCase()» <star/></srai>
+						«"      "»</think>
+						«paramConditions»
+						«"    "»</template>
+						«"  "»</category>
+						'''
+					default: 
+						ret += 
+						'''
+						«"  "»<category>
+						«"    "»<pattern>*</pattern>
+						«"    "»<that>«getParamPromptByName(transition.intent, key)»</that>
+						«"    "»<template>
+						«"      "»<think>
+						«"        "»<srai>SAVE«key.toUpperCase()» <star/></set>
+						«"      "»</think>
+						«paramConditions»
+						«"    "»</template>
+						«"  "»</category>
+						'''
+				}
+			}
+			
+			return ret
+		}
+	}
+	
+	def generateParamConditionsRec(Intent intent, List<String> params, String indent) {
+		if (params.isEmpty())
+			return 
+			'''
+			«indent + "    "»<srai>«intent.name.toUpperCase().replace(' ', '').toUpperCase()»</srai>
+			'''
+		else {
+			var currentParam = params.get(0)
+			var newIndent = indent + "    "
+			
+			params.remove(currentParam)
+			return
+			'''
+				«newIndent»<condition name="«currentParam»">
+				«newIndent + "  "»<li value="unknown">«getParamPromptByName(intent, currentParam)»</li>
+				«newIndent + "  "»<li>
+				«generateParamConditionsRec(intent, params, newIndent)»
+				«newIndent + "  "»</li>
+				«newIndent»</condition>
+			'''
+		}
+	}
+	
+	// Devuelve la peticion de parametro correspondiente dado el nombre del parametro
+	def getParamPromptByName(Intent intent, String name) {
+		var params = getIntentParameterPrompts(intent)
+		for (param: params)
+			if (param.key == name)
+				return param.value
+	}
 	
 	// Devuelve los parametros que se quieren recoger con un intent
 	def getIntentParameters(Intent intent) {
