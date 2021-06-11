@@ -264,6 +264,7 @@ class PandorabotsGenerator {
 		return ret
 	}
 	
+	// Devuelve una lista ordenada de pares <parametro, frase de peticion> de un intent concreto
 	def getIntentParameterPrompts(Intent intent) {
 		var ret = new ArrayList<Pair<String, String>>()
 		
@@ -273,22 +274,32 @@ class PandorabotsGenerator {
 		return ret
 	}
 	
+	// Extrae los nombres de parametros de una lista de pares <parametro, frase de peticion>
+	def getPromptsKeys(ArrayList<Pair<String, String>> list) {
+		var ret = new ArrayList<String>()
+		
+		for (elem: list)
+			ret.add(elem.key)
+			
+		return ret
+	}
+	
+	// Devuelve el siguiente par <parametro, frase de peticion> de una frase concreta contenida en un intent concreto
 	def getNextParamPetition(Intent intent, TrainingPhrase phrase) {
 		var entities = getPhraseEntities(phrase)
 		var parameters = getIntentParameterPrompts(intent)
 		var ret = new ArrayList<Pair<String, String>>()
 		
-		for (parameter: parameters) {
-			for(entity: entities) {
-				if (parameter.key != entity)
-					ret.add(parameter)
-				
-				else 
-					ret.remove(parameter)
-			}
-		}
+		var keys = getPromptsKeys(parameters)
+		keys.removeAll(entities)		
 		
-		return ret.length > 0 ? ret.get(0) : new Pair("", "")
+		if (keys.isEmpty())
+			return new Pair("", "")
+		
+		else
+			for	(param: parameters)
+				if(param.key == keys.get(0))
+					return param	
 	}
 	
 	// Generador de codigo de un intent
@@ -312,22 +323,26 @@ class PandorabotsGenerator {
   			«IF input instanceof TrainingPhrase»
 				«"  "»<category>
 				«"    "»<pattern>«FOR token: input.tokens»«IF token instanceof Literal»«token.text.replace('?', ' #')»«ELSEIF token instanceof ParameterReferenceToken»*«ENDIF»«ENDFOR»</pattern>
-				«"    "»<think>
+				«"    "»<template>
 				«var List<String> entities»
 				«{entities = getPhraseEntities(input); ""}»
-				«FOR entity: entities»
-					«"      "»<srai>
-					«"        "»SAVE«entity.toUpperCase()» <star index="«entities.indexOf(entity) + 1»"/>
-					«"      "»</srai>
-				«ENDFOR»
-				«"    "»</think>
+				«IF !entities.isEmpty()»
+					«"      "»<think>
+					«FOR entity: entities»
+						«"        "»<srai>
+						«"          "»SAVE«entity.toUpperCase()» <star index="«entities.indexOf(entity) + 1»"/>
+						«"        "»</srai>
+					«ENDFOR»
+					«"      "»</think>
+				«ENDIF»
 				«var String nextPrompt»
 				«{nextPrompt = getNextParamPetition(transition.intent, input).getValue(); ""}»
 				«IF nextPrompt !== ""»
-				«"    "»<template>«nextPrompt»</template>
+				«"      "»«nextPrompt»
 				«ELSE»
-				«"    "»<template></template>
+				«"      "»<srai>«transition.intent.name.toUpperCase().replace(' ', '').toUpperCase()»</srai>
 				«ENDIF»
+				«"    "»</template>
 				«"  "»</category>
 		  	«ENDIF»
 	  	«ENDFOR»

@@ -343,31 +343,34 @@ public class PandorabotsGenerator {
     return ret;
   }
   
+  public ArrayList<String> getPromptsKeys(final ArrayList<Pair<String, String>> list) {
+    ArrayList<String> ret = new ArrayList<String>();
+    for (final Pair<String, String> elem : list) {
+      ret.add(elem.getKey());
+    }
+    return ret;
+  }
+  
   public Pair<String, String> getNextParamPetition(final Intent intent, final TrainingPhrase phrase) {
     ArrayList<String> entities = this.getPhraseEntities(phrase);
     ArrayList<Pair<String, String>> parameters = this.getIntentParameterPrompts(intent);
     ArrayList<Pair<String, String>> ret = new ArrayList<Pair<String, String>>();
-    for (final Pair<String, String> parameter : parameters) {
-      for (final String entity : entities) {
-        String _key = parameter.getKey();
-        boolean _notEquals = (!Objects.equal(_key, entity));
-        if (_notEquals) {
-          ret.add(parameter);
-        } else {
-          ret.remove(parameter);
+    ArrayList<String> keys = this.getPromptsKeys(parameters);
+    keys.removeAll(entities);
+    boolean _isEmpty = keys.isEmpty();
+    if (_isEmpty) {
+      return new Pair<String, String>("", "");
+    } else {
+      for (final Pair<String, String> param : parameters) {
+        String _key = param.getKey();
+        String _get = keys.get(0);
+        boolean _equals = Objects.equal(_key, _get);
+        if (_equals) {
+          return param;
         }
       }
     }
-    Pair<String, String> _xifexpression = null;
-    final ArrayList<Pair<String, String>> _converted_ret = (ArrayList<Pair<String, String>>)ret;
-    int _length = ((Object[])Conversions.unwrapArray(_converted_ret, Object.class)).length;
-    boolean _greaterThan = (_length > 0);
-    if (_greaterThan) {
-      _xifexpression = ret.get(0);
-    } else {
-      _xifexpression = new Pair<String, String>("", "");
-    }
-    return _xifexpression;
+    return null;
   }
   
   public CharSequence intentFile(final UserInteraction transition, final String prefix, final Bot bot) {
@@ -435,7 +438,7 @@ public class PandorabotsGenerator {
                 _builder.append("</pattern>");
                 _builder.newLineIfNotEmpty();
                 _builder.append("    ");
-                _builder.append("<think>");
+                _builder.append("<template>");
                 _builder.newLineIfNotEmpty();
                 List<String> entities = null;
                 _builder.newLineIfNotEmpty();
@@ -447,28 +450,37 @@ public class PandorabotsGenerator {
                 _builder.append(_xblockexpression_2);
                 _builder.newLineIfNotEmpty();
                 {
-                  for(final String entity : entities) {
+                  boolean _isEmpty = entities.isEmpty();
+                  boolean _not = (!_isEmpty);
+                  if (_not) {
                     _builder.append("      ");
-                    _builder.append("<srai>");
+                    _builder.append("<think>");
                     _builder.newLineIfNotEmpty();
-                    _builder.append("        ");
-                    _builder.append("SAVE");
-                    String _upperCase = entity.toUpperCase();
-                    _builder.append(_upperCase);
-                    _builder.append(" <star index=\"");
-                    int _indexOf = entities.indexOf(entity);
-                    int _plus = (_indexOf + 1);
-                    _builder.append(_plus);
-                    _builder.append("\"/>");
-                    _builder.newLineIfNotEmpty();
+                    {
+                      for(final String entity : entities) {
+                        _builder.append("        ");
+                        _builder.append("<srai>");
+                        _builder.newLineIfNotEmpty();
+                        _builder.append("          ");
+                        _builder.append("SAVE");
+                        String _upperCase = entity.toUpperCase();
+                        _builder.append(_upperCase);
+                        _builder.append(" <star index=\"");
+                        int _indexOf = entities.indexOf(entity);
+                        int _plus = (_indexOf + 1);
+                        _builder.append(_plus);
+                        _builder.append("\"/>");
+                        _builder.newLineIfNotEmpty();
+                        _builder.append("        ");
+                        _builder.append("</srai>");
+                        _builder.newLineIfNotEmpty();
+                      }
+                    }
                     _builder.append("      ");
-                    _builder.append("</srai>");
+                    _builder.append("</think>");
                     _builder.newLineIfNotEmpty();
                   }
                 }
-                _builder.append("    ");
-                _builder.append("</think>");
-                _builder.newLineIfNotEmpty();
                 String nextPrompt = null;
                 _builder.newLineIfNotEmpty();
                 String _xblockexpression_3 = null;
@@ -480,17 +492,21 @@ public class PandorabotsGenerator {
                 _builder.newLineIfNotEmpty();
                 {
                   if ((nextPrompt != "")) {
-                    _builder.append("    ");
-                    _builder.append("<template>");
+                    _builder.append("      ");
                     _builder.append(nextPrompt);
-                    _builder.append("</template>");
                     _builder.newLineIfNotEmpty();
                   } else {
-                    _builder.append("    ");
-                    _builder.append("<template></template>");
+                    _builder.append("      ");
+                    _builder.append("<srai>");
+                    String _upperCase_1 = transition.getIntent().getName().toUpperCase().replace(" ", "").toUpperCase();
+                    _builder.append(_upperCase_1);
+                    _builder.append("</srai>");
                     _builder.newLineIfNotEmpty();
                   }
                 }
+                _builder.append("    ");
+                _builder.append("</template>");
+                _builder.newLineIfNotEmpty();
                 _builder.append("  ");
                 _builder.append("</category>");
                 _builder.newLineIfNotEmpty();
