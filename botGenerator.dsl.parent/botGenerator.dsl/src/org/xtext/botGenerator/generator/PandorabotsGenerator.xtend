@@ -2,22 +2,18 @@ package org.xtext.botGenerator.generator
 
 import generator.Action
 import generator.Bot
-import generator.CompositeInput
 import generator.DefaultEntity
 import generator.Entity
 import generator.EntityInput
-import generator.EntityToken
 import generator.HTTPRequest
 import generator.HTTPResponse
 import generator.Image
 import generator.Intent
 import generator.IntentLanguageInputs
 import generator.Language
-import generator.LanguageInput
 import generator.Literal
 import generator.ParameterReferenceToken
 import generator.ParameterToken
-import generator.RegexInput
 import generator.SimpleInput
 import generator.Text
 import generator.TextInput
@@ -30,7 +26,6 @@ import java.nio.file.Paths
 import java.util.ArrayList
 import java.util.HashMap
 import java.util.List
-import java.util.UUID
 import org.eclipse.emf.ecore.resource.Resource
 import org.eclipse.xtext.generator.IFileSystemAccess2
 import org.eclipse.xtext.generator.IGeneratorContext
@@ -101,7 +96,6 @@ class PandorabotsGenerator {
 			}
 		}
 
-		//////////////////TODO: Checkpoint
 		// En flows se guardan los flujos de conversacion
 		for (UserInteraction transition : bot.flows) {
 			createTransitionFiles(transition, "", fsa, bot)
@@ -155,14 +149,7 @@ class PandorabotsGenerator {
 		if (entry instanceof SimpleInput) {
 			return entry(entry)
 		}
-		// TODO: No soportadas
-		else if (entry instanceof CompositeInput) {
-			return entry(entry)
-		} 
-		// TODO: No soportadas
-		else if (entry instanceof RegexInput) {
-			return entry(entry)
-		}
+		// CompositeInput y RegexInput no soportados
 	}
 
 	// Escribe las posibles opciones de un entity dentro de un fichero set
@@ -170,14 +157,6 @@ class PandorabotsGenerator {
 		«FOR synonym : entry.values»
 			["«synonym»", "«entry.name»"]«IF !isTheLast(entry.values, synonym)»,«ENDIF»
 		«ENDFOR»
-	'''
-
-	// TODO: No soportadas
-	def entry(CompositeInput entry) '''
-	'''
-	
-	// TODO: No soportadas
-	def entry(RegexInput entry)'''
 	'''
 
 	// Guarda los intents durante el recorrido de los flujos de conversación
@@ -245,7 +224,6 @@ class PandorabotsGenerator {
 	def getNextParamPetition(Intent intent, TrainingPhrase phrase) {
 		var entities = getPhraseEntities(phrase)
 		var parameters = getIntentParameterPrompts(intent)
-		var ret = new ArrayList<Pair<String, String>>()
 		
 		var keys = getPromptsKeys(parameters)
 		keys.removeAll(entities)		
@@ -261,9 +239,8 @@ class PandorabotsGenerator {
 	
 	// Generador de codigo de un intent
 	// TODO: 
-	// 1. Mirar funcionamiento del webhook.
-	// 2. Implementar recogida de parametros a enviar en HttpRequest
-	// 3. Revisar impresion de parametros etc en HttpResponse <- Necesarias pruebas con callapi
+	// 1. Mirar funcionamiento del webhook
+	// 2. Revisar impresion de parametros etc en HttpResponse <- Necesario acceso a llamadas HTTP con callapi
 	def intentFile(UserInteraction transition, String prefix, Bot bot)
 	'''
 	<?xml version="1.0" encoding="UTF-8"?>
@@ -273,12 +250,6 @@ class PandorabotsGenerator {
 	«intentGenerator(transition, bot)»
 	«"  "»<!-- Intent inputs -->
 	«FOR language: transition.intent.inputs»
-		«var lang=""»
-      	«IF language.language != Language.EMPTY»
-  	    	«{lang = language.language.languageAbbreviation; ""}»
-      	«ELSE»
-	    	«{lang = bot.languages.get(0).languageAbbreviation; ""}»
-	    «ENDIF»
   		«FOR input: language.inputs»
   			«IF input instanceof TrainingPhrase»
 				«"  "»<category>
@@ -311,6 +282,8 @@ class PandorabotsGenerator {
 	</aiml>
 	'''
 	
+	// Generacion de codigo referente a la lectura de parametros por parte del usuario y posterior solicitud del resto
+	// de parametros requeridos
 	def createChainedParamIntents(UserInteraction transition) {
 		var parameters = getIntentParameters(transition.intent)
 		if (parameters.isEmpty())
@@ -402,6 +375,7 @@ class PandorabotsGenerator {
 		}
 	}
 	
+	// Genera los arboles de solicitud de parametros en cada intent de forma recursiva
 	def generateParamConditionsRec(Intent intent, List<String> params, String indent) {
 		if (params.isEmpty())
 			return 
@@ -639,43 +613,7 @@ class PandorabotsGenerator {
 		«ENDFOR»
 	'''
 
-//	«FOR action: transition.target.actions»
-//		«IF action instanceof Text»
-//			«FOR texLanguage: action.inputs»
-//				«intentGenerator(transition, texLanguage, bot)»
-//			«ENDFOR»
-//		«ELSEIF action instanceof Image»
-//			«"  "»<category>
-//			«"    "»<pattern>«transition.intent.name.toUpperCase().replace(' ', '_')»</pattern>
-//			«"    "»<template><image>«(action as Image).URL»</image></template>
-//			«"  "»</category>
-//		«ELSEIF action instanceof HTTPRequest»
-//			«"  "»<category>
-//			«"    "»<pattern>«(transition.intent.name + "_" + action.name).toUpperCase().replace(' ', '_')»</pattern>
-//			«"    "»<template>
-//			«"      "»<callapi response_code_var="response«"_" + action.name»">
-//			«"        "»<url>«(action as HTTPRequest).getURL()»</url>
-//			«"      "»</callapi>
-//			«"    "»</template>
-//			«"  "»</category>
-//		«ELSEIF action instanceof HTTPResponse»
-//			«"  "»<category>
-//			«"    "»<pattern>«(transition.intent.name + "_" + action.name).toUpperCase().replace(' ', '_')»</pattern>
-//			«"    "»<template>
-//			«"      "»<get name="response_«(action as HTTPResponse).HTTPRequest.name»"/>
-//			«"    "»</template>
-//			«"  "»</category>
-//		«ENDIF»
-//	«ENDFOR»
-	/////////////////////////////////////////////////////////////////////////////////////////////////////
-	
-	def returnText(String value) {
-		if (value.isEmpty) {
-			return '';
-		}
-		return value
-	}
-
+	// Obtencion de abreviacion del lenguage
 	def languageAbbreviation(Language lan) {
 		switch (lan) {
 			case Language.ENGLISH:
@@ -722,64 +660,12 @@ class PandorabotsGenerator {
 				return 'en'
 		}
 	}
-
-	// Generacion de codigo de configuracion de cada entity
-	def entityFile(Entity entity) '''
-		
-		{
-			"id": "«UUID.randomUUID().toString»",
-			"name": "«entity.name»",
-			"isOverridable": true,	  
-			«IF BotGenerator.entityType(entity) === BotGenerator.REGEX»
-				"isEnum": false,
-				"isRegexp":true,
-				"automatedExpansion": true,
-				"allowFuzzyExtraction": false
-			«ELSEIF BotGenerator.entityType(entity) === BotGenerator.SIMPLE»
-				"isEnum": false,
-				"isRegexp": false,
-				"automatedExpansion": true,
-				"allowFuzzyExtraction": true
-			«ELSE»
-				"isEnum": true,
-				"isRegexp": false,
-				"automatedExpansion": false,
-				"allowFuzzyExtraction": false
-			«ENDIF»
-		}
-	'''
-
-	def entityIsSimple(Entity entity) {
-	}
-
-	// Generador de codigo para cada lenguaje en que este configurada cada entity
-	def entriesFile(LanguageInput entity) '''
-		[
-			«FOR entry : entity.inputs»
-				{
-				   «entry(entry)»
-				} «IF !entity.inputs.isTheLast(entry)»,«ENDIF»
-			«ENDFOR»
-		]
-	'''
-
+	
 	def static isTheLast(List<?> list, Object object) {
 		if (list.indexOf(object) == list.size - 1) {
 			return true;
 		}
 		return false;
 
-	}
-
-	def getCompositeEntry(CompositeInput entry) {
-		var ret = "";
-		for (Token token : entry.expresion) {
-			if (token instanceof Literal) {
-				ret += token.text + " "
-			} else if (token instanceof EntityToken) {
-				ret += "@" + token.entity.name + ":" + token.entity.name + " "
-			}
-		}
-		return ret;
 	}
 }

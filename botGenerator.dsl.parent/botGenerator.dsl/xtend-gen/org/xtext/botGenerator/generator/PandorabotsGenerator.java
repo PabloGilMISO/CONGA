@@ -4,11 +4,9 @@ import com.google.common.base.Objects;
 import com.google.common.collect.Iterators;
 import generator.Action;
 import generator.Bot;
-import generator.CompositeInput;
 import generator.DefaultEntity;
 import generator.Entity;
 import generator.EntityInput;
-import generator.EntityToken;
 import generator.HTTPRequest;
 import generator.HTTPResponse;
 import generator.Image;
@@ -21,7 +19,6 @@ import generator.Literal;
 import generator.Parameter;
 import generator.ParameterReferenceToken;
 import generator.ParameterToken;
-import generator.RegexInput;
 import generator.SimpleInput;
 import generator.Text;
 import generator.TextInput;
@@ -37,7 +34,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
-import java.util.UUID;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.xtend2.lib.StringConcatenation;
@@ -218,14 +214,6 @@ public class PandorabotsGenerator {
   public CharSequence entry(final EntityInput entry) {
     if ((entry instanceof SimpleInput)) {
       return this.entry(((SimpleInput)entry));
-    } else {
-      if ((entry instanceof CompositeInput)) {
-        return this.entry(((CompositeInput)entry));
-      } else {
-        if ((entry instanceof RegexInput)) {
-          return this.entry(((RegexInput)entry));
-        }
-      }
     }
     return null;
   }
@@ -251,16 +239,6 @@ public class PandorabotsGenerator {
         _builder.newLineIfNotEmpty();
       }
     }
-    return _builder;
-  }
-  
-  public CharSequence entry(final CompositeInput entry) {
-    StringConcatenation _builder = new StringConcatenation();
-    return _builder;
-  }
-  
-  public CharSequence entry(final RegexInput entry) {
-    StringConcatenation _builder = new StringConcatenation();
     return _builder;
   }
   
@@ -340,7 +318,6 @@ public class PandorabotsGenerator {
   public Pair<String, String> getNextParamPetition(final Intent intent, final TrainingPhrase phrase) {
     ArrayList<String> entities = this.getPhraseEntities(phrase);
     ArrayList<Pair<String, String>> parameters = this.getIntentParameterPrompts(intent);
-    ArrayList<Pair<String, String>> ret = new ArrayList<Pair<String, String>>();
     ArrayList<String> keys = this.getPromptsKeys(parameters);
     keys.removeAll(entities);
     boolean _isEmpty = keys.isEmpty();
@@ -380,29 +357,6 @@ public class PandorabotsGenerator {
     {
       EList<IntentLanguageInputs> _inputs = transition.getIntent().getInputs();
       for(final IntentLanguageInputs language : _inputs) {
-        String lang = "";
-        _builder.newLineIfNotEmpty();
-        {
-          Language _language = language.getLanguage();
-          boolean _notEquals = (!Objects.equal(_language, Language.EMPTY));
-          if (_notEquals) {
-            String _xblockexpression = null;
-            {
-              lang = this.languageAbbreviation(language.getLanguage());
-              _xblockexpression = "";
-            }
-            _builder.append(_xblockexpression);
-            _builder.newLineIfNotEmpty();
-          } else {
-            String _xblockexpression_1 = null;
-            {
-              lang = this.languageAbbreviation(bot.getLanguages().get(0));
-              _xblockexpression_1 = "";
-            }
-            _builder.append(_xblockexpression_1);
-            _builder.newLineIfNotEmpty();
-          }
-        }
         {
           EList<IntentInput> _inputs_1 = language.getInputs();
           for(final IntentInput input : _inputs_1) {
@@ -435,12 +389,12 @@ public class PandorabotsGenerator {
                 _builder.newLineIfNotEmpty();
                 List<String> entities = null;
                 _builder.newLineIfNotEmpty();
-                String _xblockexpression_2 = null;
+                String _xblockexpression = null;
                 {
                   entities = this.getPhraseEntities(((TrainingPhrase)input));
-                  _xblockexpression_2 = "";
+                  _xblockexpression = "";
                 }
-                _builder.append(_xblockexpression_2);
+                _builder.append(_xblockexpression);
                 _builder.newLineIfNotEmpty();
                 {
                   boolean _isEmpty = entities.isEmpty();
@@ -476,12 +430,12 @@ public class PandorabotsGenerator {
                 }
                 String nextPrompt = null;
                 _builder.newLineIfNotEmpty();
-                String _xblockexpression_3 = null;
+                String _xblockexpression_1 = null;
                 {
                   nextPrompt = this.getNextParamPetition(transition.getIntent(), ((TrainingPhrase)input)).getValue();
-                  _xblockexpression_3 = "";
+                  _xblockexpression_1 = "";
                 }
-                _builder.append(_xblockexpression_3);
+                _builder.append(_xblockexpression_1);
                 _builder.newLineIfNotEmpty();
                 {
                   if ((nextPrompt != "")) {
@@ -1414,14 +1368,6 @@ public class PandorabotsGenerator {
     return _builder;
   }
   
-  public String returnText(final String value) {
-    boolean _isEmpty = value.isEmpty();
-    if (_isEmpty) {
-      return "";
-    }
-    return value;
-  }
-  
   public String languageAbbreviation(final Language lan) {
     if (lan != null) {
       switch (lan) {
@@ -1473,115 +1419,6 @@ public class PandorabotsGenerator {
     }
   }
   
-  public CharSequence entityFile(final Entity entity) {
-    StringConcatenation _builder = new StringConcatenation();
-    _builder.newLine();
-    _builder.append("{");
-    _builder.newLine();
-    _builder.append("\t");
-    _builder.append("\"id\": \"");
-    String _string = UUID.randomUUID().toString();
-    _builder.append(_string, "\t");
-    _builder.append("\",");
-    _builder.newLineIfNotEmpty();
-    _builder.append("\t");
-    _builder.append("\"name\": \"");
-    String _name = entity.getName();
-    _builder.append(_name, "\t");
-    _builder.append("\",");
-    _builder.newLineIfNotEmpty();
-    _builder.append("\t");
-    _builder.append("\"isOverridable\": true,\t  ");
-    _builder.newLine();
-    {
-      int _entityType = BotGenerator.entityType(entity);
-      boolean _tripleEquals = (_entityType == BotGenerator.REGEX);
-      if (_tripleEquals) {
-        _builder.append("\t");
-        _builder.append("\"isEnum\": false,");
-        _builder.newLine();
-        _builder.append("\t");
-        _builder.append("\"isRegexp\":true,");
-        _builder.newLine();
-        _builder.append("\t");
-        _builder.append("\"automatedExpansion\": true,");
-        _builder.newLine();
-        _builder.append("\t");
-        _builder.append("\"allowFuzzyExtraction\": false");
-        _builder.newLine();
-      } else {
-        int _entityType_1 = BotGenerator.entityType(entity);
-        boolean _tripleEquals_1 = (_entityType_1 == BotGenerator.SIMPLE);
-        if (_tripleEquals_1) {
-          _builder.append("\t");
-          _builder.append("\"isEnum\": false,");
-          _builder.newLine();
-          _builder.append("\t");
-          _builder.append("\"isRegexp\": false,");
-          _builder.newLine();
-          _builder.append("\t");
-          _builder.append("\"automatedExpansion\": true,");
-          _builder.newLine();
-          _builder.append("\t");
-          _builder.append("\"allowFuzzyExtraction\": true");
-          _builder.newLine();
-        } else {
-          _builder.append("\t");
-          _builder.append("\"isEnum\": true,");
-          _builder.newLine();
-          _builder.append("\t");
-          _builder.append("\"isRegexp\": false,");
-          _builder.newLine();
-          _builder.append("\t");
-          _builder.append("\"automatedExpansion\": false,");
-          _builder.newLine();
-          _builder.append("\t");
-          _builder.append("\"allowFuzzyExtraction\": false");
-          _builder.newLine();
-        }
-      }
-    }
-    _builder.append("}");
-    _builder.newLine();
-    return _builder;
-  }
-  
-  public Object entityIsSimple(final Entity entity) {
-    return null;
-  }
-  
-  public CharSequence entriesFile(final LanguageInput entity) {
-    StringConcatenation _builder = new StringConcatenation();
-    _builder.append("[");
-    _builder.newLine();
-    {
-      EList<EntityInput> _inputs = entity.getInputs();
-      for(final EntityInput entry : _inputs) {
-        _builder.append("\t");
-        _builder.append("{");
-        _builder.newLine();
-        _builder.append("\t");
-        _builder.append("   ");
-        CharSequence _entry = this.entry(entry);
-        _builder.append(_entry, "\t   ");
-        _builder.newLineIfNotEmpty();
-        _builder.append("\t");
-        _builder.append("} ");
-        {
-          boolean _isTheLast = PandorabotsGenerator.isTheLast(entity.getInputs(), entry);
-          boolean _not = (!_isTheLast);
-          if (_not) {
-            _builder.append(",");
-          }
-        }
-        _builder.newLineIfNotEmpty();
-      }
-    }
-    _builder.append("]");
-    _builder.newLine();
-    return _builder;
-  }
-  
   public static boolean isTheLast(final List<?> list, final Object object) {
     int _indexOf = list.indexOf(object);
     int _size = list.size();
@@ -1591,30 +1428,5 @@ public class PandorabotsGenerator {
       return true;
     }
     return false;
-  }
-  
-  public String getCompositeEntry(final CompositeInput entry) {
-    String ret = "";
-    EList<Token> _expresion = entry.getExpresion();
-    for (final Token token : _expresion) {
-      if ((token instanceof Literal)) {
-        String _ret = ret;
-        String _text = ((Literal)token).getText();
-        String _plus = (_text + " ");
-        ret = (_ret + _plus);
-      } else {
-        if ((token instanceof EntityToken)) {
-          String _ret_1 = ret;
-          String _name = ((EntityToken)token).getEntity().getName();
-          String _plus_1 = ("@" + _name);
-          String _plus_2 = (_plus_1 + ":");
-          String _name_1 = ((EntityToken)token).getEntity().getName();
-          String _plus_3 = (_plus_2 + _name_1);
-          String _plus_4 = (_plus_3 + " ");
-          ret = (_ret_1 + _plus_4);
-        }
-      }
-    }
-    return ret;
   }
 }
