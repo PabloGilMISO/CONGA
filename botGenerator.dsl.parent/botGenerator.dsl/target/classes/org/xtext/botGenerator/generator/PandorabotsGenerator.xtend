@@ -330,10 +330,10 @@ class PandorabotsGenerator {
 						'''
 						«"  "»<category>
 						«"    "»<pattern>*</pattern>
-						«"    "»<that>«getParamPromptByName(transition.intent, key)»</that>
+						«"    "»<that>«getParamPromptByName(transition.intent, key).replace('?', '')»</that>
 						«"    "»<template>
 						«"      "»<think>
-						«"        "»<srai>SAVE«key.toUpperCase()» <star/></set>
+						«"        "»<srai>SAVE«key.toUpperCase()» <star/></srai>
 						«"      "»</think>
 						«paramConditions»
 						«"    "»</template>
@@ -344,7 +344,7 @@ class PandorabotsGenerator {
 						'''
 						«"  "»<category>
 						«"    "»<pattern>* colon *</pattern>
-						«"    "»<that>«getParamPromptByName(transition.intent, key)»</that>
+						«"    "»<that>«getParamPromptByName(transition.intent, key).replace('?', '')»</that>
 						«"    "»<template>
 						«"      "»<think>
 						«"        "»<srai>SAVE«key.toUpperCase()» <star index="1"/>:<star index="2"/></srai>
@@ -358,7 +358,7 @@ class PandorabotsGenerator {
 						'''
 						«"  "»<category>
 						«"    "»<pattern>* slash * slash *</pattern>
-						«"    "»<that>«getParamPromptByName(transition.intent, key)»</that>
+						«"    "»<that>«getParamPromptByName(transition.intent, key).replace('?', '')»</that>
 						«"    "»<template>
 						«"      "»<think>
 						«"        "»<srai>SAVE«key.toUpperCase()» <star index="1"/>/<star index="2"/>/<star index="3"/></srai>
@@ -372,6 +372,7 @@ class PandorabotsGenerator {
 						'''
 						«"  "»<category>
 						«"    "»<pattern><set>number</set></pattern>
+						«"    "»<that>«getParamPromptByName(transition.intent, key).replace('?', '')»</that>
 						«"    "»<template>
 						«"      "»<think>
 						«"        "»<srai>SAVE«key.toUpperCase()» <star/></srai>
@@ -385,10 +386,10 @@ class PandorabotsGenerator {
 						'''
 						«"  "»<category>
 						«"    "»<pattern>*</pattern>
-						«"    "»<that>«getParamPromptByName(transition.intent, key)»</that>
+						«"    "»<that>«getParamPromptByName(transition.intent, key).replace('?', '')»</that>
 						«"    "»<template>
 						«"      "»<think>
-						«"        "»<srai>SAVE«key.toUpperCase()» <star/></set>
+						«"        "»<srai>SAVE«key.toUpperCase()» <star/></srai>
 						«"      "»</think>
 						«paramConditions»
 						«"    "»</template>

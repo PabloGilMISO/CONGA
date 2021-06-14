@@ -549,8 +549,8 @@ public class PandorabotsGenerator {
                 _builder_1.newLineIfNotEmpty();
                 _builder_1.append("    ");
                 _builder_1.append("<that>");
-                String _paramPromptByName = this.getParamPromptByName(transition.getIntent(), key);
-                _builder_1.append(_paramPromptByName);
+                String _replace = this.getParamPromptByName(transition.getIntent(), key).replace("?", "");
+                _builder_1.append(_replace);
                 _builder_1.append("</that>");
                 _builder_1.newLineIfNotEmpty();
                 _builder_1.append("    ");
@@ -563,7 +563,7 @@ public class PandorabotsGenerator {
                 _builder_1.append("<srai>SAVE");
                 String _upperCase = key.toUpperCase();
                 _builder_1.append(_upperCase);
-                _builder_1.append(" <star/></set>");
+                _builder_1.append(" <star/></srai>");
                 _builder_1.newLineIfNotEmpty();
                 _builder_1.append("      ");
                 _builder_1.append("</think>");
@@ -589,8 +589,8 @@ public class PandorabotsGenerator {
                 _builder_2.newLineIfNotEmpty();
                 _builder_2.append("    ");
                 _builder_2.append("<that>");
-                String _paramPromptByName_1 = this.getParamPromptByName(transition.getIntent(), key);
-                _builder_2.append(_paramPromptByName_1);
+                String _replace_1 = this.getParamPromptByName(transition.getIntent(), key).replace("?", "");
+                _builder_2.append(_replace_1);
                 _builder_2.append("</that>");
                 _builder_2.newLineIfNotEmpty();
                 _builder_2.append("    ");
@@ -629,8 +629,8 @@ public class PandorabotsGenerator {
                 _builder_3.newLineIfNotEmpty();
                 _builder_3.append("    ");
                 _builder_3.append("<that>");
-                String _paramPromptByName_2 = this.getParamPromptByName(transition.getIntent(), key);
-                _builder_3.append(_paramPromptByName_2);
+                String _replace_2 = this.getParamPromptByName(transition.getIntent(), key).replace("?", "");
+                _builder_3.append(_replace_2);
                 _builder_3.append("</that>");
                 _builder_3.newLineIfNotEmpty();
                 _builder_3.append("    ");
@@ -668,6 +668,12 @@ public class PandorabotsGenerator {
                 _builder_4.append("<pattern><set>number</set></pattern>");
                 _builder_4.newLineIfNotEmpty();
                 _builder_4.append("    ");
+                _builder_4.append("<that>");
+                String _replace_3 = this.getParamPromptByName(transition.getIntent(), key).replace("?", "");
+                _builder_4.append(_replace_3);
+                _builder_4.append("</that>");
+                _builder_4.newLineIfNotEmpty();
+                _builder_4.append("    ");
                 _builder_4.append("<template>");
                 _builder_4.newLineIfNotEmpty();
                 _builder_4.append("      ");
@@ -703,8 +709,8 @@ public class PandorabotsGenerator {
                 _builder_5.newLineIfNotEmpty();
                 _builder_5.append("    ");
                 _builder_5.append("<that>");
-                String _paramPromptByName_3 = this.getParamPromptByName(transition.getIntent(), key);
-                _builder_5.append(_paramPromptByName_3);
+                String _replace_4 = this.getParamPromptByName(transition.getIntent(), key).replace("?", "");
+                _builder_5.append(_replace_4);
                 _builder_5.append("</that>");
                 _builder_5.newLineIfNotEmpty();
                 _builder_5.append("    ");
@@ -717,7 +723,7 @@ public class PandorabotsGenerator {
                 _builder_5.append("<srai>SAVE");
                 String _upperCase_4 = key.toUpperCase();
                 _builder_5.append(_upperCase_4);
-                _builder_5.append(" <star/></set>");
+                _builder_5.append(" <star/></srai>");
                 _builder_5.newLineIfNotEmpty();
                 _builder_5.append("      ");
                 _builder_5.append("</think>");
@@ -744,8 +750,8 @@ public class PandorabotsGenerator {
             _builder_5.newLineIfNotEmpty();
             _builder_5.append("    ");
             _builder_5.append("<that>");
-            String _paramPromptByName_3 = this.getParamPromptByName(transition.getIntent(), key);
-            _builder_5.append(_paramPromptByName_3);
+            String _replace_4 = this.getParamPromptByName(transition.getIntent(), key).replace("?", "");
+            _builder_5.append(_replace_4);
             _builder_5.append("</that>");
             _builder_5.newLineIfNotEmpty();
             _builder_5.append("    ");
@@ -758,7 +764,7 @@ public class PandorabotsGenerator {
             _builder_5.append("<srai>SAVE");
             String _upperCase_4 = key.toUpperCase();
             _builder_5.append(_upperCase_4);
-            _builder_5.append(" <star/></set>");
+            _builder_5.append(" <star/></srai>");
             _builder_5.newLineIfNotEmpty();
             _builder_5.append("      ");
             _builder_5.append("</think>");
