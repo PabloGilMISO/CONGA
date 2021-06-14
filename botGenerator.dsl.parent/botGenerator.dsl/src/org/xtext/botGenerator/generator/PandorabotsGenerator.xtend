@@ -30,6 +30,7 @@ import org.eclipse.emf.ecore.resource.Resource
 import org.eclipse.xtext.generator.IFileSystemAccess2
 import org.eclipse.xtext.generator.IGeneratorContext
 import zipUtils.Zip
+import generator.KeyValue
 
 class PandorabotsGenerator {
 	String path;
@@ -599,6 +600,13 @@ class PandorabotsGenerator {
 				«"    "»<template>
 				«"      "»<callapi response_code_var="response«"_" + action.name»">
 				«"        "»<url>«(action as HTTPRequest).getURL()»</url>
+				«"        "»<method>«action.method»</method>
+				«FOR header: action.headers»
+					«"        "»<header><name>«header.key»</name>«(header.value as Literal).text»</header>
+				«ENDFOR»
+				«FOR param: action.data»
+					«"        "»<query name="«(param.value as ParameterToken).parameter.name»"><get name="«(param.value as ParameterToken).parameter.name»"/></query>
+				«ENDFOR»
 				«"      "»</callapi>
 				«"    "»</template>
 				«"  "»</category>

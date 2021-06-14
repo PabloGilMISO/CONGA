@@ -13,9 +13,11 @@ import generator.Image;
 import generator.Intent;
 import generator.IntentInput;
 import generator.IntentLanguageInputs;
+import generator.KeyValue;
 import generator.Language;
 import generator.LanguageInput;
 import generator.Literal;
+import generator.Method;
 import generator.Parameter;
 import generator.ParameterReferenceToken;
 import generator.ParameterToken;
@@ -1322,6 +1324,43 @@ public class PandorabotsGenerator {
                 _builder.append(_uRL_1);
                 _builder.append("</url>");
                 _builder.newLineIfNotEmpty();
+                _builder.append("        ");
+                _builder.append("<method>");
+                Method _method = ((HTTPRequest)action_1).getMethod();
+                _builder.append(_method);
+                _builder.append("</method>");
+                _builder.newLineIfNotEmpty();
+                {
+                  EList<KeyValue> _headers = ((HTTPRequest)action_1).getHeaders();
+                  for(final KeyValue header : _headers) {
+                    _builder.append("        ");
+                    _builder.append("<header><name>");
+                    String _key = header.getKey();
+                    _builder.append(_key);
+                    _builder.append("</name>");
+                    Token _value = header.getValue();
+                    String _text = ((Literal) _value).getText();
+                    _builder.append(_text);
+                    _builder.append("</header>");
+                    _builder.newLineIfNotEmpty();
+                  }
+                }
+                {
+                  EList<KeyValue> _data = ((HTTPRequest)action_1).getData();
+                  for(final KeyValue param : _data) {
+                    _builder.append("        ");
+                    _builder.append("<query name=\"");
+                    Token _value_1 = param.getValue();
+                    String _name_1 = ((ParameterToken) _value_1).getParameter().getName();
+                    _builder.append(_name_1);
+                    _builder.append("\"><get name=\"");
+                    Token _value_2 = param.getValue();
+                    String _name_2 = ((ParameterToken) _value_2).getParameter().getName();
+                    _builder.append(_name_2);
+                    _builder.append("\"/></query>");
+                    _builder.newLineIfNotEmpty();
+                  }
+                }
                 _builder.append("      ");
                 _builder.append("</callapi>");
                 _builder.newLineIfNotEmpty();
@@ -1348,8 +1387,8 @@ public class PandorabotsGenerator {
                   _builder.newLineIfNotEmpty();
                   _builder.append("      ");
                   _builder.append("<get name=\"response_");
-                  String _name_1 = ((HTTPResponse) action_1).getHTTPRequest().getName();
-                  _builder.append(_name_1);
+                  String _name_3 = ((HTTPResponse) action_1).getHTTPRequest().getName();
+                  _builder.append(_name_3);
                   _builder.append("\"/>");
                   _builder.newLineIfNotEmpty();
                   _builder.append("    ");
