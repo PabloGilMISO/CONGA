@@ -468,8 +468,171 @@ public class PandorabotsGenerator {
     String _createChainedParamIntents = this.createChainedParamIntents(transition);
     _builder.append(_createChainedParamIntents);
     _builder.newLineIfNotEmpty();
+    {
+      int _length = ((Object[])Conversions.unwrapArray(transition.getTarget().getOutcoming(), Object.class)).length;
+      boolean _greaterThan = (_length > 1);
+      if (_greaterThan) {
+        CharSequence _createOutcomingIntents = this.createOutcomingIntents(transition);
+        _builder.append(_createOutcomingIntents);
+        _builder.newLineIfNotEmpty();
+      }
+    }
     _builder.append("</aiml>");
     _builder.newLine();
+    return _builder;
+  }
+  
+  public CharSequence createOutcomingIntents(final UserInteraction transition) {
+    StringConcatenation _builder = new StringConcatenation();
+    _builder.append("  ");
+    _builder.append("<!-- Outcoming intents -->");
+    _builder.newLineIfNotEmpty();
+    {
+      EList<Action> _actions = transition.getTarget().getActions();
+      for(final Action action : _actions) {
+        {
+          if ((action instanceof Text)) {
+            {
+              EList<TextLanguageInput> _inputs = ((Text)action).getInputs();
+              for(final TextLanguageInput language : _inputs) {
+                List<?> responses = null;
+                _builder.newLineIfNotEmpty();
+                String _xblockexpression = null;
+                {
+                  responses = this.getAllIntentResponses(language);
+                  _xblockexpression = "";
+                }
+                _builder.append(_xblockexpression);
+                _builder.newLineIfNotEmpty();
+                {
+                  for(final Object response : responses) {
+                    {
+                      EList<UserInteraction> _outcoming = transition.getTarget().getOutcoming();
+                      for(final UserInteraction outcoming : _outcoming) {
+                        {
+                          EList<IntentLanguageInputs> _inputs_1 = outcoming.getIntent().getInputs();
+                          for(final IntentLanguageInputs nestedLanguage : _inputs_1) {
+                            {
+                              EList<IntentInput> _inputs_2 = nestedLanguage.getInputs();
+                              for(final IntentInput input : _inputs_2) {
+                                {
+                                  if ((input instanceof TrainingPhrase)) {
+                                    _builder.append("  ");
+                                    _builder.append("<category>");
+                                    _builder.newLineIfNotEmpty();
+                                    _builder.append("    ");
+                                    _builder.append("<pattern>");
+                                    {
+                                      EList<Token> _tokens = ((TrainingPhrase)input).getTokens();
+                                      for(final Token token : _tokens) {
+                                        {
+                                          if ((token instanceof Literal)) {
+                                            String _replace = ((Literal)token).getText().replace("?", " #");
+                                            _builder.append(_replace);
+                                          } else {
+                                            if ((token instanceof ParameterReferenceToken)) {
+                                              _builder.append("*");
+                                            }
+                                          }
+                                        }
+                                      }
+                                    }
+                                    _builder.append("</pattern>");
+                                    _builder.newLineIfNotEmpty();
+                                    _builder.append("    ");
+                                    _builder.append("<that>");
+                                    _builder.append(response);
+                                    _builder.append("</that>");
+                                    _builder.newLineIfNotEmpty();
+                                    _builder.append("    ");
+                                    _builder.append("<template>");
+                                    _builder.newLineIfNotEmpty();
+                                    List<String> entities = null;
+                                    _builder.newLineIfNotEmpty();
+                                    String _xblockexpression_1 = null;
+                                    {
+                                      entities = this.getPhraseEntities(((TrainingPhrase)input));
+                                      _xblockexpression_1 = "";
+                                    }
+                                    _builder.append(_xblockexpression_1);
+                                    _builder.newLineIfNotEmpty();
+                                    {
+                                      boolean _isEmpty = entities.isEmpty();
+                                      boolean _not = (!_isEmpty);
+                                      if (_not) {
+                                        _builder.append("      ");
+                                        _builder.append("<think>");
+                                        _builder.newLineIfNotEmpty();
+                                        {
+                                          for(final String entity : entities) {
+                                            _builder.append("        ");
+                                            _builder.append("<srai>");
+                                            _builder.newLineIfNotEmpty();
+                                            _builder.append("          ");
+                                            _builder.append("SAVE");
+                                            String _upperCase = entity.toUpperCase();
+                                            _builder.append(_upperCase);
+                                            _builder.append(" <star index=\"");
+                                            int _indexOf = entities.indexOf(entity);
+                                            int _plus = (_indexOf + 1);
+                                            _builder.append(_plus);
+                                            _builder.append("\"/>");
+                                            _builder.newLineIfNotEmpty();
+                                            _builder.append("        ");
+                                            _builder.append("</srai>");
+                                            _builder.newLineIfNotEmpty();
+                                          }
+                                        }
+                                        _builder.append("      ");
+                                        _builder.append("</think>");
+                                        _builder.newLineIfNotEmpty();
+                                      }
+                                    }
+                                    String nextPrompt = null;
+                                    _builder.newLineIfNotEmpty();
+                                    String _xblockexpression_2 = null;
+                                    {
+                                      nextPrompt = this.getNextParamPetition(outcoming.getIntent(), ((TrainingPhrase)input)).getValue();
+                                      _xblockexpression_2 = "";
+                                    }
+                                    _builder.append(_xblockexpression_2);
+                                    _builder.newLineIfNotEmpty();
+                                    {
+                                      if ((nextPrompt != "")) {
+                                        _builder.append("      ");
+                                        _builder.append(nextPrompt);
+                                        _builder.newLineIfNotEmpty();
+                                      } else {
+                                        _builder.append("      ");
+                                        _builder.append("<srai>");
+                                        String _upperCase_1 = outcoming.getIntent().getName().toUpperCase().replace(" ", "").toUpperCase();
+                                        _builder.append(_upperCase_1);
+                                        _builder.append("</srai>");
+                                        _builder.newLineIfNotEmpty();
+                                      }
+                                    }
+                                    _builder.append("    ");
+                                    _builder.append("</template>");
+                                    _builder.newLineIfNotEmpty();
+                                    _builder.append("  ");
+                                    _builder.append("</category>");
+                                    _builder.newLineIfNotEmpty();
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
     return _builder;
   }
   

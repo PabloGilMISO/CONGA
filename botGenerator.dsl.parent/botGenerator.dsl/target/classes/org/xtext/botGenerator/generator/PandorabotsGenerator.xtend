@@ -239,9 +239,7 @@ class PandorabotsGenerator {
 	}
 	
 	// Generador de codigo de un intent
-	// TODO: 
-	// 1. Mirar funcionamiento del webhook
-	// 2. Revisar impresion de parametros etc en HttpResponse <- Necesario acceso a llamadas HTTP con callapi
+	// TODO: Revisar impresion de parametros etc en HttpResponse <- Necesario acceso a llamadas HTTP con callapi
 	def intentFile(UserInteraction transition, String prefix, Bot bot)
 	'''
 	<?xml version="1.0" encoding="UTF-8"?>
@@ -280,7 +278,57 @@ class PandorabotsGenerator {
 	  	«ENDFOR»
 	«ENDFOR»
 	«createChainedParamIntents(transition)»
+	«IF transition.target.outcoming.length > 1»
+		«createOutcomingIntents(transition)»
+	«ENDIF»
 	</aiml>
+	'''
+	
+	// Genera los intents correspondientes a los flujos complejos de conversacion
+	def createOutcomingIntents(UserInteraction transition) '''
+		«"  "»<!-- Outcoming intents -->
+		«FOR action: transition.target.actions»
+			«IF action instanceof Text»
+				«FOR language: action.inputs»
+					«var List<?> responses»
+					«{responses = language.getAllIntentResponses(); ""}»
+					«FOR response: responses»
+						«FOR outcoming: transition.target.outcoming»
+							«FOR nestedLanguage: outcoming.intent.inputs»
+						  		«FOR input: nestedLanguage.inputs»
+						  			«IF input instanceof TrainingPhrase»
+										«"  "»<category>
+										«"    "»<pattern>«FOR token: input.tokens»«IF token instanceof Literal»«token.text.replace('?', ' #')»«ELSEIF token instanceof ParameterReferenceToken»*«ENDIF»«ENDFOR»</pattern>
+										«"    "»<that>«response»</that>
+										«"    "»<template>
+										«var List<String> entities»
+										«{entities = getPhraseEntities(input); ""}»
+										«IF !entities.isEmpty()»
+											«"      "»<think>
+											«FOR entity: entities»
+												«"        "»<srai>
+												«"          "»SAVE«entity.toUpperCase()» <star index="«entities.indexOf(entity) + 1»"/>
+												«"        "»</srai>
+											«ENDFOR»
+											«"      "»</think>
+										«ENDIF»
+										«var String nextPrompt»
+										«{nextPrompt = getNextParamPetition(outcoming.intent, input).getValue(); ""}»
+										«IF nextPrompt !== ""»
+										«"      "»«nextPrompt»
+										«ELSE»
+										«"      "»<srai>«outcoming.intent.name.toUpperCase().replace(' ', '').toUpperCase()»</srai>
+										«ENDIF»
+										«"    "»</template>
+										«"  "»</category>
+								  	«ENDIF»
+							  	«ENDFOR»
+							«ENDFOR»
+						«ENDFOR»
+					«ENDFOR»
+				«ENDFOR»
+			«ENDIF»
+		«ENDFOR»
 	'''
 	
 	// Generacion de codigo referente a la lectura de parametros por parte del usuario y posterior solicitud del resto
