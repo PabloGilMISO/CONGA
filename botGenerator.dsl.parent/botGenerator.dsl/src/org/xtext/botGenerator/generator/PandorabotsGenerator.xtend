@@ -246,7 +246,7 @@ class PandorabotsGenerator {
 	«  »<aiml>
 	«createSaveParameter(transition.intent)»
 	«"  "»<!-- Intent -->
-	«intentGenerator(transition, bot)»
+	«intentGenerator(transition, bot, "")»
 	«"  "»<!-- Intent inputs -->
 	«FOR language: transition.intent.inputs»
   		«FOR input: language.inputs»
@@ -280,6 +280,7 @@ class PandorabotsGenerator {
 	«createChainedParamIntents(transition)»
 	«IF transition.target.outcoming.length > 1»
 		«createOutcomingIntents(transition)»
+		«intentGenerator(transition, bot, transition.intent.name)»
 	«ENDIF»
 	</aiml>
 	'''
@@ -317,7 +318,7 @@ class PandorabotsGenerator {
 										«IF nextPrompt !== ""»
 										«"      "»«nextPrompt»
 										«ELSE»
-										«"      "»<srai>«outcoming.intent.name.toUpperCase().replace(' ', '').toUpperCase()»</srai>
+										«"      "»<srai>«(transition.intent.name + outcoming.intent.name).toUpperCase().replace(' ', '').toUpperCase()»</srai>
 										«ENDIF»
 										«"    "»</template>
 										«"  "»</category>
@@ -584,11 +585,10 @@ class PandorabotsGenerator {
 	}
 	
 	// Generacion de codigo de un intent con una o varias respuestas
-	def intentGenerator(UserInteraction transition, Bot bot)
+	def intentGenerator(UserInteraction transition, Bot bot, String prefix)
 	'''
 		«var intentName = ""»
 		«"  "»<!-- Main intents -->
-		«{intentName = transition.intent.name.toUpperCase().replace(' ', ''); ""}»
 		«FOR language: transition.intent.inputs»
 			«var lang = ""»
 		  	«IF language.language != Language.EMPTY»
@@ -596,77 +596,160 @@ class PandorabotsGenerator {
 		  	«ELSE»
 		    	«{lang = bot.languages.get(0).languageAbbreviation; ""}»
 		    «ENDIF»
-			«"  "»<category>
-			«"    "»<pattern>«intentName»</pattern>
-			«"    "»<template>
-			«FOR action: transition.target.actions»
-				«IF action instanceof Text»
-					«"      "»<srai>«intentName + lang.toUpperCase()»</srai>
-				«ELSE»
-					«"      "»<srai>«intentName + action.name.toUpperCase().replace(' ', '')»</srai>
-				«ENDIF»
-			«ENDFOR»
-			«"    "»</template>
-			«"  "»</category>
+			«IF prefix.isEmpty()»
+				«{intentName = transition.intent.name.toUpperCase().replace(' ', ''); ""}»
+				«"  "»<category>
+				«"    "»<pattern>«intentName»</pattern>
+				«"    "»<template>
+				«FOR action: transition.target.actions»
+					«IF action instanceof Text»
+						«"      "»<srai>«intentName + lang.toUpperCase()»</srai>
+					«ELSE»
+						«"      "»<srai>«intentName + action.name.toUpperCase().replace(' ', '')»</srai>
+					«ENDIF»
+				«ENDFOR»
+				«"    "»</template>
+				«"  "»</category>
+			«ELSE»
+				«FOR outcoming: transition.target.outcoming»
+					«{intentName = (prefix + outcoming.intent.name).toUpperCase().replace(' ', ''); ""}»
+					«"  "»<category>
+					«"    "»<pattern>«intentName»</pattern>
+					«"    "»<template>
+					«FOR action: outcoming.target.actions»
+						«IF action instanceof Text»
+							«"      "»<srai>«intentName + lang.toUpperCase()»</srai>
+						«ELSE»
+							«"      "»<srai>«intentName + action.name.toUpperCase().replace(' ', '')»</srai>
+						«ENDIF»
+					«ENDFOR»
+					«"    "»</template>
+					«"  "»</category>
+				«ENDFOR»
+			«ENDIF»
 	    «ENDFOR»
 		«"  "»<!-- Action intents -->
-		«FOR action: transition.target.actions»
-			«IF action instanceof Text»
-				«FOR language: action.inputs»
-					«var lang=""»
-					«IF language.language != Language.EMPTY»
-						«{lang = language.language.languageAbbreviation.toUpperCase(); ""}»
-					«ELSE»
-						«{lang = bot.languages.get(0).languageAbbreviation.toUpperCase(); ""}»
-					«ENDIF»
-					«IF language.getAllIntentResponses().length > 1»
-						«"  "»<category>
-						«"    "»<pattern>«(intentName + lang).toUpperCase()»</pattern>
-						«"    "»<template>
-						«"      "»<random>
-						«FOR response: language.getAllIntentResponses()»
-							«"        "»<li>«response»</li>
+		«IF prefix.isEmpty()»
+			«{intentName = transition.intent.name.toUpperCase().replace(' ', ''); ""}»
+			«FOR action: transition.target.actions»
+				«IF action instanceof Text»
+					«FOR language: action.inputs»
+						«var lang=""»
+						«IF language.language != Language.EMPTY»
+							«{lang = language.language.languageAbbreviation.toUpperCase(); ""}»
+						«ELSE»
+							«{lang = bot.languages.get(0).languageAbbreviation.toUpperCase(); ""}»
+						«ENDIF»
+						«IF language.getAllIntentResponses().length > 1»
+							«"  "»<category>
+							«"    "»<pattern>«(intentName + lang).toUpperCase()»</pattern>
+							«"    "»<template>
+							«"      "»<random>
+							«FOR response: language.getAllIntentResponses()»
+								«"        "»<li>«response»</li>
+							«ENDFOR»
+							«"      "»</random>
+							«"    "»</template>
+							«"  "»</category>
+						«ELSE»
+							«"  "»<category>
+							«"    "»<pattern>«(intentName + lang).toUpperCase()»</pattern>
+							«"    "»<template>«language.getAllIntentResponses().get(0)»</template>
+							«"  "»</category>
+						«ENDIF»
+					«ENDFOR»
+				«ELSEIF action instanceof Image»
+					«"  "»<category>
+					«"    "»<pattern>«intentName + action.name.toUpperCase().replace(' ', '')»</pattern>
+					«"    "»<template><image>«action.URL»</image></template>
+					«"  "»</category>
+				«ELSEIF action instanceof HTTPRequest»
+					«"  "»<category>
+					«"    "»<pattern>«intentName + action.name.toUpperCase().replace(' ', '')»</pattern>
+					«"    "»<template>
+					«"      "»<callapi response_code_var="response«"_" + action.name»">
+					«"        "»<url>«(action as HTTPRequest).getURL()»</url>
+					«"        "»<method>«action.method»</method>
+					«FOR header: action.headers»
+						«"        "»<header><name>«header.key»</name>«(header.value as Literal).text»</header>
+					«ENDFOR»
+					«FOR param: action.data»
+						«"        "»<query name="«(param.value as ParameterToken).parameter.name»"><get name="«(param.value as ParameterToken).parameter.name»"/></query>
+					«ENDFOR»
+					«"      "»</callapi>
+					«"    "»</template>
+					«"  "»</category>
+				«ELSEIF action instanceof HTTPResponse»
+					«"  "»<category>
+					«"    "»<pattern>«intentName + action.name.toUpperCase().replace(' ', '')»</pattern>
+					«"    "»<template>
+					«"      "»<get name="response_«(action as HTTPResponse).HTTPRequest.name»"/>
+					«"    "»</template>
+					«"  "»</category>
+				«ENDIF»
+			«ENDFOR»
+		«ELSE»
+			«FOR outcoming: transition.target.outcoming»
+				«{intentName = (prefix + outcoming.intent.name).toUpperCase().replace(' ', ''); ""}»
+				«FOR action: outcoming.target.actions»
+					«IF action instanceof Text»
+						«FOR language: action.inputs»
+							«var lang=""»
+							«IF language.language != Language.EMPTY»
+								«{lang = language.language.languageAbbreviation.toUpperCase(); ""}»
+							«ELSE»
+								«{lang = bot.languages.get(0).languageAbbreviation.toUpperCase(); ""}»
+							«ENDIF»
+							«IF language.getAllIntentResponses().length > 1»
+								«"  "»<category>
+								«"    "»<pattern>«(intentName + lang).toUpperCase()»</pattern>
+								«"    "»<template>
+								«"      "»<random>
+								«FOR response: language.getAllIntentResponses()»
+									«"        "»<li>«response»</li>
+								«ENDFOR»
+								«"      "»</random>
+								«"    "»</template>
+								«"  "»</category>
+							«ELSE»
+								«"  "»<category>
+								«"    "»<pattern>«(intentName + lang).toUpperCase()»</pattern>
+								«"    "»<template>«language.getAllIntentResponses().get(0)»</template>
+								«"  "»</category>
+							«ENDIF»
 						«ENDFOR»
-						«"      "»</random>
+					«ELSEIF action instanceof Image»
+						«"  "»<category>
+						«"    "»<pattern>«intentName + action.name.toUpperCase().replace(' ', '')»</pattern>
+						«"    "»<template><image>«action.URL»</image></template>
+						«"  "»</category>
+					«ELSEIF action instanceof HTTPRequest»
+						«"  "»<category>
+						«"    "»<pattern>«intentName + action.name.toUpperCase().replace(' ', '')»</pattern>
+						«"    "»<template>
+						«"      "»<callapi response_code_var="response«"_" + action.name»">
+						«"        "»<url>«(action as HTTPRequest).getURL()»</url>
+						«"        "»<method>«action.method»</method>
+						«FOR header: action.headers»
+							«"        "»<header><name>«header.key»</name>«(header.value as Literal).text»</header>
+						«ENDFOR»
+						«FOR param: action.data»
+							«"        "»<query name="«(param.value as ParameterToken).parameter.name»"><get name="«(param.value as ParameterToken).parameter.name»"/></query>
+						«ENDFOR»
+						«"      "»</callapi>
 						«"    "»</template>
 						«"  "»</category>
-					«ELSE»
+					«ELSEIF action instanceof HTTPResponse»
 						«"  "»<category>
-						«"    "»<pattern>«(intentName + lang).toUpperCase()»</pattern>
-						«"    "»<template>«language.getAllIntentResponses().get(0)»</template>
+						«"    "»<pattern>«intentName + action.name.toUpperCase().replace(' ', '')»</pattern>
+						«"    "»<template>
+						«"      "»<get name="response_«(action as HTTPResponse).HTTPRequest.name»"/>
+						«"    "»</template>
 						«"  "»</category>
 					«ENDIF»
 				«ENDFOR»
-			«ELSEIF action instanceof Image»
-				«"  "»<category>
-				«"    "»<pattern>«intentName + action.name.toUpperCase().replace(' ', '')»</pattern>
-				«"    "»<template><image>«action.URL»</image></template>
-				«"  "»</category>
-			«ELSEIF action instanceof HTTPRequest»
-				«"  "»<category>
-				«"    "»<pattern>«intentName + action.name.toUpperCase().replace(' ', '')»</pattern>
-				«"    "»<template>
-				«"      "»<callapi response_code_var="response«"_" + action.name»">
-				«"        "»<url>«(action as HTTPRequest).getURL()»</url>
-				«"        "»<method>«action.method»</method>
-				«FOR header: action.headers»
-					«"        "»<header><name>«header.key»</name>«(header.value as Literal).text»</header>
-				«ENDFOR»
-				«FOR param: action.data»
-					«"        "»<query name="«(param.value as ParameterToken).parameter.name»"><get name="«(param.value as ParameterToken).parameter.name»"/></query>
-				«ENDFOR»
-				«"      "»</callapi>
-				«"    "»</template>
-				«"  "»</category>
-			«ELSEIF action instanceof HTTPResponse»
-				«"  "»<category>
-				«"    "»<pattern>«intentName + action.name.toUpperCase().replace(' ', '')»</pattern>
-				«"    "»<template>
-				«"      "»<get name="response_«(action as HTTPResponse).HTTPRequest.name»"/>
-				«"    "»</template>
-				«"  "»</category>
-			«ENDIF»
-		«ENDFOR»
+			«ENDFOR»
+		«ENDIF»
 	'''
 
 	// Obtencion de abreviacion del lenguage

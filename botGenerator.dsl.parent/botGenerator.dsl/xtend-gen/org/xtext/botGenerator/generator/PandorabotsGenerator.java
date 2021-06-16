@@ -350,7 +350,7 @@ public class PandorabotsGenerator {
     _builder.append("  ");
     _builder.append("<!-- Intent -->");
     _builder.newLineIfNotEmpty();
-    CharSequence _intentGenerator = this.intentGenerator(transition, bot);
+    CharSequence _intentGenerator = this.intentGenerator(transition, bot, "");
     _builder.append(_intentGenerator);
     _builder.newLineIfNotEmpty();
     _builder.append("  ");
@@ -474,6 +474,9 @@ public class PandorabotsGenerator {
       if (_greaterThan) {
         CharSequence _createOutcomingIntents = this.createOutcomingIntents(transition);
         _builder.append(_createOutcomingIntents);
+        _builder.newLineIfNotEmpty();
+        CharSequence _intentGenerator_1 = this.intentGenerator(transition, bot, transition.getIntent().getName());
+        _builder.append(_intentGenerator_1);
         _builder.newLineIfNotEmpty();
       }
     }
@@ -605,7 +608,9 @@ public class PandorabotsGenerator {
                                       } else {
                                         _builder.append("      ");
                                         _builder.append("<srai>");
-                                        String _upperCase_1 = outcoming.getIntent().getName().toUpperCase().replace(" ", "").toUpperCase();
+                                        String _name = transition.getIntent().getName();
+                                        String _name_1 = outcoming.getIntent().getName();
+                                        String _upperCase_1 = (_name + _name_1).toUpperCase().replace(" ", "").toUpperCase();
                                         _builder.append(_upperCase_1);
                                         _builder.append("</srai>");
                                         _builder.newLineIfNotEmpty();
@@ -1260,19 +1265,12 @@ public class PandorabotsGenerator {
     return ret;
   }
   
-  public CharSequence intentGenerator(final UserInteraction transition, final Bot bot) {
+  public CharSequence intentGenerator(final UserInteraction transition, final Bot bot, final String prefix) {
     StringConcatenation _builder = new StringConcatenation();
     String intentName = "";
     _builder.newLineIfNotEmpty();
     _builder.append("  ");
     _builder.append("<!-- Main intents -->");
-    _builder.newLineIfNotEmpty();
-    String _xblockexpression = null;
-    {
-      intentName = transition.getIntent().getName().toUpperCase().replace(" ", "");
-      _xblockexpression = "";
-    }
-    _builder.append(_xblockexpression);
     _builder.newLineIfNotEmpty();
     {
       EList<IntentLanguageInputs> _inputs = transition.getIntent().getInputs();
@@ -1283,283 +1281,597 @@ public class PandorabotsGenerator {
           Language _language = language.getLanguage();
           boolean _notEquals = (!Objects.equal(_language, Language.EMPTY));
           if (_notEquals) {
-            String _xblockexpression_1 = null;
+            String _xblockexpression = null;
             {
               lang = this.languageAbbreviation(language.getLanguage());
+              _xblockexpression = "";
+            }
+            _builder.append(_xblockexpression);
+            _builder.newLineIfNotEmpty();
+          } else {
+            String _xblockexpression_1 = null;
+            {
+              lang = this.languageAbbreviation(bot.getLanguages().get(0));
               _xblockexpression_1 = "";
             }
             _builder.append(_xblockexpression_1);
             _builder.newLineIfNotEmpty();
-          } else {
+          }
+        }
+        {
+          boolean _isEmpty = prefix.isEmpty();
+          if (_isEmpty) {
             String _xblockexpression_2 = null;
             {
-              lang = this.languageAbbreviation(bot.getLanguages().get(0));
+              intentName = transition.getIntent().getName().toUpperCase().replace(" ", "");
               _xblockexpression_2 = "";
             }
             _builder.append(_xblockexpression_2);
             _builder.newLineIfNotEmpty();
-          }
-        }
-        _builder.append("  ");
-        _builder.append("<category>");
-        _builder.newLineIfNotEmpty();
-        _builder.append("    ");
-        _builder.append("<pattern>");
-        _builder.append(intentName);
-        _builder.append("</pattern>");
-        _builder.newLineIfNotEmpty();
-        _builder.append("    ");
-        _builder.append("<template>");
-        _builder.newLineIfNotEmpty();
-        {
-          EList<Action> _actions = transition.getTarget().getActions();
-          for(final Action action : _actions) {
+            _builder.append("  ");
+            _builder.append("<category>");
+            _builder.newLineIfNotEmpty();
+            _builder.append("    ");
+            _builder.append("<pattern>");
+            _builder.append(intentName);
+            _builder.append("</pattern>");
+            _builder.newLineIfNotEmpty();
+            _builder.append("    ");
+            _builder.append("<template>");
+            _builder.newLineIfNotEmpty();
             {
-              if ((action instanceof Text)) {
-                _builder.append("      ");
-                _builder.append("<srai>");
-                String _upperCase = lang.toUpperCase();
-                String _plus = (intentName + _upperCase);
-                _builder.append(_plus);
-                _builder.append("</srai>");
-                _builder.newLineIfNotEmpty();
-              } else {
-                _builder.append("      ");
-                _builder.append("<srai>");
-                String _replace = action.getName().toUpperCase().replace(" ", "");
-                String _plus_1 = (intentName + _replace);
-                _builder.append(_plus_1);
-                _builder.append("</srai>");
-                _builder.newLineIfNotEmpty();
-              }
-            }
-          }
-        }
-        _builder.append("    ");
-        _builder.append("</template>");
-        _builder.newLineIfNotEmpty();
-        _builder.append("  ");
-        _builder.append("</category>");
-        _builder.newLineIfNotEmpty();
-      }
-    }
-    _builder.append("  ");
-    _builder.append("<!-- Action intents -->");
-    _builder.newLineIfNotEmpty();
-    {
-      EList<Action> _actions_1 = transition.getTarget().getActions();
-      for(final Action action_1 : _actions_1) {
-        {
-          if ((action_1 instanceof Text)) {
-            {
-              EList<TextLanguageInput> _inputs_1 = ((Text)action_1).getInputs();
-              for(final TextLanguageInput language_1 : _inputs_1) {
-                String lang_1 = "";
-                _builder.newLineIfNotEmpty();
+              EList<Action> _actions = transition.getTarget().getActions();
+              for(final Action action : _actions) {
                 {
-                  Language _language_1 = language_1.getLanguage();
-                  boolean _notEquals_1 = (!Objects.equal(_language_1, Language.EMPTY));
-                  if (_notEquals_1) {
-                    String _xblockexpression_3 = null;
-                    {
-                      lang_1 = this.languageAbbreviation(language_1.getLanguage()).toUpperCase();
-                      _xblockexpression_3 = "";
-                    }
-                    _builder.append(_xblockexpression_3);
+                  if ((action instanceof Text)) {
+                    _builder.append("      ");
+                    _builder.append("<srai>");
+                    String _upperCase = lang.toUpperCase();
+                    String _plus = (intentName + _upperCase);
+                    _builder.append(_plus);
+                    _builder.append("</srai>");
                     _builder.newLineIfNotEmpty();
                   } else {
-                    String _xblockexpression_4 = null;
-                    {
-                      lang_1 = this.languageAbbreviation(bot.getLanguages().get(0)).toUpperCase();
-                      _xblockexpression_4 = "";
-                    }
-                    _builder.append(_xblockexpression_4);
-                    _builder.newLineIfNotEmpty();
-                  }
-                }
-                {
-                  int _length = ((Object[])Conversions.unwrapArray(this.getAllIntentResponses(language_1), Object.class)).length;
-                  boolean _greaterThan = (_length > 1);
-                  if (_greaterThan) {
-                    _builder.append("  ");
-                    _builder.append("<category>");
-                    _builder.newLineIfNotEmpty();
-                    _builder.append("    ");
-                    _builder.append("<pattern>");
-                    String _upperCase_1 = (intentName + lang_1).toUpperCase();
-                    _builder.append(_upperCase_1);
-                    _builder.append("</pattern>");
-                    _builder.newLineIfNotEmpty();
-                    _builder.append("    ");
-                    _builder.append("<template>");
-                    _builder.newLineIfNotEmpty();
                     _builder.append("      ");
-                    _builder.append("<random>");
-                    _builder.newLineIfNotEmpty();
-                    {
-                      ArrayList<String> _allIntentResponses = this.getAllIntentResponses(language_1);
-                      for(final String response : _allIntentResponses) {
-                        _builder.append("        ");
-                        _builder.append("<li>");
-                        _builder.append(response);
-                        _builder.append("</li>");
-                        _builder.newLineIfNotEmpty();
-                      }
-                    }
-                    _builder.append("      ");
-                    _builder.append("</random>");
-                    _builder.newLineIfNotEmpty();
-                    _builder.append("    ");
-                    _builder.append("</template>");
-                    _builder.newLineIfNotEmpty();
-                    _builder.append("  ");
-                    _builder.append("</category>");
-                    _builder.newLineIfNotEmpty();
-                  } else {
-                    _builder.append("  ");
-                    _builder.append("<category>");
-                    _builder.newLineIfNotEmpty();
-                    _builder.append("    ");
-                    _builder.append("<pattern>");
-                    String _upperCase_2 = (intentName + lang_1).toUpperCase();
-                    _builder.append(_upperCase_2);
-                    _builder.append("</pattern>");
-                    _builder.newLineIfNotEmpty();
-                    _builder.append("    ");
-                    _builder.append("<template>");
-                    String _get = this.getAllIntentResponses(language_1).get(0);
-                    _builder.append(_get);
-                    _builder.append("</template>");
-                    _builder.newLineIfNotEmpty();
-                    _builder.append("  ");
-                    _builder.append("</category>");
+                    _builder.append("<srai>");
+                    String _replace = action.getName().toUpperCase().replace(" ", "");
+                    String _plus_1 = (intentName + _replace);
+                    _builder.append(_plus_1);
+                    _builder.append("</srai>");
                     _builder.newLineIfNotEmpty();
                   }
                 }
               }
             }
+            _builder.append("    ");
+            _builder.append("</template>");
+            _builder.newLineIfNotEmpty();
+            _builder.append("  ");
+            _builder.append("</category>");
+            _builder.newLineIfNotEmpty();
           } else {
-            if ((action_1 instanceof Image)) {
-              _builder.append("  ");
-              _builder.append("<category>");
-              _builder.newLineIfNotEmpty();
-              _builder.append("    ");
-              _builder.append("<pattern>");
-              String _replace_1 = ((Image)action_1).getName().toUpperCase().replace(" ", "");
-              String _plus_2 = (intentName + _replace_1);
-              _builder.append(_plus_2);
-              _builder.append("</pattern>");
-              _builder.newLineIfNotEmpty();
-              _builder.append("    ");
-              _builder.append("<template><image>");
-              String _uRL = ((Image)action_1).getURL();
-              _builder.append(_uRL);
-              _builder.append("</image></template>");
-              _builder.newLineIfNotEmpty();
-              _builder.append("  ");
-              _builder.append("</category>");
-              _builder.newLineIfNotEmpty();
-            } else {
-              if ((action_1 instanceof HTTPRequest)) {
+            {
+              EList<UserInteraction> _outcoming = transition.getTarget().getOutcoming();
+              for(final UserInteraction outcoming : _outcoming) {
+                String _xblockexpression_3 = null;
+                {
+                  String _name = outcoming.getIntent().getName();
+                  intentName = (prefix + _name).toUpperCase().replace(" ", "");
+                  _xblockexpression_3 = "";
+                }
+                _builder.append(_xblockexpression_3);
+                _builder.newLineIfNotEmpty();
                 _builder.append("  ");
                 _builder.append("<category>");
                 _builder.newLineIfNotEmpty();
                 _builder.append("    ");
                 _builder.append("<pattern>");
-                String _replace_2 = ((HTTPRequest)action_1).getName().toUpperCase().replace(" ", "");
-                String _plus_3 = (intentName + _replace_2);
-                _builder.append(_plus_3);
+                _builder.append(intentName);
                 _builder.append("</pattern>");
                 _builder.newLineIfNotEmpty();
                 _builder.append("    ");
                 _builder.append("<template>");
                 _builder.newLineIfNotEmpty();
-                _builder.append("      ");
-                _builder.append("<callapi response_code_var=\"response");
-                String _name = ((HTTPRequest)action_1).getName();
-                String _plus_4 = ("_" + _name);
-                _builder.append(_plus_4);
-                _builder.append("\">");
-                _builder.newLineIfNotEmpty();
-                _builder.append("        ");
-                _builder.append("<url>");
-                String _uRL_1 = ((HTTPRequest) action_1).getURL();
-                _builder.append(_uRL_1);
-                _builder.append("</url>");
-                _builder.newLineIfNotEmpty();
-                _builder.append("        ");
-                _builder.append("<method>");
-                Method _method = ((HTTPRequest)action_1).getMethod();
-                _builder.append(_method);
-                _builder.append("</method>");
-                _builder.newLineIfNotEmpty();
                 {
-                  EList<KeyValue> _headers = ((HTTPRequest)action_1).getHeaders();
-                  for(final KeyValue header : _headers) {
-                    _builder.append("        ");
-                    _builder.append("<header><name>");
-                    String _key = header.getKey();
-                    _builder.append(_key);
-                    _builder.append("</name>");
-                    Token _value = header.getValue();
-                    String _text = ((Literal) _value).getText();
-                    _builder.append(_text);
-                    _builder.append("</header>");
-                    _builder.newLineIfNotEmpty();
+                  EList<Action> _actions_1 = outcoming.getTarget().getActions();
+                  for(final Action action_1 : _actions_1) {
+                    {
+                      if ((action_1 instanceof Text)) {
+                        _builder.append("      ");
+                        _builder.append("<srai>");
+                        String _upperCase_1 = lang.toUpperCase();
+                        String _plus_2 = (intentName + _upperCase_1);
+                        _builder.append(_plus_2);
+                        _builder.append("</srai>");
+                        _builder.newLineIfNotEmpty();
+                      } else {
+                        _builder.append("      ");
+                        _builder.append("<srai>");
+                        String _replace_1 = action_1.getName().toUpperCase().replace(" ", "");
+                        String _plus_3 = (intentName + _replace_1);
+                        _builder.append(_plus_3);
+                        _builder.append("</srai>");
+                        _builder.newLineIfNotEmpty();
+                      }
+                    }
                   }
                 }
-                {
-                  EList<KeyValue> _data = ((HTTPRequest)action_1).getData();
-                  for(final KeyValue param : _data) {
-                    _builder.append("        ");
-                    _builder.append("<query name=\"");
-                    Token _value_1 = param.getValue();
-                    String _name_1 = ((ParameterToken) _value_1).getParameter().getName();
-                    _builder.append(_name_1);
-                    _builder.append("\"><get name=\"");
-                    Token _value_2 = param.getValue();
-                    String _name_2 = ((ParameterToken) _value_2).getParameter().getName();
-                    _builder.append(_name_2);
-                    _builder.append("\"/></query>");
-                    _builder.newLineIfNotEmpty();
-                  }
-                }
-                _builder.append("      ");
-                _builder.append("</callapi>");
-                _builder.newLineIfNotEmpty();
                 _builder.append("    ");
                 _builder.append("</template>");
                 _builder.newLineIfNotEmpty();
                 _builder.append("  ");
                 _builder.append("</category>");
                 _builder.newLineIfNotEmpty();
+              }
+            }
+          }
+        }
+      }
+    }
+    _builder.append("  ");
+    _builder.append("<!-- Action intents -->");
+    _builder.newLineIfNotEmpty();
+    {
+      boolean _isEmpty_1 = prefix.isEmpty();
+      if (_isEmpty_1) {
+        String _xblockexpression_4 = null;
+        {
+          intentName = transition.getIntent().getName().toUpperCase().replace(" ", "");
+          _xblockexpression_4 = "";
+        }
+        _builder.append(_xblockexpression_4);
+        _builder.newLineIfNotEmpty();
+        {
+          EList<Action> _actions_2 = transition.getTarget().getActions();
+          for(final Action action_2 : _actions_2) {
+            {
+              if ((action_2 instanceof Text)) {
+                {
+                  EList<TextLanguageInput> _inputs_1 = ((Text)action_2).getInputs();
+                  for(final TextLanguageInput language_1 : _inputs_1) {
+                    String lang_1 = "";
+                    _builder.newLineIfNotEmpty();
+                    {
+                      Language _language_1 = language_1.getLanguage();
+                      boolean _notEquals_1 = (!Objects.equal(_language_1, Language.EMPTY));
+                      if (_notEquals_1) {
+                        String _xblockexpression_5 = null;
+                        {
+                          lang_1 = this.languageAbbreviation(language_1.getLanguage()).toUpperCase();
+                          _xblockexpression_5 = "";
+                        }
+                        _builder.append(_xblockexpression_5);
+                        _builder.newLineIfNotEmpty();
+                      } else {
+                        String _xblockexpression_6 = null;
+                        {
+                          lang_1 = this.languageAbbreviation(bot.getLanguages().get(0)).toUpperCase();
+                          _xblockexpression_6 = "";
+                        }
+                        _builder.append(_xblockexpression_6);
+                        _builder.newLineIfNotEmpty();
+                      }
+                    }
+                    {
+                      int _length = ((Object[])Conversions.unwrapArray(this.getAllIntentResponses(language_1), Object.class)).length;
+                      boolean _greaterThan = (_length > 1);
+                      if (_greaterThan) {
+                        _builder.append("  ");
+                        _builder.append("<category>");
+                        _builder.newLineIfNotEmpty();
+                        _builder.append("    ");
+                        _builder.append("<pattern>");
+                        String _upperCase_2 = (intentName + lang_1).toUpperCase();
+                        _builder.append(_upperCase_2);
+                        _builder.append("</pattern>");
+                        _builder.newLineIfNotEmpty();
+                        _builder.append("    ");
+                        _builder.append("<template>");
+                        _builder.newLineIfNotEmpty();
+                        _builder.append("      ");
+                        _builder.append("<random>");
+                        _builder.newLineIfNotEmpty();
+                        {
+                          ArrayList<String> _allIntentResponses = this.getAllIntentResponses(language_1);
+                          for(final String response : _allIntentResponses) {
+                            _builder.append("        ");
+                            _builder.append("<li>");
+                            _builder.append(response);
+                            _builder.append("</li>");
+                            _builder.newLineIfNotEmpty();
+                          }
+                        }
+                        _builder.append("      ");
+                        _builder.append("</random>");
+                        _builder.newLineIfNotEmpty();
+                        _builder.append("    ");
+                        _builder.append("</template>");
+                        _builder.newLineIfNotEmpty();
+                        _builder.append("  ");
+                        _builder.append("</category>");
+                        _builder.newLineIfNotEmpty();
+                      } else {
+                        _builder.append("  ");
+                        _builder.append("<category>");
+                        _builder.newLineIfNotEmpty();
+                        _builder.append("    ");
+                        _builder.append("<pattern>");
+                        String _upperCase_3 = (intentName + lang_1).toUpperCase();
+                        _builder.append(_upperCase_3);
+                        _builder.append("</pattern>");
+                        _builder.newLineIfNotEmpty();
+                        _builder.append("    ");
+                        _builder.append("<template>");
+                        String _get = this.getAllIntentResponses(language_1).get(0);
+                        _builder.append(_get);
+                        _builder.append("</template>");
+                        _builder.newLineIfNotEmpty();
+                        _builder.append("  ");
+                        _builder.append("</category>");
+                        _builder.newLineIfNotEmpty();
+                      }
+                    }
+                  }
+                }
               } else {
-                if ((action_1 instanceof HTTPResponse)) {
+                if ((action_2 instanceof Image)) {
                   _builder.append("  ");
                   _builder.append("<category>");
                   _builder.newLineIfNotEmpty();
                   _builder.append("    ");
                   _builder.append("<pattern>");
-                  String _replace_3 = ((HTTPResponse)action_1).getName().toUpperCase().replace(" ", "");
-                  String _plus_5 = (intentName + _replace_3);
-                  _builder.append(_plus_5);
+                  String _replace_2 = ((Image)action_2).getName().toUpperCase().replace(" ", "");
+                  String _plus_4 = (intentName + _replace_2);
+                  _builder.append(_plus_4);
                   _builder.append("</pattern>");
                   _builder.newLineIfNotEmpty();
                   _builder.append("    ");
-                  _builder.append("<template>");
-                  _builder.newLineIfNotEmpty();
-                  _builder.append("      ");
-                  _builder.append("<get name=\"response_");
-                  String _name_3 = ((HTTPResponse) action_1).getHTTPRequest().getName();
-                  _builder.append(_name_3);
-                  _builder.append("\"/>");
-                  _builder.newLineIfNotEmpty();
-                  _builder.append("    ");
-                  _builder.append("</template>");
+                  _builder.append("<template><image>");
+                  String _uRL = ((Image)action_2).getURL();
+                  _builder.append(_uRL);
+                  _builder.append("</image></template>");
                   _builder.newLineIfNotEmpty();
                   _builder.append("  ");
                   _builder.append("</category>");
                   _builder.newLineIfNotEmpty();
+                } else {
+                  if ((action_2 instanceof HTTPRequest)) {
+                    _builder.append("  ");
+                    _builder.append("<category>");
+                    _builder.newLineIfNotEmpty();
+                    _builder.append("    ");
+                    _builder.append("<pattern>");
+                    String _replace_3 = ((HTTPRequest)action_2).getName().toUpperCase().replace(" ", "");
+                    String _plus_5 = (intentName + _replace_3);
+                    _builder.append(_plus_5);
+                    _builder.append("</pattern>");
+                    _builder.newLineIfNotEmpty();
+                    _builder.append("    ");
+                    _builder.append("<template>");
+                    _builder.newLineIfNotEmpty();
+                    _builder.append("      ");
+                    _builder.append("<callapi response_code_var=\"response");
+                    String _name = ((HTTPRequest)action_2).getName();
+                    String _plus_6 = ("_" + _name);
+                    _builder.append(_plus_6);
+                    _builder.append("\">");
+                    _builder.newLineIfNotEmpty();
+                    _builder.append("        ");
+                    _builder.append("<url>");
+                    String _uRL_1 = ((HTTPRequest) action_2).getURL();
+                    _builder.append(_uRL_1);
+                    _builder.append("</url>");
+                    _builder.newLineIfNotEmpty();
+                    _builder.append("        ");
+                    _builder.append("<method>");
+                    Method _method = ((HTTPRequest)action_2).getMethod();
+                    _builder.append(_method);
+                    _builder.append("</method>");
+                    _builder.newLineIfNotEmpty();
+                    {
+                      EList<KeyValue> _headers = ((HTTPRequest)action_2).getHeaders();
+                      for(final KeyValue header : _headers) {
+                        _builder.append("        ");
+                        _builder.append("<header><name>");
+                        String _key = header.getKey();
+                        _builder.append(_key);
+                        _builder.append("</name>");
+                        Token _value = header.getValue();
+                        String _text = ((Literal) _value).getText();
+                        _builder.append(_text);
+                        _builder.append("</header>");
+                        _builder.newLineIfNotEmpty();
+                      }
+                    }
+                    {
+                      EList<KeyValue> _data = ((HTTPRequest)action_2).getData();
+                      for(final KeyValue param : _data) {
+                        _builder.append("        ");
+                        _builder.append("<query name=\"");
+                        Token _value_1 = param.getValue();
+                        String _name_1 = ((ParameterToken) _value_1).getParameter().getName();
+                        _builder.append(_name_1);
+                        _builder.append("\"><get name=\"");
+                        Token _value_2 = param.getValue();
+                        String _name_2 = ((ParameterToken) _value_2).getParameter().getName();
+                        _builder.append(_name_2);
+                        _builder.append("\"/></query>");
+                        _builder.newLineIfNotEmpty();
+                      }
+                    }
+                    _builder.append("      ");
+                    _builder.append("</callapi>");
+                    _builder.newLineIfNotEmpty();
+                    _builder.append("    ");
+                    _builder.append("</template>");
+                    _builder.newLineIfNotEmpty();
+                    _builder.append("  ");
+                    _builder.append("</category>");
+                    _builder.newLineIfNotEmpty();
+                  } else {
+                    if ((action_2 instanceof HTTPResponse)) {
+                      _builder.append("  ");
+                      _builder.append("<category>");
+                      _builder.newLineIfNotEmpty();
+                      _builder.append("    ");
+                      _builder.append("<pattern>");
+                      String _replace_4 = ((HTTPResponse)action_2).getName().toUpperCase().replace(" ", "");
+                      String _plus_7 = (intentName + _replace_4);
+                      _builder.append(_plus_7);
+                      _builder.append("</pattern>");
+                      _builder.newLineIfNotEmpty();
+                      _builder.append("    ");
+                      _builder.append("<template>");
+                      _builder.newLineIfNotEmpty();
+                      _builder.append("      ");
+                      _builder.append("<get name=\"response_");
+                      String _name_3 = ((HTTPResponse) action_2).getHTTPRequest().getName();
+                      _builder.append(_name_3);
+                      _builder.append("\"/>");
+                      _builder.newLineIfNotEmpty();
+                      _builder.append("    ");
+                      _builder.append("</template>");
+                      _builder.newLineIfNotEmpty();
+                      _builder.append("  ");
+                      _builder.append("</category>");
+                      _builder.newLineIfNotEmpty();
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      } else {
+        {
+          EList<UserInteraction> _outcoming_1 = transition.getTarget().getOutcoming();
+          for(final UserInteraction outcoming_1 : _outcoming_1) {
+            String _xblockexpression_7 = null;
+            {
+              String _name_4 = outcoming_1.getIntent().getName();
+              intentName = (prefix + _name_4).toUpperCase().replace(" ", "");
+              _xblockexpression_7 = "";
+            }
+            _builder.append(_xblockexpression_7);
+            _builder.newLineIfNotEmpty();
+            {
+              EList<Action> _actions_3 = outcoming_1.getTarget().getActions();
+              for(final Action action_3 : _actions_3) {
+                {
+                  if ((action_3 instanceof Text)) {
+                    {
+                      EList<TextLanguageInput> _inputs_2 = ((Text)action_3).getInputs();
+                      for(final TextLanguageInput language_2 : _inputs_2) {
+                        String lang_2 = "";
+                        _builder.newLineIfNotEmpty();
+                        {
+                          Language _language_2 = language_2.getLanguage();
+                          boolean _notEquals_2 = (!Objects.equal(_language_2, Language.EMPTY));
+                          if (_notEquals_2) {
+                            String _xblockexpression_8 = null;
+                            {
+                              lang_2 = this.languageAbbreviation(language_2.getLanguage()).toUpperCase();
+                              _xblockexpression_8 = "";
+                            }
+                            _builder.append(_xblockexpression_8);
+                            _builder.newLineIfNotEmpty();
+                          } else {
+                            String _xblockexpression_9 = null;
+                            {
+                              lang_2 = this.languageAbbreviation(bot.getLanguages().get(0)).toUpperCase();
+                              _xblockexpression_9 = "";
+                            }
+                            _builder.append(_xblockexpression_9);
+                            _builder.newLineIfNotEmpty();
+                          }
+                        }
+                        {
+                          int _length_1 = ((Object[])Conversions.unwrapArray(this.getAllIntentResponses(language_2), Object.class)).length;
+                          boolean _greaterThan_1 = (_length_1 > 1);
+                          if (_greaterThan_1) {
+                            _builder.append("  ");
+                            _builder.append("<category>");
+                            _builder.newLineIfNotEmpty();
+                            _builder.append("    ");
+                            _builder.append("<pattern>");
+                            String _upperCase_4 = (intentName + lang_2).toUpperCase();
+                            _builder.append(_upperCase_4);
+                            _builder.append("</pattern>");
+                            _builder.newLineIfNotEmpty();
+                            _builder.append("    ");
+                            _builder.append("<template>");
+                            _builder.newLineIfNotEmpty();
+                            _builder.append("      ");
+                            _builder.append("<random>");
+                            _builder.newLineIfNotEmpty();
+                            {
+                              ArrayList<String> _allIntentResponses_1 = this.getAllIntentResponses(language_2);
+                              for(final String response_1 : _allIntentResponses_1) {
+                                _builder.append("        ");
+                                _builder.append("<li>");
+                                _builder.append(response_1);
+                                _builder.append("</li>");
+                                _builder.newLineIfNotEmpty();
+                              }
+                            }
+                            _builder.append("      ");
+                            _builder.append("</random>");
+                            _builder.newLineIfNotEmpty();
+                            _builder.append("    ");
+                            _builder.append("</template>");
+                            _builder.newLineIfNotEmpty();
+                            _builder.append("  ");
+                            _builder.append("</category>");
+                            _builder.newLineIfNotEmpty();
+                          } else {
+                            _builder.append("  ");
+                            _builder.append("<category>");
+                            _builder.newLineIfNotEmpty();
+                            _builder.append("    ");
+                            _builder.append("<pattern>");
+                            String _upperCase_5 = (intentName + lang_2).toUpperCase();
+                            _builder.append(_upperCase_5);
+                            _builder.append("</pattern>");
+                            _builder.newLineIfNotEmpty();
+                            _builder.append("    ");
+                            _builder.append("<template>");
+                            String _get_1 = this.getAllIntentResponses(language_2).get(0);
+                            _builder.append(_get_1);
+                            _builder.append("</template>");
+                            _builder.newLineIfNotEmpty();
+                            _builder.append("  ");
+                            _builder.append("</category>");
+                            _builder.newLineIfNotEmpty();
+                          }
+                        }
+                      }
+                    }
+                  } else {
+                    if ((action_3 instanceof Image)) {
+                      _builder.append("  ");
+                      _builder.append("<category>");
+                      _builder.newLineIfNotEmpty();
+                      _builder.append("    ");
+                      _builder.append("<pattern>");
+                      String _replace_5 = ((Image)action_3).getName().toUpperCase().replace(" ", "");
+                      String _plus_8 = (intentName + _replace_5);
+                      _builder.append(_plus_8);
+                      _builder.append("</pattern>");
+                      _builder.newLineIfNotEmpty();
+                      _builder.append("    ");
+                      _builder.append("<template><image>");
+                      String _uRL_2 = ((Image)action_3).getURL();
+                      _builder.append(_uRL_2);
+                      _builder.append("</image></template>");
+                      _builder.newLineIfNotEmpty();
+                      _builder.append("  ");
+                      _builder.append("</category>");
+                      _builder.newLineIfNotEmpty();
+                    } else {
+                      if ((action_3 instanceof HTTPRequest)) {
+                        _builder.append("  ");
+                        _builder.append("<category>");
+                        _builder.newLineIfNotEmpty();
+                        _builder.append("    ");
+                        _builder.append("<pattern>");
+                        String _replace_6 = ((HTTPRequest)action_3).getName().toUpperCase().replace(" ", "");
+                        String _plus_9 = (intentName + _replace_6);
+                        _builder.append(_plus_9);
+                        _builder.append("</pattern>");
+                        _builder.newLineIfNotEmpty();
+                        _builder.append("    ");
+                        _builder.append("<template>");
+                        _builder.newLineIfNotEmpty();
+                        _builder.append("      ");
+                        _builder.append("<callapi response_code_var=\"response");
+                        String _name_4 = ((HTTPRequest)action_3).getName();
+                        String _plus_10 = ("_" + _name_4);
+                        _builder.append(_plus_10);
+                        _builder.append("\">");
+                        _builder.newLineIfNotEmpty();
+                        _builder.append("        ");
+                        _builder.append("<url>");
+                        String _uRL_3 = ((HTTPRequest) action_3).getURL();
+                        _builder.append(_uRL_3);
+                        _builder.append("</url>");
+                        _builder.newLineIfNotEmpty();
+                        _builder.append("        ");
+                        _builder.append("<method>");
+                        Method _method_1 = ((HTTPRequest)action_3).getMethod();
+                        _builder.append(_method_1);
+                        _builder.append("</method>");
+                        _builder.newLineIfNotEmpty();
+                        {
+                          EList<KeyValue> _headers_1 = ((HTTPRequest)action_3).getHeaders();
+                          for(final KeyValue header_1 : _headers_1) {
+                            _builder.append("        ");
+                            _builder.append("<header><name>");
+                            String _key_1 = header_1.getKey();
+                            _builder.append(_key_1);
+                            _builder.append("</name>");
+                            Token _value_3 = header_1.getValue();
+                            String _text_1 = ((Literal) _value_3).getText();
+                            _builder.append(_text_1);
+                            _builder.append("</header>");
+                            _builder.newLineIfNotEmpty();
+                          }
+                        }
+                        {
+                          EList<KeyValue> _data_1 = ((HTTPRequest)action_3).getData();
+                          for(final KeyValue param_1 : _data_1) {
+                            _builder.append("        ");
+                            _builder.append("<query name=\"");
+                            Token _value_4 = param_1.getValue();
+                            String _name_5 = ((ParameterToken) _value_4).getParameter().getName();
+                            _builder.append(_name_5);
+                            _builder.append("\"><get name=\"");
+                            Token _value_5 = param_1.getValue();
+                            String _name_6 = ((ParameterToken) _value_5).getParameter().getName();
+                            _builder.append(_name_6);
+                            _builder.append("\"/></query>");
+                            _builder.newLineIfNotEmpty();
+                          }
+                        }
+                        _builder.append("      ");
+                        _builder.append("</callapi>");
+                        _builder.newLineIfNotEmpty();
+                        _builder.append("    ");
+                        _builder.append("</template>");
+                        _builder.newLineIfNotEmpty();
+                        _builder.append("  ");
+                        _builder.append("</category>");
+                        _builder.newLineIfNotEmpty();
+                      } else {
+                        if ((action_3 instanceof HTTPResponse)) {
+                          _builder.append("  ");
+                          _builder.append("<category>");
+                          _builder.newLineIfNotEmpty();
+                          _builder.append("    ");
+                          _builder.append("<pattern>");
+                          String _replace_7 = ((HTTPResponse)action_3).getName().toUpperCase().replace(" ", "");
+                          String _plus_11 = (intentName + _replace_7);
+                          _builder.append(_plus_11);
+                          _builder.append("</pattern>");
+                          _builder.newLineIfNotEmpty();
+                          _builder.append("    ");
+                          _builder.append("<template>");
+                          _builder.newLineIfNotEmpty();
+                          _builder.append("      ");
+                          _builder.append("<get name=\"response_");
+                          String _name_7 = ((HTTPResponse) action_3).getHTTPRequest().getName();
+                          _builder.append(_name_7);
+                          _builder.append("\"/>");
+                          _builder.newLineIfNotEmpty();
+                          _builder.append("    ");
+                          _builder.append("</template>");
+                          _builder.newLineIfNotEmpty();
+                          _builder.append("  ");
+                          _builder.append("</category>");
+                          _builder.newLineIfNotEmpty();
+                        }
+                      }
+                    }
+                  }
                 }
               }
             }
