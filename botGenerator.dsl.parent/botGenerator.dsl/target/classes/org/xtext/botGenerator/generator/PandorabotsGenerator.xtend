@@ -163,7 +163,15 @@ class PandorabotsGenerator {
 	// Guarda los intents durante el recorrido de los flujos de conversación
 	def void createTransitionFiles(UserInteraction transition, String prefix, IFileSystemAccess2 fsa, Bot bot) {
 		var intentFileName = (prefix + transition.intent.name).toLowerCase().replace(' ', '')
-		fsa.generateFile(path + "/files/" + intentFileName + ".aiml", transition.intentFile(prefix, bot))
+		var intentFileContent = '''
+		<?xml version="1.0" encoding="UTF-8"?>
+		«  »<aiml>
+		'''
+		intentFileContent += transition.intentFile(bot, prefix)
+		intentFileContent += '''
+		</aiml>
+		'''
+		fsa.generateFile(path + "/files/" + intentFileName + ".aiml", intentFileContent)
 		var intentValue = fsa.readBinaryFile(path + "/files/" + intentFileName + ".aiml")
 		zip.addFileToFolder("files", intentFileName + ".aiml", intentValue)
 	}
@@ -240,53 +248,58 @@ class PandorabotsGenerator {
 	
 	// Generador de codigo de un intent
 	// TODO: Revisar impresion de parametros etc en HttpResponse <- Necesario acceso a llamadas HTTP con callapi
-	def intentFile(UserInteraction transition, String prefix, Bot bot)
+	def intentFile(UserInteraction transition, Bot bot, String prefix)
 	'''
-	<?xml version="1.0" encoding="UTF-8"?>
-	«  »<aiml>
-	«createSaveParameter(transition.intent)»
+	«createSaveParameter(transition.intent, prefix)»
 	«"  "»<!-- Intent -->
-	«intentGenerator(transition, bot, "")»
+	«intentGenerator(transition, bot, prefix)»
 	«"  "»<!-- Intent inputs -->
-	«FOR language: transition.intent.inputs»
-  		«FOR input: language.inputs»
-  			«IF input instanceof TrainingPhrase»
-				«"  "»<category>
-				«"    "»<pattern>«FOR token: input.tokens»«IF token instanceof Literal»«token.text.replace('?', ' #')»«ELSEIF token instanceof ParameterReferenceToken»*«ENDIF»«ENDFOR»</pattern>
-				«"    "»<template>
-				«var List<String> entities»
-				«{entities = getPhraseEntities(input); ""}»
-				«IF !entities.isEmpty()»
-					«"      "»<think>
-					«FOR entity: entities»
-						«"        "»<srai>
-						«"          "»SAVE«entity.toUpperCase()» <star index="«entities.indexOf(entity) + 1»"/>
-						«"        "»</srai>
-					«ENDFOR»
-					«"      "»</think>
-				«ENDIF»
-				«var String nextPrompt»
-				«{nextPrompt = getNextParamPetition(transition.intent, input).getValue(); ""}»
-				«IF nextPrompt !== ""»
-				«"      "»«nextPrompt»
-				«ELSE»
-				«"      "»<srai>«transition.intent.name.toUpperCase().replace(' ', '').toUpperCase()»</srai>
-				«ENDIF»
-				«"    "»</template>
-				«"  "»</category>
-		  	«ENDIF»
-	  	«ENDFOR»
-	«ENDFOR»
-	«createChainedParamIntents(transition)»
+	«createIntentInputs(transition, bot, prefix)»
+	«createChainedParamIntents(transition, prefix)»
 	«IF transition.target.outcoming.length > 1»
-		«createOutcomingIntents(transition)»
-		«intentGenerator(transition, bot, transition.intent.name)»
+		«createOutcomingIntents(transition, prefix)»
+		«FOR outcoming: transition.target.outcoming»
+			«intentFile(outcoming, bot, transition.intent.name)»
+		«ENDFOR»
 	«ENDIF»
-	</aiml>
+	'''
+	
+	// Crea los intents de Pandorabots relacionados con las entradas del usuario que generalmente conllevan guardado
+	// de argumentos
+	def createIntentInputs(UserInteraction transition, Bot bot, String prefix) '''
+		«FOR language: transition.intent.inputs»
+	  		«FOR input: language.inputs»
+	  			«IF input instanceof TrainingPhrase»
+					«"  "»<category>
+					«"    "»<pattern>«FOR token: input.tokens»«IF token instanceof Literal»«token.text.replace('?', ' #')»«ELSEIF token instanceof ParameterReferenceToken»*«ENDIF»«ENDFOR»</pattern>
+					«"    "»<template>
+					«var List<String> entities»
+					«{entities = getPhraseEntities(input); ""}»
+					«IF !entities.isEmpty()»
+						«"      "»<think>
+						«FOR entity: entities»
+							«"        "»<srai>
+							«"          "»SAVE«(prefix + entity).toUpperCase()» <star index="«entities.indexOf(entity) + 1»"/>
+							«"        "»</srai>
+						«ENDFOR»
+						«"      "»</think>
+					«ENDIF»
+					«var String nextPrompt»
+					«{nextPrompt = getNextParamPetition(transition.intent, input).getValue(); ""}»
+					«IF nextPrompt !== ""»
+					«"      "»«nextPrompt»
+					«ELSE»
+					«"      "»<srai>«(prefix + transition.intent.name).toUpperCase().replace(' ', '').toUpperCase()»</srai>
+					«ENDIF»
+					«"    "»</template>
+					«"  "»</category>
+			  	«ENDIF»
+		  	«ENDFOR»
+		«ENDFOR»
 	'''
 	
 	// Genera los intents correspondientes a los flujos complejos de conversacion
-	def createOutcomingIntents(UserInteraction transition) '''
+	def createOutcomingIntents(UserInteraction transition, String prefix) '''
 		«"  "»<!-- Outcoming intents -->
 		«FOR action: transition.target.actions»
 			«IF action instanceof Text»
@@ -308,7 +321,7 @@ class PandorabotsGenerator {
 											«"      "»<think>
 											«FOR entity: entities»
 												«"        "»<srai>
-												«"          "»SAVE«entity.toUpperCase()» <star index="«entities.indexOf(entity) + 1»"/>
+												«"          "»SAVE«(prefix + entity).toUpperCase()» <star index="«entities.indexOf(entity) + 1»"/>
 												«"        "»</srai>
 											«ENDFOR»
 											«"      "»</think>
@@ -318,7 +331,7 @@ class PandorabotsGenerator {
 										«IF nextPrompt !== ""»
 										«"      "»«nextPrompt»
 										«ELSE»
-										«"      "»<srai>«(transition.intent.name + outcoming.intent.name).toUpperCase().replace(' ', '').toUpperCase()»</srai>
+										«"      "»<srai>«(prefix + transition.intent.name + outcoming.intent.name).toUpperCase().replace(' ', '').toUpperCase()»</srai>
 										«ENDIF»
 										«"    "»</template>
 										«"  "»</category>
@@ -334,7 +347,7 @@ class PandorabotsGenerator {
 	
 	// Generacion de codigo referente a la lectura de parametros por parte del usuario y posterior solicitud del resto
 	// de parametros requeridos
-	def createChainedParamIntents(UserInteraction transition) {
+	def createChainedParamIntents(UserInteraction transition, String prefix) {
 		var parameters = getIntentParameters(transition.intent)
 		if (parameters.isEmpty())
 			return ""
@@ -347,6 +360,7 @@ class PandorabotsGenerator {
 			for (key: parameters.keySet) {
 				var value = parameters.get(key)
 				var paramConditions = generateParamConditionsRec(transition.intent, new ArrayList<String>(parameters.keySet), "  ")
+				var completeKey = prefix + key
 				switch (value) {
 					case DefaultEntity.TEXT:
 						ret += 
@@ -356,7 +370,7 @@ class PandorabotsGenerator {
 						«"    "»<that>«getParamPromptByName(transition.intent, key).replace('?', '')»</that>
 						«"    "»<template>
 						«"      "»<think>
-						«"        "»<srai>SAVE«key.toUpperCase()» <star/></srai>
+						«"        "»<srai>SAVE«completeKey.toUpperCase()» <star/></srai>
 						«"      "»</think>
 						«paramConditions»
 						«"    "»</template>
@@ -370,7 +384,7 @@ class PandorabotsGenerator {
 						«"    "»<that>«getParamPromptByName(transition.intent, key).replace('?', '')»</that>
 						«"    "»<template>
 						«"      "»<think>
-						«"        "»<srai>SAVE«key.toUpperCase()» <star index="1"/>:<star index="2"/></srai>
+						«"        "»<srai>SAVE«completeKey.toUpperCase()» <star index="1"/>:<star index="2"/></srai>
 						«"      "»</think>
 						«paramConditions»
 						«"    "»</template>
@@ -384,7 +398,7 @@ class PandorabotsGenerator {
 						«"    "»<that>«getParamPromptByName(transition.intent, key).replace('?', '')»</that>
 						«"    "»<template>
 						«"      "»<think>
-						«"        "»<srai>SAVE«key.toUpperCase()» <star index="1"/>/<star index="2"/>/<star index="3"/></srai>
+						«"        "»<srai>SAVE«completeKey.toUpperCase()» <star index="1"/>/<star index="2"/>/<star index="3"/></srai>
 						«"      "»</think>
 						«paramConditions»
 						«"    "»</template>
@@ -398,7 +412,7 @@ class PandorabotsGenerator {
 						«"    "»<that>«getParamPromptByName(transition.intent, key).replace('?', '')»</that>
 						«"    "»<template>
 						«"      "»<think>
-						«"        "»<srai>SAVE«key.toUpperCase()» <star/></srai>
+						«"        "»<srai>SAVE«completeKey.toUpperCase()» <star/></srai>
 						«"      "»</think>
 						«paramConditions»
 						«"    "»</template>
@@ -412,7 +426,7 @@ class PandorabotsGenerator {
 						«"    "»<that>«getParamPromptByName(transition.intent, key).replace('?', '')»</that>
 						«"    "»<template>
 						«"      "»<think>
-						«"        "»<srai>SAVE«key.toUpperCase()» <star/></srai>
+						«"        "»<srai>SAVE«completeKey.toUpperCase()» <star/></srai>
 						«"      "»</think>
 						«paramConditions»
 						«"    "»</template>
@@ -475,7 +489,7 @@ class PandorabotsGenerator {
 	
 	// Genera los intents de pandorabots de tipo SAVE_PARAMETER para poder guardar los parametros de distintos
 	// tipos del intent concreto
-	def createSaveParameter(Intent intent) {
+	def createSaveParameter(Intent intent, String prefix) {
 		var parameters = getIntentParameters(intent)
 		if (parameters.isEmpty())
 			return ""
@@ -484,14 +498,15 @@ class PandorabotsGenerator {
 			var ret = "  <!-- Entity saving -->\n"
 			for (key: parameters.keySet) {
 				var value = parameters.get(key)
+				var completeKey = prefix + key
 				switch (value) {
 					case DefaultEntity.TEXT:
 						ret += 
 						'''
 						«"  "»<category>
-						«"    "»<pattern>SAVE«key.toUpperCase()» *</pattern>
+						«"    "»<pattern>SAVE«completeKey.toUpperCase()» *</pattern>
 						«"    "»<template>
-						«"      "»<think><set name="«key»"><star/></set></think>
+						«"      "»<think><set name="«completeKey»"><star/></set></think>
 						«"    "»</template>
 						«"  "»</category>
 						'''
@@ -499,15 +514,15 @@ class PandorabotsGenerator {
 						ret +=
 						'''
 						«"  "»<category>
-						«"    "»<pattern>SAVE«key.toUpperCase()» * colon *</pattern>
+						«"    "»<pattern>SAVE«completeKey.toUpperCase()» * colon *</pattern>
 						«"    "»<template>
 						«"      "»<think>
-						«"        "»<set name="«key»_is_valid"><srai>ISVALIDHOUR <star index="1"/>:<star index="2"/></srai></set>
+						«"        "»<set name="«completeKey»_is_valid"><srai>ISVALIDHOUR <star index="1"/>:<star index="2"/></srai></set>
 						«"      "»</think>
-						«"      "»<condition name="«key»_is_valid">
+						«"      "»<condition name="«completeKey»_is_valid">
 						«"        "»<li value="TRUE">
 						«"          "»<think>
-						«"            "»<set name="«key»"><star index="1"/>:<star index="2"/></set>
+						«"            "»<set name="«completeKey»"><star index="1"/>:<star index="2"/></set>
 						«"          "»</think>
 						«"        "»</li>
 						«"      "»</condition>
@@ -518,16 +533,16 @@ class PandorabotsGenerator {
 						ret +=
 						'''
 						«"  "»<category>
-						«"    "»<pattern>SAVE«key.toUpperCase()» * slash * slash *</pattern>
+						«"    "»<pattern>SAVE«completeKey.toUpperCase()» * slash * slash *</pattern>
 						«"    "»<template>
 						«"      "»<think>
-						«"        "»<set name="«key»_is_valid">
+						«"        "»<set name="«completeKey»_is_valid">
 						«"          "»<srai>VALIDDATE <star index="1"/>/<star index="2"/>/<star index="3"/></srai>
 						«"        "»</set>
 						«"      "»</think>
-						«"      "»<condition name="«key»_is_valid">
+						«"      "»<condition name="«completeKey»_is_valid">
 						«"        "»<li value="TRUE">
-						«"          "»<think><set name="«key»"><star index="1"/>/<star index="2"/>/<star index="3"/></set></think>
+						«"          "»<think><set name="«completeKey»"><star index="1"/>/<star index="2"/>/<star index="3"/></set></think>
 						«"        "»</li>
 						«"      "»</condition>
 						«"    "»</template>
@@ -537,9 +552,9 @@ class PandorabotsGenerator {
 						ret +=
 						'''
 						«"  "»<category>
-						«"    "»<pattern>SAVE«key.toUpperCase()» <set>number</set></pattern>
+						«"    "»<pattern>SAVE«completeKey.toUpperCase()» <set>number</set></pattern>
 						«"    "»<template>
-						«"      "»<think><set name="«key»"><star/></set></think>
+						«"      "»<think><set name="«completeKey»"><star/></set></think>
 						«"    "»</template>
 						«"  "»</category>
 						'''
@@ -547,9 +562,9 @@ class PandorabotsGenerator {
 						ret += 
 						'''
 						«"  "»<category>
-						«"    "»<pattern>SAVE«key.toUpperCase()» *</pattern>
+						«"    "»<pattern>SAVE«completeKey.toUpperCase()» *</pattern>
 						«"    "»<template>
-						«"      "»<think><set name="«key»"><star/></set></think>
+						«"      "»<think><set name="«completeKey»"><star/></set></think>
 						«"    "»</template>
 						«"  "»</category>
 						'''
@@ -596,160 +611,79 @@ class PandorabotsGenerator {
 		  	«ELSE»
 		    	«{lang = bot.languages.get(0).languageAbbreviation; ""}»
 		    «ENDIF»
-			«IF prefix.isEmpty()»
-				«{intentName = transition.intent.name.toUpperCase().replace(' ', ''); ""}»
-				«"  "»<category>
-				«"    "»<pattern>«intentName»</pattern>
-				«"    "»<template>
-				«FOR action: transition.target.actions»
-					«IF action instanceof Text»
-						«"      "»<srai>«intentName + lang.toUpperCase()»</srai>
-					«ELSE»
-						«"      "»<srai>«intentName + action.name.toUpperCase().replace(' ', '')»</srai>
-					«ENDIF»
-				«ENDFOR»
-				«"    "»</template>
-				«"  "»</category>
-			«ELSE»
-				«FOR outcoming: transition.target.outcoming»
-					«{intentName = (prefix + outcoming.intent.name).toUpperCase().replace(' ', ''); ""}»
-					«"  "»<category>
-					«"    "»<pattern>«intentName»</pattern>
-					«"    "»<template>
-					«FOR action: outcoming.target.actions»
-						«IF action instanceof Text»
-							«"      "»<srai>«intentName + lang.toUpperCase()»</srai>
-						«ELSE»
-							«"      "»<srai>«intentName + action.name.toUpperCase().replace(' ', '')»</srai>
-						«ENDIF»
-					«ENDFOR»
-					«"    "»</template>
-					«"  "»</category>
-				«ENDFOR»
-			«ENDIF»
-	    «ENDFOR»
-		«"  "»<!-- Action intents -->
-		«IF prefix.isEmpty()»
-			«{intentName = transition.intent.name.toUpperCase().replace(' ', ''); ""}»
+			«{intentName = (prefix + transition.intent.name).toUpperCase().replace(' ', ''); ""}»
+			«"  "»<category>
+			«"    "»<pattern>«intentName»</pattern>
+			«"    "»<template>
 			«FOR action: transition.target.actions»
 				«IF action instanceof Text»
-					«FOR language: action.inputs»
-						«var lang=""»
-						«IF language.language != Language.EMPTY»
-							«{lang = language.language.languageAbbreviation.toUpperCase(); ""}»
-						«ELSE»
-							«{lang = bot.languages.get(0).languageAbbreviation.toUpperCase(); ""}»
-						«ENDIF»
-						«IF language.getAllIntentResponses().length > 1»
-							«"  "»<category>
-							«"    "»<pattern>«(intentName + lang).toUpperCase()»</pattern>
-							«"    "»<template>
-							«"      "»<random>
-							«FOR response: language.getAllIntentResponses()»
-								«"        "»<li>«response»</li>
-							«ENDFOR»
-							«"      "»</random>
-							«"    "»</template>
-							«"  "»</category>
-						«ELSE»
-							«"  "»<category>
-							«"    "»<pattern>«(intentName + lang).toUpperCase()»</pattern>
-							«"    "»<template>«language.getAllIntentResponses().get(0)»</template>
-							«"  "»</category>
-						«ENDIF»
-					«ENDFOR»
-				«ELSEIF action instanceof Image»
-					«"  "»<category>
-					«"    "»<pattern>«intentName + action.name.toUpperCase().replace(' ', '')»</pattern>
-					«"    "»<template><image>«action.URL»</image></template>
-					«"  "»</category>
-				«ELSEIF action instanceof HTTPRequest»
-					«"  "»<category>
-					«"    "»<pattern>«intentName + action.name.toUpperCase().replace(' ', '')»</pattern>
-					«"    "»<template>
-					«"      "»<callapi response_code_var="response«"_" + action.name»">
-					«"        "»<url>«(action as HTTPRequest).getURL()»</url>
-					«"        "»<method>«action.method»</method>
-					«FOR header: action.headers»
-						«"        "»<header><name>«header.key»</name>«(header.value as Literal).text»</header>
-					«ENDFOR»
-					«FOR param: action.data»
-						«"        "»<query name="«(param.value as ParameterToken).parameter.name»"><get name="«(param.value as ParameterToken).parameter.name»"/></query>
-					«ENDFOR»
-					«"      "»</callapi>
-					«"    "»</template>
-					«"  "»</category>
-				«ELSEIF action instanceof HTTPResponse»
-					«"  "»<category>
-					«"    "»<pattern>«intentName + action.name.toUpperCase().replace(' ', '')»</pattern>
-					«"    "»<template>
-					«"      "»<get name="response_«(action as HTTPResponse).HTTPRequest.name»"/>
-					«"    "»</template>
-					«"  "»</category>
+					«"      "»<srai>«intentName + lang.toUpperCase()»</srai>
+				«ELSE»
+					«"      "»<srai>«(intentName + action.name).toUpperCase().replace(' ', '')»</srai>
 				«ENDIF»
 			«ENDFOR»
-		«ELSE»
-			«FOR outcoming: transition.target.outcoming»
-				«{intentName = (prefix + outcoming.intent.name).toUpperCase().replace(' ', ''); ""}»
-				«FOR action: outcoming.target.actions»
-					«IF action instanceof Text»
-						«FOR language: action.inputs»
-							«var lang=""»
-							«IF language.language != Language.EMPTY»
-								«{lang = language.language.languageAbbreviation.toUpperCase(); ""}»
-							«ELSE»
-								«{lang = bot.languages.get(0).languageAbbreviation.toUpperCase(); ""}»
-							«ENDIF»
-							«IF language.getAllIntentResponses().length > 1»
-								«"  "»<category>
-								«"    "»<pattern>«(intentName + lang).toUpperCase()»</pattern>
-								«"    "»<template>
-								«"      "»<random>
-								«FOR response: language.getAllIntentResponses()»
-									«"        "»<li>«response»</li>
-								«ENDFOR»
-								«"      "»</random>
-								«"    "»</template>
-								«"  "»</category>
-							«ELSE»
-								«"  "»<category>
-								«"    "»<pattern>«(intentName + lang).toUpperCase()»</pattern>
-								«"    "»<template>«language.getAllIntentResponses().get(0)»</template>
-								«"  "»</category>
-							«ENDIF»
-						«ENDFOR»
-					«ELSEIF action instanceof Image»
+			«"    "»</template>
+			«"  "»</category>
+	    «ENDFOR»
+		«"  "»<!-- Action intents -->
+		«{intentName = (prefix + transition.intent.name).toUpperCase().replace(' ', ''); ""}»
+		«FOR action: transition.target.actions»
+			«IF action instanceof Text»
+				«FOR language: action.inputs»
+					«var lang=""»
+					«IF language.language != Language.EMPTY»
+						«{lang = language.language.languageAbbreviation.toUpperCase(); ""}»
+					«ELSE»
+						«{lang = bot.languages.get(0).languageAbbreviation.toUpperCase(); ""}»
+					«ENDIF»
+					«IF language.getAllIntentResponses().length > 1»
 						«"  "»<category>
-						«"    "»<pattern>«intentName + action.name.toUpperCase().replace(' ', '')»</pattern>
-						«"    "»<template><image>«action.URL»</image></template>
-						«"  "»</category>
-					«ELSEIF action instanceof HTTPRequest»
-						«"  "»<category>
-						«"    "»<pattern>«intentName + action.name.toUpperCase().replace(' ', '')»</pattern>
+						«"    "»<pattern>«(intentName + lang).toUpperCase()»</pattern>
 						«"    "»<template>
-						«"      "»<callapi response_code_var="response«"_" + action.name»">
-						«"        "»<url>«(action as HTTPRequest).getURL()»</url>
-						«"        "»<method>«action.method»</method>
-						«FOR header: action.headers»
-							«"        "»<header><name>«header.key»</name>«(header.value as Literal).text»</header>
+						«"      "»<random>
+						«FOR response: language.getAllIntentResponses()»
+							«"        "»<li>«response»</li>
 						«ENDFOR»
-						«FOR param: action.data»
-							«"        "»<query name="«(param.value as ParameterToken).parameter.name»"><get name="«(param.value as ParameterToken).parameter.name»"/></query>
-						«ENDFOR»
-						«"      "»</callapi>
+						«"      "»</random>
 						«"    "»</template>
 						«"  "»</category>
-					«ELSEIF action instanceof HTTPResponse»
+					«ELSE»
 						«"  "»<category>
-						«"    "»<pattern>«intentName + action.name.toUpperCase().replace(' ', '')»</pattern>
-						«"    "»<template>
-						«"      "»<get name="response_«(action as HTTPResponse).HTTPRequest.name»"/>
-						«"    "»</template>
+						«"    "»<pattern>«(intentName + lang).toUpperCase()»</pattern>
+						«"    "»<template>«language.getAllIntentResponses().get(0)»</template>
 						«"  "»</category>
 					«ENDIF»
 				«ENDFOR»
-			«ENDFOR»
-		«ENDIF»
+			«ELSEIF action instanceof Image»
+				«"  "»<category>
+				«"    "»<pattern>«(intentName + action.name).toUpperCase().replace(' ', '')»</pattern>
+				«"    "»<template><image>«action.URL»</image></template>
+				«"  "»</category>
+			«ELSEIF action instanceof HTTPRequest»
+				«"  "»<category>
+				«"    "»<pattern>«(intentName + action.name).toUpperCase().replace(' ', '')»</pattern>
+				«"    "»<template>
+				«"      "»<callapi response_code_var="response«"_" + action.name»">
+				«"        "»<url>«(action as HTTPRequest).getURL()»</url>
+				«"        "»<method>«action.method»</method>
+				«FOR header: action.headers»
+					«"        "»<header><name>«header.key»</name>«(header.value as Literal).text»</header>
+				«ENDFOR»
+				«FOR param: action.data»
+					«"        "»<query name="«(param.value as ParameterToken).parameter.name»"><get name="«(param.value as ParameterToken).parameter.name»"/></query>
+				«ENDFOR»
+				«"      "»</callapi>
+				«"    "»</template>
+				«"  "»</category>
+			«ELSEIF action instanceof HTTPResponse»
+				«"  "»<category>
+				«"    "»<pattern>«(intentName + action.name).toUpperCase().replace(' ', '')»</pattern>
+				«"    "»<template>
+				«"      "»<get name="response_«(action as HTTPResponse).HTTPRequest.name»"/>
+				«"    "»</template>
+				«"  "»</category>
+			«ENDIF»
+		«ENDFOR»
 	'''
 
 	// Obtencion de abreviacion del lenguage
