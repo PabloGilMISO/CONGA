@@ -167,7 +167,7 @@ class PandorabotsGenerator {
 		<?xml version="1.0" encoding="UTF-8"?>
 		«  »<aiml>
 		'''
-		intentFileContent += transition.intentFile(bot, prefix)
+		intentFileContent += transition.intentFile(bot, prefix, "")
 		intentFileContent += '''
 		</aiml>
 		'''
@@ -248,30 +248,43 @@ class PandorabotsGenerator {
 	
 	// Generador de codigo de un intent
 	// TODO: Revisar impresion de parametros etc en HttpResponse <- Necesario acceso a llamadas HTTP con callapi
-	def intentFile(UserInteraction transition, Bot bot, String prefix)
+	def intentFile(UserInteraction transition, Bot bot, String prefix, String that)
 	'''
 	«createSaveParameter(transition.intent, prefix)»
 	«"  "»<!-- Intent -->
 	«intentGenerator(transition, bot, prefix)»
-	«"  "»<!-- Intent inputs -->
-	«createIntentInputs(transition, bot, prefix)»
+	«createIntentInputs(transition, bot, prefix, that)»
 	«createChainedParamIntents(transition, prefix)»
 	«IF transition.target.outcoming.length > 1»
-		«createOutcomingIntents(transition, prefix)»
-		«FOR outcoming: transition.target.outcoming»
-			«intentFile(outcoming, bot, transition.intent.name)»
+		«"  "»<!-- Nested outcoming intents -->
+		«FOR action: transition.target.actions»
+			«IF action instanceof Text»
+				«FOR language: action.inputs»
+					«var List<?> responses»
+					«{responses = language.getAllIntentResponses(); ""}»
+					«FOR response: responses»
+						«FOR outcoming: transition.target.outcoming»
+							«intentFile(outcoming, bot, transition.intent.name, response.toString())»
+						«ENDFOR»
+					«ENDFOR»
+				«ENDFOR»
+			«ENDIF»
 		«ENDFOR»
 	«ENDIF»
 	'''
 	
 	// Crea los intents de Pandorabots relacionados con las entradas del usuario que generalmente conllevan guardado
 	// de argumentos
-	def createIntentInputs(UserInteraction transition, Bot bot, String prefix) '''
+	def createIntentInputs(UserInteraction transition, Bot bot, String prefix, String that) '''
+		«"  "»<!-- Intent inputs -->
 		«FOR language: transition.intent.inputs»
 	  		«FOR input: language.inputs»
 	  			«IF input instanceof TrainingPhrase»
 					«"  "»<category>
 					«"    "»<pattern>«FOR token: input.tokens»«IF token instanceof Literal»«token.text.replace('?', ' #')»«ELSEIF token instanceof ParameterReferenceToken»*«ENDIF»«ENDFOR»</pattern>
+					«IF !that.isEmpty()»
+						«"    "»<that>«that»</that>
+					«ENDIF»
 					«"    "»<template>
 					«var List<String> entities»
 					«{entities = getPhraseEntities(input); ""}»
@@ -297,54 +310,7 @@ class PandorabotsGenerator {
 		  	«ENDFOR»
 		«ENDFOR»
 	'''
-	
-	// Genera los intents correspondientes a los flujos complejos de conversacion
-	def createOutcomingIntents(UserInteraction transition, String prefix) '''
-		«"  "»<!-- Outcoming intents -->
-		«FOR action: transition.target.actions»
-			«IF action instanceof Text»
-				«FOR language: action.inputs»
-					«var List<?> responses»
-					«{responses = language.getAllIntentResponses(); ""}»
-					«FOR response: responses»
-						«FOR outcoming: transition.target.outcoming»
-							«FOR nestedLanguage: outcoming.intent.inputs»
-						  		«FOR input: nestedLanguage.inputs»
-						  			«IF input instanceof TrainingPhrase»
-										«"  "»<category>
-										«"    "»<pattern>«FOR token: input.tokens»«IF token instanceof Literal»«token.text.replace('?', ' #')»«ELSEIF token instanceof ParameterReferenceToken»*«ENDIF»«ENDFOR»</pattern>
-										«"    "»<that>«response»</that>
-										«"    "»<template>
-										«var List<String> entities»
-										«{entities = getPhraseEntities(input); ""}»
-										«IF !entities.isEmpty()»
-											«"      "»<think>
-											«FOR entity: entities»
-												«"        "»<srai>
-												«"          "»SAVE«(prefix + entity).toUpperCase()» <star index="«entities.indexOf(entity) + 1»"/>
-												«"        "»</srai>
-											«ENDFOR»
-											«"      "»</think>
-										«ENDIF»
-										«var String nextPrompt»
-										«{nextPrompt = getNextParamPetition(outcoming.intent, input).getValue(); ""}»
-										«IF nextPrompt !== ""»
-										«"      "»«nextPrompt»
-										«ELSE»
-										«"      "»<srai>«(prefix + transition.intent.name + outcoming.intent.name).toUpperCase().replace(' ', '').toUpperCase()»</srai>
-										«ENDIF»
-										«"    "»</template>
-										«"  "»</category>
-								  	«ENDIF»
-							  	«ENDFOR»
-							«ENDFOR»
-						«ENDFOR»
-					«ENDFOR»
-				«ENDFOR»
-			«ENDIF»
-		«ENDFOR»
-	'''
-	
+		
 	// Generacion de codigo referente a la lectura de parametros por parte del usuario y posterior solicitud del resto
 	// de parametros requeridos
 	def createChainedParamIntents(UserInteraction transition, String prefix) {
@@ -359,7 +325,7 @@ class PandorabotsGenerator {
 			'''
 			for (key: parameters.keySet) {
 				var value = parameters.get(key)
-				var paramConditions = generateParamConditionsRec(transition.intent, new ArrayList<String>(parameters.keySet), "  ")
+				var paramConditions = generateParamConditionsRec(transition.intent, new ArrayList<String>(parameters.keySet), "  ", prefix)
 				var completeKey = prefix + key
 				switch (value) {
 					case DefaultEntity.TEXT:
@@ -440,11 +406,11 @@ class PandorabotsGenerator {
 	}
 	
 	// Genera los arboles de solicitud de parametros en cada intent de forma recursiva
-	def generateParamConditionsRec(Intent intent, List<String> params, String indent) {
+	def generateParamConditionsRec(Intent intent, List<String> params, String indent, String prefix) {
 		if (params.isEmpty())
 			return 
 			'''
-			«indent + "    "»<srai>«intent.name.toUpperCase().replace(' ', '').toUpperCase()»</srai>
+			«indent + "    "»<srai>«(prefix + intent.name).toUpperCase().replace(' ', '').toUpperCase()»</srai>
 			'''
 		else {
 			var currentParam = params.get(0)
@@ -453,10 +419,10 @@ class PandorabotsGenerator {
 			params.remove(currentParam)
 			return
 			'''
-				«newIndent»<condition name="«currentParam»">
+				«newIndent»<condition name="«prefix + currentParam»">
 				«newIndent + "  "»<li value="unknown">«getParamPromptByName(intent, currentParam)»</li>
 				«newIndent + "  "»<li>
-				«generateParamConditionsRec(intent, params, newIndent)»
+				«generateParamConditionsRec(intent, params, newIndent, prefix)»
 				«newIndent + "  "»</li>
 				«newIndent»</condition>
 			'''
@@ -663,7 +629,7 @@ class PandorabotsGenerator {
 				«"  "»<category>
 				«"    "»<pattern>«(intentName + action.name).toUpperCase().replace(' ', '')»</pattern>
 				«"    "»<template>
-				«"      "»<callapi response_code_var="response«"_" + action.name»">
+				«"      "»<callapi response_code_var="response_«prefix + action.name»">
 				«"        "»<url>«(action as HTTPRequest).getURL()»</url>
 				«"        "»<method>«action.method»</method>
 				«FOR header: action.headers»
@@ -679,7 +645,7 @@ class PandorabotsGenerator {
 				«"  "»<category>
 				«"    "»<pattern>«(intentName + action.name).toUpperCase().replace(' ', '')»</pattern>
 				«"    "»<template>
-				«"      "»<get name="response_«(action as HTTPResponse).HTTPRequest.name»"/>
+				«"      "»<get name="response_«prefix + (action as HTTPResponse).HTTPRequest.name»"/>
 				«"    "»</template>
 				«"  "»</category>
 			«ENDIF»
