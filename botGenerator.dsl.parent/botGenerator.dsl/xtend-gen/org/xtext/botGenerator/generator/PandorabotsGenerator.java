@@ -371,8 +371,8 @@ public class PandorabotsGenerator {
     _builder.newLineIfNotEmpty();
     {
       int _length = ((Object[])Conversions.unwrapArray(transition.getTarget().getOutcoming(), Object.class)).length;
-      boolean _greaterThan = (_length > 1);
-      if (_greaterThan) {
+      boolean _greaterEqualsThan = (_length >= 1);
+      if (_greaterEqualsThan) {
         _builder.append("  ");
         _builder.append("<!-- Nested outcoming intents -->");
         _builder.newLineIfNotEmpty();
@@ -457,7 +457,8 @@ public class PandorabotsGenerator {
                   if (_not) {
                     _builder.append("    ");
                     _builder.append("<that>");
-                    _builder.append(that);
+                    String _replaceAll = that.replaceAll("[?.]", " ");
+                    _builder.append(_replaceAll);
                     _builder.append("</that>");
                     _builder.newLineIfNotEmpty();
                   }
@@ -506,14 +507,49 @@ public class PandorabotsGenerator {
                     _builder.newLineIfNotEmpty();
                   }
                 }
+                String lang = "";
+                _builder.newLineIfNotEmpty();
+                {
+                  Language _language = language.getLanguage();
+                  boolean _notEquals = (!Objects.equal(_language, Language.EMPTY));
+                  if (_notEquals) {
+                    String _xblockexpression_1 = null;
+                    {
+                      lang = this.languageAbbreviation(language.getLanguage());
+                      _xblockexpression_1 = "";
+                    }
+                    _builder.append(_xblockexpression_1);
+                    _builder.newLineIfNotEmpty();
+                  } else {
+                    String _xblockexpression_2 = null;
+                    {
+                      lang = this.languageAbbreviation(bot.getLanguages().get(0));
+                      _xblockexpression_2 = "";
+                    }
+                    _builder.append(_xblockexpression_2);
+                    _builder.newLineIfNotEmpty();
+                  }
+                }
+                _builder.append("\t\t\t\t    ");
+                _builder.append("      ", "\t\t\t\t    ");
+                _builder.append("<think>");
+                _builder.newLineIfNotEmpty();
+                _builder.append("        ");
+                _builder.append("<set name=\"pandoralang\">");
+                _builder.append(lang);
+                _builder.append("</set>");
+                _builder.newLineIfNotEmpty();
+                _builder.append("      ");
+                _builder.append("</think>");
+                _builder.newLineIfNotEmpty();
                 String nextPrompt = null;
                 _builder.newLineIfNotEmpty();
-                String _xblockexpression_1 = null;
+                String _xblockexpression_3 = null;
                 {
                   nextPrompt = this.getNextParamPetition(transition.getIntent(), ((TrainingPhrase)input)).getValue();
-                  _xblockexpression_1 = "";
+                  _xblockexpression_3 = "";
                 }
-                _builder.append(_xblockexpression_1);
+                _builder.append(_xblockexpression_3);
                 _builder.newLineIfNotEmpty();
                 {
                   if ((nextPrompt != "")) {
@@ -578,8 +614,8 @@ public class PandorabotsGenerator {
                 _builder_1.newLineIfNotEmpty();
                 _builder_1.append("    ");
                 _builder_1.append("<that>");
-                String _replace = this.getParamPromptByName(transition.getIntent(), key).replace("?", "");
-                _builder_1.append(_replace);
+                String _replaceAll = this.getParamPromptByName(transition.getIntent(), key).replaceAll("[?.]", " ");
+                _builder_1.append(_replaceAll);
                 _builder_1.append("</that>");
                 _builder_1.newLineIfNotEmpty();
                 _builder_1.append("    ");
@@ -618,8 +654,8 @@ public class PandorabotsGenerator {
                 _builder_2.newLineIfNotEmpty();
                 _builder_2.append("    ");
                 _builder_2.append("<that>");
-                String _replace_1 = this.getParamPromptByName(transition.getIntent(), key).replace("?", "");
-                _builder_2.append(_replace_1);
+                String _replaceAll_1 = this.getParamPromptByName(transition.getIntent(), key).replaceAll("[?.]", " ");
+                _builder_2.append(_replaceAll_1);
                 _builder_2.append("</that>");
                 _builder_2.newLineIfNotEmpty();
                 _builder_2.append("    ");
@@ -658,8 +694,8 @@ public class PandorabotsGenerator {
                 _builder_3.newLineIfNotEmpty();
                 _builder_3.append("    ");
                 _builder_3.append("<that>");
-                String _replace_2 = this.getParamPromptByName(transition.getIntent(), key).replace("?", "");
-                _builder_3.append(_replace_2);
+                String _replaceAll_2 = this.getParamPromptByName(transition.getIntent(), key).replaceAll("[?.]", " ");
+                _builder_3.append(_replaceAll_2);
                 _builder_3.append("</that>");
                 _builder_3.newLineIfNotEmpty();
                 _builder_3.append("    ");
@@ -698,8 +734,8 @@ public class PandorabotsGenerator {
                 _builder_4.newLineIfNotEmpty();
                 _builder_4.append("    ");
                 _builder_4.append("<that>");
-                String _replace_3 = this.getParamPromptByName(transition.getIntent(), key).replace("?", "");
-                _builder_4.append(_replace_3);
+                String _replaceAll_3 = this.getParamPromptByName(transition.getIntent(), key).replaceAll("[?.]", " ");
+                _builder_4.append(_replaceAll_3);
                 _builder_4.append("</that>");
                 _builder_4.newLineIfNotEmpty();
                 _builder_4.append("    ");
@@ -738,8 +774,8 @@ public class PandorabotsGenerator {
                 _builder_5.newLineIfNotEmpty();
                 _builder_5.append("    ");
                 _builder_5.append("<that>");
-                String _replace_4 = this.getParamPromptByName(transition.getIntent(), key).replace("?", "");
-                _builder_5.append(_replace_4);
+                String _replaceAll_4 = this.getParamPromptByName(transition.getIntent(), key).replaceAll("[?.]", " ");
+                _builder_5.append(_replaceAll_4);
                 _builder_5.append("</that>");
                 _builder_5.newLineIfNotEmpty();
                 _builder_5.append("    ");
@@ -779,8 +815,8 @@ public class PandorabotsGenerator {
             _builder_5.newLineIfNotEmpty();
             _builder_5.append("    ");
             _builder_5.append("<that>");
-            String _replace_4 = this.getParamPromptByName(transition.getIntent(), key).replace("?", "");
-            _builder_5.append(_replace_4);
+            String _replaceAll_4 = this.getParamPromptByName(transition.getIntent(), key).replaceAll("[?.]", " ");
+            _builder_5.append(_replaceAll_4);
             _builder_5.append("</that>");
             _builder_5.newLineIfNotEmpty();
             _builder_5.append("    ");
@@ -1172,6 +1208,10 @@ public class PandorabotsGenerator {
     return ret;
   }
   
+  public Object getActionsByLanguage(final UserInteraction transition) {
+    return null;
+  }
+  
   public CharSequence intentGenerator(final UserInteraction transition, final Bot bot, final String prefix) {
     StringConcatenation _builder = new StringConcatenation();
     String intentName = "";
@@ -1223,6 +1263,9 @@ public class PandorabotsGenerator {
         _builder.newLineIfNotEmpty();
         _builder.append("    ");
         _builder.append("<template>");
+        _builder.newLineIfNotEmpty();
+        _builder.append("      ");
+        _builder.append("<condition name=\"pandoralang\">");
         _builder.newLineIfNotEmpty();
         {
           EList<Action> _actions = transition.getTarget().getActions();

@@ -255,7 +255,7 @@ class PandorabotsGenerator {
 	«intentGenerator(transition, bot, prefix)»
 	«createIntentInputs(transition, bot, prefix, that)»
 	«createChainedParamIntents(transition, prefix)»
-	«IF transition.target.outcoming.length > 1»
+	«IF transition.target.outcoming.length >= 1»
 		«"  "»<!-- Nested outcoming intents -->
 		«FOR action: transition.target.actions»
 			«IF action instanceof Text»
@@ -283,7 +283,7 @@ class PandorabotsGenerator {
 					«"  "»<category>
 					«"    "»<pattern>«FOR token: input.tokens»«IF token instanceof Literal»«token.text.replace('?', ' #')»«ELSEIF token instanceof ParameterReferenceToken»*«ENDIF»«ENDFOR»</pattern>
 					«IF !that.isEmpty()»
-						«"    "»<that>«that»</that>
+						«"    "»<that>«that.replaceAll('[?.]', ' ')»</that>
 					«ENDIF»
 					«"    "»<template>
 					«var List<String> entities»
@@ -297,6 +297,15 @@ class PandorabotsGenerator {
 						«ENDFOR»
 						«"      "»</think>
 					«ENDIF»
+					«var lang = ""»
+				  	«IF language.language != Language.EMPTY»
+				    	«{lang = language.language.languageAbbreviation; ""}»
+				  	«ELSE»
+				    	«{lang = bot.languages.get(0).languageAbbreviation; ""}»
+				    «ENDIF»
+				    «"      "»<think>
+					«"        "»<set name="pandoralang">«lang»</set>
+					«"      "»</think>
 					«var String nextPrompt»
 					«{nextPrompt = getNextParamPetition(transition.intent, input).getValue(); ""}»
 					«IF nextPrompt !== ""»
@@ -333,7 +342,7 @@ class PandorabotsGenerator {
 						'''
 						«"  "»<category>
 						«"    "»<pattern>*</pattern>
-						«"    "»<that>«getParamPromptByName(transition.intent, key).replace('?', '')»</that>
+						«"    "»<that>«getParamPromptByName(transition.intent, key).replaceAll('[?.]', ' ')»</that>
 						«"    "»<template>
 						«"      "»<think>
 						«"        "»<srai>SAVE«completeKey.toUpperCase()» <star/></srai>
@@ -347,7 +356,7 @@ class PandorabotsGenerator {
 						'''
 						«"  "»<category>
 						«"    "»<pattern>* colon *</pattern>
-						«"    "»<that>«getParamPromptByName(transition.intent, key).replace('?', '')»</that>
+						«"    "»<that>«getParamPromptByName(transition.intent, key).replaceAll('[?.]', ' ')»</that>
 						«"    "»<template>
 						«"      "»<think>
 						«"        "»<srai>SAVE«completeKey.toUpperCase()» <star index="1"/>:<star index="2"/></srai>
@@ -361,7 +370,7 @@ class PandorabotsGenerator {
 						'''
 						«"  "»<category>
 						«"    "»<pattern>* slash * slash *</pattern>
-						«"    "»<that>«getParamPromptByName(transition.intent, key).replace('?', '')»</that>
+						«"    "»<that>«getParamPromptByName(transition.intent, key).replaceAll('[?.]', ' ')»</that>
 						«"    "»<template>
 						«"      "»<think>
 						«"        "»<srai>SAVE«completeKey.toUpperCase()» <star index="1"/>/<star index="2"/>/<star index="3"/></srai>
@@ -375,7 +384,7 @@ class PandorabotsGenerator {
 						'''
 						«"  "»<category>
 						«"    "»<pattern><set>number</set></pattern>
-						«"    "»<that>«getParamPromptByName(transition.intent, key).replace('?', '')»</that>
+						«"    "»<that>«getParamPromptByName(transition.intent, key).replaceAll('[?.]', ' ')»</that>
 						«"    "»<template>
 						«"      "»<think>
 						«"        "»<srai>SAVE«completeKey.toUpperCase()» <star/></srai>
@@ -389,7 +398,7 @@ class PandorabotsGenerator {
 						'''
 						«"  "»<category>
 						«"    "»<pattern>*</pattern>
-						«"    "»<that>«getParamPromptByName(transition.intent, key).replace('?', '')»</that>
+						«"    "»<that>«getParamPromptByName(transition.intent, key).replaceAll('[?.]', ' ')»</that>
 						«"    "»<template>
 						«"      "»<think>
 						«"        "»<srai>SAVE«completeKey.toUpperCase()» <star/></srai>
@@ -565,6 +574,37 @@ class PandorabotsGenerator {
 		return ret
 	}
 	
+	// La idea es sacar todos los leguages en un map con su contenido asociado para poder recorrerlos e ir separando
+	//  en un condition en base a la variable pandoralang en la que he guardado el lenguaje justo antes de llamar al 
+	// Main Intent
+	def getActionsByLanguage(UserInteraction transition) {
+//		var ret = new HashMap<String, List<String>>()
+//		var othersList = new ArrayList<String>()
+//		
+//		for (action: transition.target.actions) {
+//			if (action instanceof Text) {
+//				for (input: action.inputs) {
+//					var lang = languageAbbreviation(input.language)
+//					if (!ret.keySet.contains(lang)) {
+//						ret.put(lang, new ArrayList<String>(action.name))
+//					}
+//				}
+//			}
+//			else {
+//				othersList.add(action)
+//			}
+//		}
+//		
+//		for (key: ret.keySet) {
+//			
+//		}
+//		
+//		if (!othersList.isEmpty())
+//			ret.put("others", othersList)
+//		
+//		return ret
+	}
+	
 	// Generacion de codigo de un intent con una o varias respuestas
 	def intentGenerator(UserInteraction transition, Bot bot, String prefix)
 	'''
@@ -581,6 +621,7 @@ class PandorabotsGenerator {
 			«"  "»<category>
 			«"    "»<pattern>«intentName»</pattern>
 			«"    "»<template>
+			«"      "»<condition name="pandoralang">
 			«FOR action: transition.target.actions»
 				«IF action instanceof Text»
 					«"      "»<srai>«intentName + lang.toUpperCase()»</srai>

@@ -110,9 +110,9 @@ INDEX VERSION 1.131+C:\Users\Pablo Gil\Documents\Proyecto CONGA\CONGA\.metadata\
 330299006.index
 4066286598.index
 3547492380.index
-1011845587.index
-1994154561.index
 3959769747.index
+1994154561.index
+1011845587.index
 2217343124.index
 691124463.index
 1966587007.index
@@ -135,7 +135,6 @@ INDEX VERSION 1.131+C:\Users\Pablo Gil\Documents\Proyecto CONGA\CONGA\.metadata\
 1014189391.index
 2768116140.index
 4124988457.index
-3887170713.index
 2171791524.index
 1655953867.index
 793407653.index
