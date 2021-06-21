@@ -530,18 +530,6 @@ public class PandorabotsGenerator {
                     _builder.newLineIfNotEmpty();
                   }
                 }
-                _builder.append("\t\t\t\t    ");
-                _builder.append("      ", "\t\t\t\t    ");
-                _builder.append("<think>");
-                _builder.newLineIfNotEmpty();
-                _builder.append("        ");
-                _builder.append("<set name=\"pandoralang\">");
-                _builder.append(lang);
-                _builder.append("</set>");
-                _builder.newLineIfNotEmpty();
-                _builder.append("      ");
-                _builder.append("</think>");
-                _builder.newLineIfNotEmpty();
                 String nextPrompt = null;
                 _builder.newLineIfNotEmpty();
                 String _xblockexpression_3 = null;
@@ -557,6 +545,17 @@ public class PandorabotsGenerator {
                     _builder.append(nextPrompt);
                     _builder.newLineIfNotEmpty();
                   } else {
+                    _builder.append("      ");
+                    _builder.append("<think>");
+                    _builder.newLineIfNotEmpty();
+                    _builder.append("        ");
+                    _builder.append("<set name=\"pandoralang\">");
+                    _builder.append(lang);
+                    _builder.append("</set>");
+                    _builder.newLineIfNotEmpty();
+                    _builder.append("      ");
+                    _builder.append("</think>");
+                    _builder.newLineIfNotEmpty();
                     _builder.append("      ");
                     _builder.append("<srai>");
                     String _name = transition.getIntent().getName();
@@ -854,6 +853,15 @@ public class PandorabotsGenerator {
     boolean _isEmpty = params.isEmpty();
     if (_isEmpty) {
       StringConcatenation _builder = new StringConcatenation();
+      _builder.append((indent + "    "));
+      _builder.append("<think>");
+      _builder.newLineIfNotEmpty();
+      _builder.append((indent + "      "));
+      _builder.append("<set name=\"pandoralang\">en</set>");
+      _builder.newLineIfNotEmpty();
+      _builder.append((indent + "    "));
+      _builder.append("</think>");
+      _builder.newLineIfNotEmpty();
       _builder.append((indent + "    "));
       _builder.append("<srai>");
       String _name = intent.getName();
@@ -1208,8 +1216,39 @@ public class PandorabotsGenerator {
     return ret;
   }
   
-  public Object getActionsByLanguage(final UserInteraction transition) {
-    return null;
+  public HashMap<String, List<String>> getActionsByLanguage(final UserInteraction transition) {
+    HashMap<String, List<String>> ret = new HashMap<String, List<String>>();
+    ArrayList<String> othersList = new ArrayList<String>();
+    EList<Action> _actions = transition.getTarget().getActions();
+    for (final Action action : _actions) {
+      if ((action instanceof Text)) {
+        EList<TextLanguageInput> _inputs = ((Text)action).getInputs();
+        for (final TextLanguageInput input : _inputs) {
+          {
+            String lang = this.languageAbbreviation(input.getLanguage());
+            boolean _contains = ret.keySet().contains(lang);
+            boolean _not = (!_contains);
+            if (_not) {
+              ArrayList<String> temp = new ArrayList<String>();
+              temp.add(((Text)action).getName());
+              ret.put(lang, temp);
+            } else {
+              List<String> tempList = ret.get(lang);
+              tempList.add(((Text)action).getName());
+              ret.put(lang, tempList);
+            }
+          }
+        }
+      } else {
+        othersList.add(action.getName());
+      }
+    }
+    boolean _isEmpty = othersList.isEmpty();
+    boolean _not = (!_isEmpty);
+    if (_not) {
+      ret.put("others", othersList);
+    }
+    return ret;
   }
   
   public CharSequence intentGenerator(final UserInteraction transition, final Bot bot, final String prefix) {
@@ -1267,30 +1306,66 @@ public class PandorabotsGenerator {
         _builder.append("      ");
         _builder.append("<condition name=\"pandoralang\">");
         _builder.newLineIfNotEmpty();
+        HashMap<?, ?> langActions = null;
+        _builder.newLineIfNotEmpty();
+        String _xblockexpression_3 = null;
         {
-          EList<Action> _actions = transition.getTarget().getActions();
-          for(final Action action : _actions) {
+          langActions = this.getActionsByLanguage(transition);
+          _xblockexpression_3 = "";
+        }
+        _builder.append(_xblockexpression_3);
+        _builder.newLineIfNotEmpty();
+        {
+          Set<?> _keySet = langActions.keySet();
+          for(final Object key : _keySet) {
             {
-              if ((action instanceof Text)) {
-                _builder.append("      ");
-                _builder.append("<srai>");
-                String _upperCase = lang.toUpperCase();
-                String _plus = (intentName + _upperCase);
-                _builder.append(_plus);
-                _builder.append("</srai>");
+              boolean _equals = Objects.equal(key, "others");
+              if (_equals) {
+                _builder.append("        ");
+                _builder.append("<li>");
+                _builder.newLineIfNotEmpty();
+                {
+                  Object _get = langActions.get(key);
+                  for(final String act : ((List<String>) _get)) {
+                    _builder.append("          ");
+                    _builder.append("<srai>");
+                    String _replace = (intentName + act).toUpperCase().replace(" ", "");
+                    _builder.append(_replace);
+                    _builder.append("</srai>");
+                    _builder.newLineIfNotEmpty();
+                  }
+                }
+                _builder.append("        ");
+                _builder.append("</li>");
                 _builder.newLineIfNotEmpty();
               } else {
-                _builder.append("      ");
-                _builder.append("<srai>");
-                String _name = action.getName();
-                String _replace = (intentName + _name).toUpperCase().replace(" ", "");
-                _builder.append(_replace);
-                _builder.append("</srai>");
+                _builder.append("        ");
+                _builder.append("<li value=\"");
+                _builder.append(key);
+                _builder.append("\">");
+                _builder.newLineIfNotEmpty();
+                {
+                  Object _get_1 = langActions.get(key);
+                  for(final String act_1 : ((List<String>) _get_1)) {
+                    _builder.append("          ");
+                    _builder.append("<srai>");
+                    String _upperCase = ((String) key).toUpperCase();
+                    String _plus = (intentName + _upperCase);
+                    _builder.append(_plus);
+                    _builder.append("</srai>");
+                    _builder.newLineIfNotEmpty();
+                  }
+                }
+                _builder.append("        ");
+                _builder.append("</li>");
                 _builder.newLineIfNotEmpty();
               }
             }
           }
         }
+        _builder.append("      ");
+        _builder.append("</condition>");
+        _builder.newLineIfNotEmpty();
         _builder.append("    ");
         _builder.append("</template>");
         _builder.newLineIfNotEmpty();
@@ -1302,21 +1377,21 @@ public class PandorabotsGenerator {
     _builder.append("  ");
     _builder.append("<!-- Action intents -->");
     _builder.newLineIfNotEmpty();
-    String _xblockexpression_3 = null;
+    String _xblockexpression_4 = null;
     {
-      String _name_1 = transition.getIntent().getName();
-      intentName = (prefix + _name_1).toUpperCase().replace(" ", "");
-      _xblockexpression_3 = "";
+      String _name = transition.getIntent().getName();
+      intentName = (prefix + _name).toUpperCase().replace(" ", "");
+      _xblockexpression_4 = "";
     }
-    _builder.append(_xblockexpression_3);
+    _builder.append(_xblockexpression_4);
     _builder.newLineIfNotEmpty();
     {
-      EList<Action> _actions_1 = transition.getTarget().getActions();
-      for(final Action action_1 : _actions_1) {
+      EList<Action> _actions = transition.getTarget().getActions();
+      for(final Action action : _actions) {
         {
-          if ((action_1 instanceof Text)) {
+          if ((action instanceof Text)) {
             {
-              EList<TextLanguageInput> _inputs_1 = ((Text)action_1).getInputs();
+              EList<TextLanguageInput> _inputs_1 = ((Text)action).getInputs();
               for(final TextLanguageInput language_1 : _inputs_1) {
                 String lang_1 = "";
                 _builder.newLineIfNotEmpty();
@@ -1324,20 +1399,20 @@ public class PandorabotsGenerator {
                   Language _language_1 = language_1.getLanguage();
                   boolean _notEquals_1 = (!Objects.equal(_language_1, Language.EMPTY));
                   if (_notEquals_1) {
-                    String _xblockexpression_4 = null;
-                    {
-                      lang_1 = this.languageAbbreviation(language_1.getLanguage()).toUpperCase();
-                      _xblockexpression_4 = "";
-                    }
-                    _builder.append(_xblockexpression_4);
-                    _builder.newLineIfNotEmpty();
-                  } else {
                     String _xblockexpression_5 = null;
                     {
-                      lang_1 = this.languageAbbreviation(bot.getLanguages().get(0)).toUpperCase();
+                      lang_1 = this.languageAbbreviation(language_1.getLanguage()).toUpperCase();
                       _xblockexpression_5 = "";
                     }
                     _builder.append(_xblockexpression_5);
+                    _builder.newLineIfNotEmpty();
+                  } else {
+                    String _xblockexpression_6 = null;
+                    {
+                      lang_1 = this.languageAbbreviation(bot.getLanguages().get(0)).toUpperCase();
+                      _xblockexpression_6 = "";
+                    }
+                    _builder.append(_xblockexpression_6);
                     _builder.newLineIfNotEmpty();
                   }
                 }
@@ -1391,8 +1466,8 @@ public class PandorabotsGenerator {
                     _builder.newLineIfNotEmpty();
                     _builder.append("    ");
                     _builder.append("<template>");
-                    String _get = this.getAllIntentResponses(language_1).get(0);
-                    _builder.append(_get);
+                    String _get_2 = this.getAllIntentResponses(language_1).get(0);
+                    _builder.append(_get_2);
                     _builder.append("</template>");
                     _builder.newLineIfNotEmpty();
                     _builder.append("  ");
@@ -1403,20 +1478,20 @@ public class PandorabotsGenerator {
               }
             }
           } else {
-            if ((action_1 instanceof Image)) {
+            if ((action instanceof Image)) {
               _builder.append("  ");
               _builder.append("<category>");
               _builder.newLineIfNotEmpty();
               _builder.append("    ");
               _builder.append("<pattern>");
-              String _name_1 = ((Image)action_1).getName();
-              String _replace_1 = (intentName + _name_1).toUpperCase().replace(" ", "");
+              String _name = ((Image)action).getName();
+              String _replace_1 = (intentName + _name).toUpperCase().replace(" ", "");
               _builder.append(_replace_1);
               _builder.append("</pattern>");
               _builder.newLineIfNotEmpty();
               _builder.append("    ");
               _builder.append("<template><image>");
-              String _uRL = ((Image)action_1).getURL();
+              String _uRL = ((Image)action).getURL();
               _builder.append(_uRL);
               _builder.append("</image></template>");
               _builder.newLineIfNotEmpty();
@@ -1424,14 +1499,14 @@ public class PandorabotsGenerator {
               _builder.append("</category>");
               _builder.newLineIfNotEmpty();
             } else {
-              if ((action_1 instanceof HTTPRequest)) {
+              if ((action instanceof HTTPRequest)) {
                 _builder.append("  ");
                 _builder.append("<category>");
                 _builder.newLineIfNotEmpty();
                 _builder.append("    ");
                 _builder.append("<pattern>");
-                String _name_2 = ((HTTPRequest)action_1).getName();
-                String _replace_2 = (intentName + _name_2).toUpperCase().replace(" ", "");
+                String _name_1 = ((HTTPRequest)action).getName();
+                String _replace_2 = (intentName + _name_1).toUpperCase().replace(" ", "");
                 _builder.append(_replace_2);
                 _builder.append("</pattern>");
                 _builder.newLineIfNotEmpty();
@@ -1440,25 +1515,25 @@ public class PandorabotsGenerator {
                 _builder.newLineIfNotEmpty();
                 _builder.append("      ");
                 _builder.append("<callapi response_code_var=\"response_");
-                String _name_3 = ((HTTPRequest)action_1).getName();
-                String _plus_1 = (prefix + _name_3);
+                String _name_2 = ((HTTPRequest)action).getName();
+                String _plus_1 = (prefix + _name_2);
                 _builder.append(_plus_1);
                 _builder.append("\">");
                 _builder.newLineIfNotEmpty();
                 _builder.append("        ");
                 _builder.append("<url>");
-                String _uRL_1 = ((HTTPRequest) action_1).getURL();
+                String _uRL_1 = ((HTTPRequest) action).getURL();
                 _builder.append(_uRL_1);
                 _builder.append("</url>");
                 _builder.newLineIfNotEmpty();
                 _builder.append("        ");
                 _builder.append("<method>");
-                Method _method = ((HTTPRequest)action_1).getMethod();
+                Method _method = ((HTTPRequest)action).getMethod();
                 _builder.append(_method);
                 _builder.append("</method>");
                 _builder.newLineIfNotEmpty();
                 {
-                  EList<KeyValue> _headers = ((HTTPRequest)action_1).getHeaders();
+                  EList<KeyValue> _headers = ((HTTPRequest)action).getHeaders();
                   for(final KeyValue header : _headers) {
                     _builder.append("        ");
                     _builder.append("<header><name>");
@@ -1473,17 +1548,17 @@ public class PandorabotsGenerator {
                   }
                 }
                 {
-                  EList<KeyValue> _data = ((HTTPRequest)action_1).getData();
+                  EList<KeyValue> _data = ((HTTPRequest)action).getData();
                   for(final KeyValue param : _data) {
                     _builder.append("        ");
                     _builder.append("<query name=\"");
                     Token _value_1 = param.getValue();
-                    String _name_4 = ((ParameterToken) _value_1).getParameter().getName();
-                    _builder.append(_name_4);
+                    String _name_3 = ((ParameterToken) _value_1).getParameter().getName();
+                    _builder.append(_name_3);
                     _builder.append("\"><get name=\"");
                     Token _value_2 = param.getValue();
-                    String _name_5 = ((ParameterToken) _value_2).getParameter().getName();
-                    _builder.append(_name_5);
+                    String _name_4 = ((ParameterToken) _value_2).getParameter().getName();
+                    _builder.append(_name_4);
                     _builder.append("\"/></query>");
                     _builder.newLineIfNotEmpty();
                   }
@@ -1498,14 +1573,14 @@ public class PandorabotsGenerator {
                 _builder.append("</category>");
                 _builder.newLineIfNotEmpty();
               } else {
-                if ((action_1 instanceof HTTPResponse)) {
+                if ((action instanceof HTTPResponse)) {
                   _builder.append("  ");
                   _builder.append("<category>");
                   _builder.newLineIfNotEmpty();
                   _builder.append("    ");
                   _builder.append("<pattern>");
-                  String _name_6 = ((HTTPResponse)action_1).getName();
-                  String _replace_3 = (intentName + _name_6).toUpperCase().replace(" ", "");
+                  String _name_5 = ((HTTPResponse)action).getName();
+                  String _replace_3 = (intentName + _name_5).toUpperCase().replace(" ", "");
                   _builder.append(_replace_3);
                   _builder.append("</pattern>");
                   _builder.newLineIfNotEmpty();
@@ -1514,8 +1589,8 @@ public class PandorabotsGenerator {
                   _builder.newLineIfNotEmpty();
                   _builder.append("      ");
                   _builder.append("<get name=\"response_");
-                  String _name_7 = ((HTTPResponse) action_1).getHTTPRequest().getName();
-                  String _plus_2 = (prefix + _name_7);
+                  String _name_6 = ((HTTPResponse) action).getHTTPRequest().getName();
+                  String _plus_2 = (prefix + _name_6);
                   _builder.append(_plus_2);
                   _builder.append("\"/>");
                   _builder.newLineIfNotEmpty();

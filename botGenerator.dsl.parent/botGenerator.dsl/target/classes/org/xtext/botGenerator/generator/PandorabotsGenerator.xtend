@@ -303,15 +303,15 @@ class PandorabotsGenerator {
 				  	«ELSE»
 				    	«{lang = bot.languages.get(0).languageAbbreviation; ""}»
 				    «ENDIF»
-				    «"      "»<think>
-					«"        "»<set name="pandoralang">«lang»</set>
-					«"      "»</think>
 					«var String nextPrompt»
 					«{nextPrompt = getNextParamPetition(transition.intent, input).getValue(); ""}»
 					«IF nextPrompt !== ""»
-					«"      "»«nextPrompt»
+						«"      "»«nextPrompt»
 					«ELSE»
-					«"      "»<srai>«(prefix + transition.intent.name).toUpperCase().replace(' ', '').toUpperCase()»</srai>
+						«"      "»<think>
+						«"        "»<set name="pandoralang">«lang»</set>
+						«"      "»</think>
+						«"      "»<srai>«(prefix + transition.intent.name).toUpperCase().replace(' ', '').toUpperCase()»</srai>
 					«ENDIF»
 					«"    "»</template>
 					«"  "»</category>
@@ -415,10 +415,15 @@ class PandorabotsGenerator {
 	}
 	
 	// Genera los arboles de solicitud de parametros en cada intent de forma recursiva
+	// TODO: cambiar para que acepte distintos lenguages. Hay que poner alguna condicion del lenguage en que se esten
+	// pidiendo los argumentos en ese momento concreto y en base a eso imprimir el que corresponda
 	def generateParamConditionsRec(Intent intent, List<String> params, String indent, String prefix) {
 		if (params.isEmpty())
 			return 
 			'''
+			«indent + "    "»<think>
+			«indent + "      "»<set name="pandoralang">en</set>
+			«indent + "    "»</think>
 			«indent + "    "»<srai>«(prefix + intent.name).toUpperCase().replace(' ', '').toUpperCase()»</srai>
 			'''
 		else {
@@ -574,35 +579,37 @@ class PandorabotsGenerator {
 		return ret
 	}
 	
-	// La idea es sacar todos los leguages en un map con su contenido asociado para poder recorrerlos e ir separando
-	//  en un condition en base a la variable pandoralang en la que he guardado el lenguaje justo antes de llamar al 
-	// Main Intent
 	def getActionsByLanguage(UserInteraction transition) {
-//		var ret = new HashMap<String, List<String>>()
-//		var othersList = new ArrayList<String>()
-//		
-//		for (action: transition.target.actions) {
-//			if (action instanceof Text) {
-//				for (input: action.inputs) {
-//					var lang = languageAbbreviation(input.language)
-//					if (!ret.keySet.contains(lang)) {
-//						ret.put(lang, new ArrayList<String>(action.name))
-//					}
-//				}
-//			}
-//			else {
-//				othersList.add(action)
-//			}
-//		}
-//		
-//		for (key: ret.keySet) {
-//			
-//		}
-//		
-//		if (!othersList.isEmpty())
-//			ret.put("others", othersList)
-//		
-//		return ret
+		var ret = new HashMap<String, List<String>>()
+		var othersList = new ArrayList<String>()
+		
+		for (action: transition.target.actions) {
+			if (action instanceof Text) {
+				for (input: action.inputs) {
+					var lang = languageAbbreviation(input.language)
+					if (!ret.keySet.contains(lang)) {
+						var temp = new ArrayList<String>()
+						temp.add(action.name)
+						ret.put(lang, temp)
+					}
+					
+					else {
+						var tempList = ret.get(lang)
+						tempList.add(action.name)
+						ret.put(lang, tempList)
+					}
+				}
+			}
+			
+			else {
+				othersList.add(action.name)
+			}
+		}
+		
+		if (!othersList.isEmpty())
+			ret.put("others", othersList)
+		
+		return ret
 	}
 	
 	// Generacion de codigo de un intent con una o varias respuestas
@@ -622,13 +629,31 @@ class PandorabotsGenerator {
 			«"    "»<pattern>«intentName»</pattern>
 			«"    "»<template>
 			«"      "»<condition name="pandoralang">
-			«FOR action: transition.target.actions»
-				«IF action instanceof Text»
-					«"      "»<srai>«intentName + lang.toUpperCase()»</srai>
+			«var HashMap<?, ?> langActions»
+			«{langActions = getActionsByLanguage(transition); ""}»
+			«FOR key: langActions.keySet»
+				«IF key == "others"»
+					«"        "»<li>
+					«FOR act: langActions.get(key) as List<String>»
+						«"          "»<srai>«(intentName + act).toUpperCase().replace(' ', '')»</srai>
+					«ENDFOR»
+					«"        "»</li>
 				«ELSE»
-					«"      "»<srai>«(intentName + action.name).toUpperCase().replace(' ', '')»</srai>
+					«"        "»<li value="«key»">
+					«FOR act: langActions.get(key) as List<String>»
+						«"          "»<srai>«intentName + (key as String).toUpperCase()»</srai>
+					«ENDFOR»
+					«"        "»</li>
 				«ENDIF»
 			«ENDFOR»
+			«"      "»</condition>
+«««			«FOR action: transition.target.actions»
+«««				«IF action instanceof Text»
+«««					«"      "»<srai>«intentName + lang.toUpperCase()»</srai>
+«««				«ELSE»
+«««					«"      "»<srai>«(intentName + action.name).toUpperCase().replace(' ', '')»</srai>
+«««				«ENDIF»
+«««			«ENDFOR»
 			«"    "»</template>
 			«"  "»</category>
 	    «ENDFOR»
