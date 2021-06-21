@@ -857,7 +857,10 @@ public class PandorabotsGenerator {
       _builder.append("<think>");
       _builder.newLineIfNotEmpty();
       _builder.append((indent + "      "));
-      _builder.append("<set name=\"pandoralang\">en</set>");
+      _builder.append("<set name=\"pandoralang\">");
+      String _languageAbbreviation = this.languageAbbreviation(intent.getInputs().get(0).getLanguage());
+      _builder.append(_languageAbbreviation);
+      _builder.append("</set>");
       _builder.newLineIfNotEmpty();
       _builder.append((indent + "    "));
       _builder.append("</think>");

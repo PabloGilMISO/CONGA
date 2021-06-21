@@ -422,7 +422,7 @@ class PandorabotsGenerator {
 			return 
 			'''
 			«indent + "    "»<think>
-			«indent + "      "»<set name="pandoralang">en</set>
+			«indent + "      "»<set name="pandoralang">«intent.inputs.get(0).language.languageAbbreviation»</set>
 			«indent + "    "»</think>
 			«indent + "    "»<srai>«(prefix + intent.name).toUpperCase().replace(' ', '').toUpperCase()»</srai>
 			'''
@@ -453,6 +453,7 @@ class PandorabotsGenerator {
 	
 	// Devuelve los parametros que se quieren recoger con un intent
 	def getIntentParameters(Intent intent) {
+		// <lenguaje, entity>
 		var ret = new HashMap<String, DefaultEntity>()
 		
 		for (IntentLanguageInputs language: intent.inputs)
