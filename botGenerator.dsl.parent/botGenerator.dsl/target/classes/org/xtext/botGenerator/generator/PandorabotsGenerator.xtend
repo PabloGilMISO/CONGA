@@ -678,23 +678,31 @@ class PandorabotsGenerator {
 			«"    "»<pattern>«intentName»</pattern>
 			«"    "»<template>
 			«"      "»<condition name="pandoralang">
+			«var flag = ""»
 			«var HashMap<?, ?> langActions»
 			«{langActions = getActionsByLanguage(transition); ""}»
 			«FOR key: langActions.keySet»
-				«IF key == "others"»
-					«"        "»<li>
-					«FOR act: langActions.get(key) as List<String>»
-						«"          "»<srai>«(intentName + act).toUpperCase().replaceAll('[ _]', '')»</srai>
-					«ENDFOR»
-					«"        "»</li>
-				«ELSE»
+				«IF key !== "others"»
 					«"        "»<li value="«key»">
 					«FOR act: langActions.get(key) as List<String>»
-						«"          "»<srai>«intentName + (key as String).replaceAll('[ _]', '').toUpperCase()»</srai>
+						«"          "»<srai>«(intentName + (key as String) + act).replaceAll('[ _]', '').toUpperCase()»</srai>
 					«ENDFOR»
+					«IF langActions.get("others") !== null && flag == ""»
+						«FOR act: langActions.get("others") as List<String>»
+							«"          "»<srai>«(intentName + act).toUpperCase().replaceAll('[ _]', '')»</srai>
+						«ENDFOR»
+						«{flag="x"; ""}»
+					«ENDIF»
 					«"        "»</li>
 				«ENDIF»
 			«ENDFOR»
+			«IF langActions.size() == 1 && langActions.get("others") !== null»
+				«"        "»<li>
+				«FOR act: langActions.get("others") as List<String>»
+					«"          "»<srai>«(intentName + act).toUpperCase().replaceAll('[ _]', '')»</srai>
+				«ENDFOR»
+				«"        "»</li>
+			«ENDIF»
 			«"      "»</condition>
 «««			«FOR action: transition.target.actions»
 «««				«IF action instanceof Text»
@@ -730,19 +738,19 @@ class PandorabotsGenerator {
 						«"  "»</category>
 					«ELSE»
 						«"  "»<category>
-						«"    "»<pattern>«(intentName + lang).toUpperCase()»</pattern>
+						«"    "»<pattern>«(intentName + lang + action.name).replaceAll('[ _]', '').toUpperCase()»</pattern>
 						«"    "»<template>«language.getAllIntentResponses().get(0)»</template>
 						«"  "»</category>
 					«ENDIF»
 				«ENDFOR»
 			«ELSEIF action instanceof Image»
 				«"  "»<category>
-				«"    "»<pattern>«(intentName + action.name).toUpperCase().replace(' ', '')»</pattern>
+				«"    "»<pattern>«(intentName + action.name).toUpperCase().replaceAll('[ _]', '')»</pattern>
 				«"    "»<template><image>«action.URL»</image></template>
 				«"  "»</category>
 			«ELSEIF action instanceof HTTPRequest»
 				«"  "»<category>
-				«"    "»<pattern>«(intentName + action.name).toUpperCase().replace(' ', '')»</pattern>
+				«"    "»<pattern>«(intentName + action.name).toUpperCase().replaceAll('[ _]', '')»</pattern>
 				«"    "»<template>
 				«"      "»<callapi response_code_var="response_«prefix + action.name»">
 				«"        "»<url>«(action as HTTPRequest).getURL()»</url>
@@ -758,7 +766,7 @@ class PandorabotsGenerator {
 				«"  "»</category>
 			«ELSEIF action instanceof HTTPResponse»
 				«"  "»<category>
-				«"    "»<pattern>«(intentName + action.name).toUpperCase().replace(' ', '')»</pattern>
+				«"    "»<pattern>«(intentName + action.name).toUpperCase().replaceAll('[ _]', '')»</pattern>
 				«"    "»<template>
 				«"      "»<get name="response_«prefix + (action as HTTPResponse).HTTPRequest.name»"/>
 				«"    "»</template>
