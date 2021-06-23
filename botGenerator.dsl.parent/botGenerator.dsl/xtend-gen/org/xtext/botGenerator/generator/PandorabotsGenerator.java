@@ -5,6 +5,7 @@ import com.google.common.collect.Iterators;
 import generator.Action;
 import generator.Bot;
 import generator.DefaultEntity;
+import generator.Empty;
 import generator.Entity;
 import generator.EntityInput;
 import generator.HTTPRequest;
@@ -488,7 +489,7 @@ public class PandorabotsGenerator {
                   for(final Token token : _tokens) {
                     {
                       if ((token instanceof Literal)) {
-                        String _replace = ((Literal)token).getText().replace("?", " #");
+                        String _replace = ((Literal)token).getText().replace("?", " #").replace("&", "and");
                         _builder.append(_replace);
                       } else {
                         if ((token instanceof ParameterReferenceToken)) {
@@ -506,8 +507,8 @@ public class PandorabotsGenerator {
                   if (_not) {
                     _builder.append("    ");
                     _builder.append("<that>");
-                    String _replaceAll = that.replaceAll("[?.]", " ");
-                    _builder.append(_replaceAll);
+                    String _replace_1 = that.replaceAll("[?.!]", " ").replace("&", "and");
+                    _builder.append(_replace_1);
                     _builder.append("</that>");
                     _builder.newLineIfNotEmpty();
                   }
@@ -662,8 +663,8 @@ public class PandorabotsGenerator {
                 _builder_1.newLineIfNotEmpty();
                 _builder_1.append("    ");
                 _builder_1.append("<that>");
-                String _replaceAll = this.getParamPromptByName(transition.getIntent(), key).replaceAll("[?.]", " ");
-                _builder_1.append(_replaceAll);
+                String _replace = this.getParamPromptByName(transition.getIntent(), key).replaceAll("[?.!]", " ").replace("&", "and");
+                _builder_1.append(_replace);
                 _builder_1.append("</that>");
                 _builder_1.newLineIfNotEmpty();
                 _builder_1.append("    ");
@@ -702,8 +703,8 @@ public class PandorabotsGenerator {
                 _builder_2.newLineIfNotEmpty();
                 _builder_2.append("    ");
                 _builder_2.append("<that>");
-                String _replaceAll_1 = this.getParamPromptByName(transition.getIntent(), key).replaceAll("[?.]", " ");
-                _builder_2.append(_replaceAll_1);
+                String _replace_1 = this.getParamPromptByName(transition.getIntent(), key).replaceAll("[?.!]", " ").replace("&", "and");
+                _builder_2.append(_replace_1);
                 _builder_2.append("</that>");
                 _builder_2.newLineIfNotEmpty();
                 _builder_2.append("    ");
@@ -742,8 +743,8 @@ public class PandorabotsGenerator {
                 _builder_3.newLineIfNotEmpty();
                 _builder_3.append("    ");
                 _builder_3.append("<that>");
-                String _replaceAll_2 = this.getParamPromptByName(transition.getIntent(), key).replaceAll("[?.]", " ");
-                _builder_3.append(_replaceAll_2);
+                String _replace_2 = this.getParamPromptByName(transition.getIntent(), key).replaceAll("[?.!]", " ").replace("&", "and");
+                _builder_3.append(_replace_2);
                 _builder_3.append("</that>");
                 _builder_3.newLineIfNotEmpty();
                 _builder_3.append("    ");
@@ -782,8 +783,8 @@ public class PandorabotsGenerator {
                 _builder_4.newLineIfNotEmpty();
                 _builder_4.append("    ");
                 _builder_4.append("<that>");
-                String _replaceAll_3 = this.getParamPromptByName(transition.getIntent(), key).replaceAll("[?.]", " ");
-                _builder_4.append(_replaceAll_3);
+                String _replace_3 = this.getParamPromptByName(transition.getIntent(), key).replaceAll("[?.!]", " ").replace("&", "and");
+                _builder_4.append(_replace_3);
                 _builder_4.append("</that>");
                 _builder_4.newLineIfNotEmpty();
                 _builder_4.append("    ");
@@ -822,8 +823,8 @@ public class PandorabotsGenerator {
                 _builder_5.newLineIfNotEmpty();
                 _builder_5.append("    ");
                 _builder_5.append("<that>");
-                String _replaceAll_4 = this.getParamPromptByName(transition.getIntent(), key).replaceAll("[?.]", " ");
-                _builder_5.append(_replaceAll_4);
+                String _replace_4 = this.getParamPromptByName(transition.getIntent(), key).replaceAll("[?.!]", " ").replace("&", "and");
+                _builder_5.append(_replace_4);
                 _builder_5.append("</that>");
                 _builder_5.newLineIfNotEmpty();
                 _builder_5.append("    ");
@@ -863,8 +864,8 @@ public class PandorabotsGenerator {
             _builder_5.newLineIfNotEmpty();
             _builder_5.append("    ");
             _builder_5.append("<that>");
-            String _replaceAll_4 = this.getParamPromptByName(transition.getIntent(), key).replaceAll("[?.]", " ");
-            _builder_5.append(_replaceAll_4);
+            String _replace_4 = this.getParamPromptByName(transition.getIntent(), key).replaceAll("[?.!]", " ").replace("&", "and");
+            _builder_5.append(_replace_4);
             _builder_5.append("</that>");
             _builder_5.newLineIfNotEmpty();
             _builder_5.append("    ");
@@ -934,8 +935,8 @@ public class PandorabotsGenerator {
       _builder_1.newLineIfNotEmpty();
       _builder_1.append((newIndent + "  "));
       _builder_1.append("<li value=\"unknown\">");
-      String _paramPromptByName = this.getParamPromptByName(intent, currentParam);
-      _builder_1.append(_paramPromptByName);
+      String _replace = this.getParamPromptByName(intent, currentParam).replace("&", "and");
+      _builder_1.append(_replace);
       _builder_1.append("</li>");
       _builder_1.newLineIfNotEmpty();
       _builder_1.append((newIndent + "  "));
@@ -1518,7 +1519,8 @@ public class PandorabotsGenerator {
                       for(final String response : _allIntentResponses) {
                         _builder.append("        ");
                         _builder.append("<li>");
-                        _builder.append(response);
+                        String _replace = response.replaceAll("[?.!]", " ").replace("&", "and");
+                        _builder.append(_replace);
                         _builder.append("</li>");
                         _builder.newLineIfNotEmpty();
                       }
@@ -1535,8 +1537,8 @@ public class PandorabotsGenerator {
                   } else {
                     _builder.append("    ");
                     _builder.append("<template>");
-                    String _get_3 = this.getAllIntentResponses(language_1).get(0);
-                    _builder.append(_get_3);
+                    String _replace_1 = this.getAllIntentResponses(language_1).get(0).replaceAll("[?.!]", " ").replace("&", "and");
+                    _builder.append(_replace_1);
                     _builder.append("</template>");
                     _builder.newLineIfNotEmpty();
                     _builder.append("  ");
@@ -1547,121 +1549,113 @@ public class PandorabotsGenerator {
               }
             }
           } else {
-            if ((action instanceof Image)) {
+            if ((action instanceof Empty)) {
               _builder.append("  ");
               _builder.append("<category>");
               _builder.newLineIfNotEmpty();
               _builder.append("    ");
               _builder.append("<pattern>");
-              String _name_1 = ((Image)action).getName();
-              String _replaceAll_2 = (intentName + _name_1).toUpperCase().replaceAll("[ _]", "");
-              _builder.append(_replaceAll_2);
+              String _languageAbbreviation = this.languageAbbreviation(bot.getLanguages().get(0));
+              String _plus = (intentName + _languageAbbreviation);
+              String _name_1 = ((Empty)action).getName();
+              String _upperCase_2 = (_plus + _name_1).replaceAll("[ _]", "").toUpperCase();
+              _builder.append(_upperCase_2);
               _builder.append("</pattern>");
               _builder.newLineIfNotEmpty();
               _builder.append("    ");
-              _builder.append("<template><image>");
-              String _uRL = ((Image)action).getURL();
-              _builder.append(_uRL);
-              _builder.append("</image></template>");
+              _builder.append("<template></template>");
               _builder.newLineIfNotEmpty();
               _builder.append("  ");
               _builder.append("</category>");
               _builder.newLineIfNotEmpty();
             } else {
-              if ((action instanceof HTTPRequest)) {
+              if ((action instanceof Image)) {
                 _builder.append("  ");
                 _builder.append("<category>");
                 _builder.newLineIfNotEmpty();
                 _builder.append("    ");
                 _builder.append("<pattern>");
-                String _name_2 = ((HTTPRequest)action).getName();
-                String _replaceAll_3 = (intentName + _name_2).toUpperCase().replaceAll("[ _]", "");
-                _builder.append(_replaceAll_3);
+                String _name_2 = ((Image)action).getName();
+                String _replaceAll_2 = (intentName + _name_2).toUpperCase().replaceAll("[ _]", "");
+                _builder.append(_replaceAll_2);
                 _builder.append("</pattern>");
                 _builder.newLineIfNotEmpty();
                 _builder.append("    ");
-                _builder.append("<template>");
-                _builder.newLineIfNotEmpty();
-                _builder.append("      ");
-                _builder.append("<callapi response_code_var=\"response_");
-                String _name_3 = ((HTTPRequest)action).getName();
-                String _plus = (prefix + _name_3);
-                _builder.append(_plus);
-                _builder.append("\">");
-                _builder.newLineIfNotEmpty();
-                _builder.append("        ");
-                _builder.append("<url>");
-                String _uRL_1 = ((HTTPRequest) action).getURL();
-                _builder.append(_uRL_1);
-                _builder.append("</url>");
-                _builder.newLineIfNotEmpty();
-                _builder.append("        ");
-                _builder.append("<method>");
-                Method _method = ((HTTPRequest)action).getMethod();
-                _builder.append(_method);
-                _builder.append("</method>");
-                _builder.newLineIfNotEmpty();
-                {
-                  EList<KeyValue> _headers = ((HTTPRequest)action).getHeaders();
-                  for(final KeyValue header : _headers) {
-                    _builder.append("        ");
-                    _builder.append("<header><name>");
-                    String _key = header.getKey();
-                    _builder.append(_key);
-                    _builder.append("</name>");
-                    Token _value = header.getValue();
-                    String _text = ((Literal) _value).getText();
-                    _builder.append(_text);
-                    _builder.append("</header>");
-                    _builder.newLineIfNotEmpty();
-                  }
-                }
-                {
-                  EList<KeyValue> _data = ((HTTPRequest)action).getData();
-                  for(final KeyValue param : _data) {
-                    _builder.append("        ");
-                    _builder.append("<query name=\"");
-                    Token _value_1 = param.getValue();
-                    String _name_4 = ((ParameterToken) _value_1).getParameter().getName();
-                    _builder.append(_name_4);
-                    _builder.append("\"><get name=\"");
-                    Token _value_2 = param.getValue();
-                    String _name_5 = ((ParameterToken) _value_2).getParameter().getName();
-                    _builder.append(_name_5);
-                    _builder.append("\"/></query>");
-                    _builder.newLineIfNotEmpty();
-                  }
-                }
-                _builder.append("      ");
-                _builder.append("</callapi>");
-                _builder.newLineIfNotEmpty();
-                _builder.append("    ");
-                _builder.append("</template>");
+                _builder.append("<template><image>");
+                String _uRL = ((Image)action).getURL();
+                _builder.append(_uRL);
+                _builder.append("</image></template>");
                 _builder.newLineIfNotEmpty();
                 _builder.append("  ");
                 _builder.append("</category>");
                 _builder.newLineIfNotEmpty();
               } else {
-                if ((action instanceof HTTPResponse)) {
+                if ((action instanceof HTTPRequest)) {
                   _builder.append("  ");
                   _builder.append("<category>");
                   _builder.newLineIfNotEmpty();
                   _builder.append("    ");
                   _builder.append("<pattern>");
-                  String _name_6 = ((HTTPResponse)action).getName();
-                  String _replaceAll_4 = (intentName + _name_6).toUpperCase().replaceAll("[ _]", "");
-                  _builder.append(_replaceAll_4);
+                  String _name_3 = ((HTTPRequest)action).getName();
+                  String _replaceAll_3 = (intentName + _name_3).toUpperCase().replaceAll("[ _]", "");
+                  _builder.append(_replaceAll_3);
                   _builder.append("</pattern>");
                   _builder.newLineIfNotEmpty();
                   _builder.append("    ");
                   _builder.append("<template>");
                   _builder.newLineIfNotEmpty();
                   _builder.append("      ");
-                  _builder.append("<get name=\"response_");
-                  String _name_7 = ((HTTPResponse) action).getHTTPRequest().getName();
-                  String _plus_1 = (prefix + _name_7);
+                  _builder.append("<callapi response_code_var=\"response_");
+                  String _name_4 = ((HTTPRequest)action).getName();
+                  String _plus_1 = (prefix + _name_4);
                   _builder.append(_plus_1);
-                  _builder.append("\"/>");
+                  _builder.append("\">");
+                  _builder.newLineIfNotEmpty();
+                  _builder.append("        ");
+                  _builder.append("<url>");
+                  String _uRL_1 = ((HTTPRequest) action).getURL();
+                  _builder.append(_uRL_1);
+                  _builder.append("</url>");
+                  _builder.newLineIfNotEmpty();
+                  _builder.append("        ");
+                  _builder.append("<method>");
+                  Method _method = ((HTTPRequest)action).getMethod();
+                  _builder.append(_method);
+                  _builder.append("</method>");
+                  _builder.newLineIfNotEmpty();
+                  {
+                    EList<KeyValue> _headers = ((HTTPRequest)action).getHeaders();
+                    for(final KeyValue header : _headers) {
+                      _builder.append("        ");
+                      _builder.append("<header><name>");
+                      String _key = header.getKey();
+                      _builder.append(_key);
+                      _builder.append("</name>");
+                      Token _value = header.getValue();
+                      String _text = ((Literal) _value).getText();
+                      _builder.append(_text);
+                      _builder.append("</header>");
+                      _builder.newLineIfNotEmpty();
+                    }
+                  }
+                  {
+                    EList<KeyValue> _data = ((HTTPRequest)action).getData();
+                    for(final KeyValue param : _data) {
+                      _builder.append("        ");
+                      _builder.append("<query name=\"");
+                      Token _value_1 = param.getValue();
+                      String _name_5 = ((ParameterToken) _value_1).getParameter().getName();
+                      _builder.append(_name_5);
+                      _builder.append("\"><get name=\"");
+                      Token _value_2 = param.getValue();
+                      String _name_6 = ((ParameterToken) _value_2).getParameter().getName();
+                      _builder.append(_name_6);
+                      _builder.append("\"/></query>");
+                      _builder.newLineIfNotEmpty();
+                    }
+                  }
+                  _builder.append("      ");
+                  _builder.append("</callapi>");
                   _builder.newLineIfNotEmpty();
                   _builder.append("    ");
                   _builder.append("</template>");
@@ -1669,6 +1663,35 @@ public class PandorabotsGenerator {
                   _builder.append("  ");
                   _builder.append("</category>");
                   _builder.newLineIfNotEmpty();
+                } else {
+                  if ((action instanceof HTTPResponse)) {
+                    _builder.append("  ");
+                    _builder.append("<category>");
+                    _builder.newLineIfNotEmpty();
+                    _builder.append("    ");
+                    _builder.append("<pattern>");
+                    String _name_7 = ((HTTPResponse)action).getName();
+                    String _replaceAll_4 = (intentName + _name_7).toUpperCase().replaceAll("[ _]", "");
+                    _builder.append(_replaceAll_4);
+                    _builder.append("</pattern>");
+                    _builder.newLineIfNotEmpty();
+                    _builder.append("    ");
+                    _builder.append("<template>");
+                    _builder.newLineIfNotEmpty();
+                    _builder.append("      ");
+                    _builder.append("<get name=\"response_");
+                    String _name_8 = ((HTTPResponse) action).getHTTPRequest().getName();
+                    String _plus_2 = (prefix + _name_8);
+                    _builder.append(_plus_2);
+                    _builder.append("\"/>");
+                    _builder.newLineIfNotEmpty();
+                    _builder.append("    ");
+                    _builder.append("</template>");
+                    _builder.newLineIfNotEmpty();
+                    _builder.append("  ");
+                    _builder.append("</category>");
+                    _builder.newLineIfNotEmpty();
+                  }
                 }
               }
             }
