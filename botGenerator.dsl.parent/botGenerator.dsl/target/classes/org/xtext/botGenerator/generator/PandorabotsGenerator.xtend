@@ -725,9 +725,9 @@ class PandorabotsGenerator {
 					«ELSE»
 						«{lang = bot.languages.get(0).languageAbbreviation.toUpperCase(); ""}»
 					«ENDIF»
+					«"  "»<category>
+					«"    "»<pattern>«(intentName + lang + action.name).replaceAll('[ _]', '').toUpperCase()»</pattern>
 					«IF language.getAllIntentResponses().length > 1»
-						«"  "»<category>
-						«"    "»<pattern>«(intentName + lang).toUpperCase()»</pattern>
 						«"    "»<template>
 						«"      "»<random>
 						«FOR response: language.getAllIntentResponses()»
@@ -737,8 +737,6 @@ class PandorabotsGenerator {
 						«"    "»</template>
 						«"  "»</category>
 					«ELSE»
-						«"  "»<category>
-						«"    "»<pattern>«(intentName + lang + action.name).replaceAll('[ _]', '').toUpperCase()»</pattern>
 						«"    "»<template>«language.getAllIntentResponses().get(0)»</template>
 						«"  "»</category>
 					«ENDIF»

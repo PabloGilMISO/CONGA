@@ -1493,19 +1493,20 @@ public class PandorabotsGenerator {
                     _builder.newLineIfNotEmpty();
                   }
                 }
+                _builder.append("  ");
+                _builder.append("<category>");
+                _builder.newLineIfNotEmpty();
+                _builder.append("    ");
+                _builder.append("<pattern>");
+                String _name = ((Text)action).getName();
+                String _upperCase_1 = ((intentName + lang_1) + _name).replaceAll("[ _]", "").toUpperCase();
+                _builder.append(_upperCase_1);
+                _builder.append("</pattern>");
+                _builder.newLineIfNotEmpty();
                 {
                   int _length = ((Object[])Conversions.unwrapArray(this.getAllIntentResponses(language_1), Object.class)).length;
                   boolean _greaterThan = (_length > 1);
                   if (_greaterThan) {
-                    _builder.append("  ");
-                    _builder.append("<category>");
-                    _builder.newLineIfNotEmpty();
-                    _builder.append("    ");
-                    _builder.append("<pattern>");
-                    String _upperCase_1 = (intentName + lang_1).toUpperCase();
-                    _builder.append(_upperCase_1);
-                    _builder.append("</pattern>");
-                    _builder.newLineIfNotEmpty();
                     _builder.append("    ");
                     _builder.append("<template>");
                     _builder.newLineIfNotEmpty();
@@ -1532,16 +1533,6 @@ public class PandorabotsGenerator {
                     _builder.append("</category>");
                     _builder.newLineIfNotEmpty();
                   } else {
-                    _builder.append("  ");
-                    _builder.append("<category>");
-                    _builder.newLineIfNotEmpty();
-                    _builder.append("    ");
-                    _builder.append("<pattern>");
-                    String _name = ((Text)action).getName();
-                    String _upperCase_2 = ((intentName + lang_1) + _name).replaceAll("[ _]", "").toUpperCase();
-                    _builder.append(_upperCase_2);
-                    _builder.append("</pattern>");
-                    _builder.newLineIfNotEmpty();
                     _builder.append("    ");
                     _builder.append("<template>");
                     String _get_3 = this.getAllIntentResponses(language_1).get(0);
