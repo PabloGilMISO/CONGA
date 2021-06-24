@@ -124,6 +124,7 @@ class PandorabotsGenerator {
 		fsa.generateFile(normalName, 
 		'''
 		[
+		["\/", " slash "],
 		[":0", " colon 0"],
 		[":1", " colon 1"],
 		[":2", " colon 2"],
@@ -330,9 +331,9 @@ class PandorabotsGenerator {
 	  		«FOR input: language.inputs»
 	  			«IF input instanceof TrainingPhrase»
 					«"  "»<category>
-					«"    "»<pattern>«FOR token: input.tokens»«IF token instanceof Literal»«token.text.replace('?', ' #').replace('&', "and")»«ELSEIF token instanceof ParameterReferenceToken»*«ENDIF»«ENDFOR»</pattern>
+					«"    "»<pattern>«FOR token: input.tokens»«IF token instanceof Literal»«token.text.replace('?', ' #').replace('&', language.language.ampersandSubstitution)»«ELSEIF token instanceof ParameterReferenceToken»*«ENDIF»«ENDFOR»</pattern>
 					«IF !that.isEmpty()»
-						«"    "»<that>«that.replaceAll('[?.!]', ' ').replace('&', "and")»</that>
+						«"    "»<that>«that.replaceAll('[?.!]', ' ').replace('&', language.language.ampersandSubstitution)»</that>
 					«ENDIF»
 					«"    "»<template>
 					«var List<String> entities»
@@ -391,7 +392,7 @@ class PandorabotsGenerator {
 						'''
 						«"  "»<category>
 						«"    "»<pattern>*</pattern>
-						«"    "»<that>«getParamPromptByName(transition.intent, key).replaceAll('[?.!]', ' ').replace('&', "and")»</that>
+						«"    "»<that>«getParamPromptByName(transition.intent, key).replaceAll('[?.!]', ' ').replace('&', transition.intent.inputs.get(0).language.ampersandSubstitution)»</that>
 						«"    "»<template>
 						«"      "»<think>
 						«"        "»<srai>SAVE«completeKey.toUpperCase()» <star/></srai>
@@ -405,7 +406,7 @@ class PandorabotsGenerator {
 						'''
 						«"  "»<category>
 						«"    "»<pattern>* colon *</pattern>
-						«"    "»<that>«getParamPromptByName(transition.intent, key).replaceAll('[?.!]', ' ').replace('&', "and")»</that>
+						«"    "»<that>«getParamPromptByName(transition.intent, key).replaceAll('[?.!]', ' ').replace('&', transition.intent.inputs.get(0).language.ampersandSubstitution)»</that>
 						«"    "»<template>
 						«"      "»<think>
 						«"        "»<srai>SAVE«completeKey.toUpperCase()» <star index="1"/>:<star index="2"/></srai>
@@ -419,7 +420,7 @@ class PandorabotsGenerator {
 						'''
 						«"  "»<category>
 						«"    "»<pattern>* slash * slash *</pattern>
-						«"    "»<that>«getParamPromptByName(transition.intent, key).replaceAll('[?.!]', ' ').replace('&', "and")»</that>
+						«"    "»<that>«getParamPromptByName(transition.intent, key).replaceAll('[.!]', ' ').replace('&', transition.intent.inputs.get(0).language.ampersandSubstitution).replace('?', " #")»</that>
 						«"    "»<template>
 						«"      "»<think>
 						«"        "»<srai>SAVE«completeKey.toUpperCase()» <star index="1"/>/<star index="2"/>/<star index="3"/></srai>
@@ -433,7 +434,7 @@ class PandorabotsGenerator {
 						'''
 						«"  "»<category>
 						«"    "»<pattern><set>number</set></pattern>
-						«"    "»<that>«getParamPromptByName(transition.intent, key).replaceAll('[?.!]', ' ').replace('&', "and")»</that>
+						«"    "»<that>«getParamPromptByName(transition.intent, key).replaceAll('[?.!]', ' ').replace('&', transition.intent.inputs.get(0).language.ampersandSubstitution).replace('?', " #")»</that>
 						«"    "»<template>
 						«"      "»<think>
 						«"        "»<srai>SAVE«completeKey.toUpperCase()» <star/></srai>
@@ -447,7 +448,7 @@ class PandorabotsGenerator {
 						'''
 						«"  "»<category>
 						«"    "»<pattern>*</pattern>
-						«"    "»<that>«getParamPromptByName(transition.intent, key).replaceAll('[?.!]', ' ').replace('&', "and")»</that>
+						«"    "»<that>«getParamPromptByName(transition.intent, key).replaceAll('[?.!]', ' ').replace('&', transition.intent.inputs.get(0).language.ampersandSubstitution).replace('?', " #")»</that>
 						«"    "»<template>
 						«"      "»<think>
 						«"        "»<srai>SAVE«completeKey.toUpperCase()» <star/></srai>
@@ -483,7 +484,7 @@ class PandorabotsGenerator {
 			return
 			'''
 				«newIndent»<condition name="«prefix + currentParam»">
-				«newIndent + "  "»<li value="unknown">«getParamPromptByName(intent, currentParam).replace('&', "and")»</li>
+				«newIndent + "  "»<li value="unknown">«getParamPromptByName(intent, currentParam).replace('&', intent.inputs.get(0).language.ampersandSubstitution)»</li>
 				«newIndent + "  "»<li>
 				«generateParamConditionsRec(intent, params, newIndent, prefix)»
 				«newIndent + "  "»</li>
@@ -685,11 +686,11 @@ class PandorabotsGenerator {
 			«FOR key: langActions.keySet»
 				«IF key !== "others"»
 					«"        "»<li value="«key»">
-					«FOR act: langActions.get(key) as List<String>»
+					«FOR act: (langActions.get(key) as ArrayList<String>)»
 						«"          "»<srai>«(intentName + (key as String) + act).replaceAll('[ _]', '').toUpperCase()»</srai>
 					«ENDFOR»
 					«IF langActions.get("others") !== null && flag == ""»
-						«FOR act: langActions.get("others") as List<String>»
+						«FOR act: (langActions.get("others") as ArrayList<String>)»
 							«"          "»<srai>«(intentName + act).toUpperCase().replaceAll('[ _]', '')»</srai>
 						«ENDFOR»
 						«{flag="x"; ""}»
@@ -725,19 +726,19 @@ class PandorabotsGenerator {
 						«"    "»<template>
 						«"      "»<random>
 						«FOR response: language.getAllIntentResponses()»
-							«"        "»<li>«response.replaceAll("[?.!]", ' ').replace('&', "and")»</li>
+							«"        "»<li>«response.replaceAll("[?.!]", ' ').replace('&', language.language.ampersandSubstitution)»</li>
 						«ENDFOR»
 						«"      "»</random>
 						«"    "»</template>
 						«"  "»</category>
 					«ELSE»
-						«"    "»<template>«language.getAllIntentResponses().get(0).replaceAll("[?.!]", ' ').replace('&', "and")»</template>
+						«"    "»<template>«language.getAllIntentResponses().get(0).replaceAll("[?.!]", ' ').replace('&', language.language.ampersandSubstitution)»</template>
 						«"  "»</category>
 					«ENDIF»
 				«ENDFOR»
 			«ELSEIF action instanceof Empty»
 				«"  "»<category>
-				«"    "»<pattern>«(intentName + bot.languages.get(0).languageAbbreviation + action.name).replaceAll('[ _]', '').toUpperCase()»</pattern>
+				«"    "»<pattern>«(intentName + action.name).replaceAll('[ _]', '').toUpperCase()»</pattern>
 				«"    "»<template></template>
 				«"  "»</category>
 			«ELSEIF action instanceof Image»
@@ -772,6 +773,42 @@ class PandorabotsGenerator {
 		«ENDFOR»
 	'''
 
+	// Devuelve la sustitucion del simbolo ampersand asociado al idioma en que este programado el bot
+	def ampersandSubstitution(Language lang) {
+		switch (lang) {
+			case Language.ENGLISH:
+				return 'and'
+			case Language.SPANISH:
+				return 'y'
+			case Language.DANISH:
+				return 'og'
+			case Language.GERMAN:
+				return 'und'
+			case Language.FRENCH:
+				return 'et'
+			case Language.INDONESIAN:
+				return 'dan'
+			case Language.ITALIAN:
+				return 'e'
+			case Language.DUTCH:
+				return 'en'
+			case Language.NORWEGIAN:
+				return 'og'
+			case Language.POLISH:
+				return 'i'
+			case Language.PORTUGUESE:
+				return 'e'
+			case Language.SWEDISH:
+				return 'och'
+			case Language.TURKISH:
+				return 've'
+			case Language.UKRANIAN:
+				return 'i'
+			default:
+				return 'and'
+		}
+	}
+	
 	// Obtencion de abreviacion del lenguage
 	def languageAbbreviation(Language lan) {
 		switch (lan) {

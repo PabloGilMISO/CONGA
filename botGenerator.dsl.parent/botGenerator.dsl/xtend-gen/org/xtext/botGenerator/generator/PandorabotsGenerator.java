@@ -138,6 +138,8 @@ public class PandorabotsGenerator {
     StringConcatenation _builder = new StringConcatenation();
     _builder.append("[");
     _builder.newLine();
+    _builder.append("[\"\\/\", \" slash \"],");
+    _builder.newLine();
     _builder.append("[\":0\", \" colon 0\"],");
     _builder.newLine();
     _builder.append("[\":1\", \" colon 1\"],");
@@ -489,7 +491,7 @@ public class PandorabotsGenerator {
                   for(final Token token : _tokens) {
                     {
                       if ((token instanceof Literal)) {
-                        String _replace = ((Literal)token).getText().replace("?", " #").replace("&", "and");
+                        String _replace = ((Literal)token).getText().replace("?", " #").replace("&", this.ampersandSubstitution(language.getLanguage()));
                         _builder.append(_replace);
                       } else {
                         if ((token instanceof ParameterReferenceToken)) {
@@ -507,7 +509,7 @@ public class PandorabotsGenerator {
                   if (_not) {
                     _builder.append("    ");
                     _builder.append("<that>");
-                    String _replace_1 = that.replaceAll("[?.!]", " ").replace("&", "and");
+                    String _replace_1 = that.replaceAll("[?.!]", " ").replace("&", this.ampersandSubstitution(language.getLanguage()));
                     _builder.append(_replace_1);
                     _builder.append("</that>");
                     _builder.newLineIfNotEmpty();
@@ -663,7 +665,7 @@ public class PandorabotsGenerator {
                 _builder_1.newLineIfNotEmpty();
                 _builder_1.append("    ");
                 _builder_1.append("<that>");
-                String _replace = this.getParamPromptByName(transition.getIntent(), key).replaceAll("[?.!]", " ").replace("&", "and");
+                String _replace = this.getParamPromptByName(transition.getIntent(), key).replaceAll("[?.!]", " ").replace("&", this.ampersandSubstitution(transition.getIntent().getInputs().get(0).getLanguage()));
                 _builder_1.append(_replace);
                 _builder_1.append("</that>");
                 _builder_1.newLineIfNotEmpty();
@@ -703,7 +705,7 @@ public class PandorabotsGenerator {
                 _builder_2.newLineIfNotEmpty();
                 _builder_2.append("    ");
                 _builder_2.append("<that>");
-                String _replace_1 = this.getParamPromptByName(transition.getIntent(), key).replaceAll("[?.!]", " ").replace("&", "and");
+                String _replace_1 = this.getParamPromptByName(transition.getIntent(), key).replaceAll("[?.!]", " ").replace("&", this.ampersandSubstitution(transition.getIntent().getInputs().get(0).getLanguage()));
                 _builder_2.append(_replace_1);
                 _builder_2.append("</that>");
                 _builder_2.newLineIfNotEmpty();
@@ -743,7 +745,7 @@ public class PandorabotsGenerator {
                 _builder_3.newLineIfNotEmpty();
                 _builder_3.append("    ");
                 _builder_3.append("<that>");
-                String _replace_2 = this.getParamPromptByName(transition.getIntent(), key).replaceAll("[?.!]", " ").replace("&", "and");
+                String _replace_2 = this.getParamPromptByName(transition.getIntent(), key).replaceAll("[.!]", " ").replace("&", this.ampersandSubstitution(transition.getIntent().getInputs().get(0).getLanguage())).replace("?", " #");
                 _builder_3.append(_replace_2);
                 _builder_3.append("</that>");
                 _builder_3.newLineIfNotEmpty();
@@ -783,7 +785,7 @@ public class PandorabotsGenerator {
                 _builder_4.newLineIfNotEmpty();
                 _builder_4.append("    ");
                 _builder_4.append("<that>");
-                String _replace_3 = this.getParamPromptByName(transition.getIntent(), key).replaceAll("[?.!]", " ").replace("&", "and");
+                String _replace_3 = this.getParamPromptByName(transition.getIntent(), key).replaceAll("[?.!]", " ").replace("&", this.ampersandSubstitution(transition.getIntent().getInputs().get(0).getLanguage())).replace("?", " #");
                 _builder_4.append(_replace_3);
                 _builder_4.append("</that>");
                 _builder_4.newLineIfNotEmpty();
@@ -823,7 +825,7 @@ public class PandorabotsGenerator {
                 _builder_5.newLineIfNotEmpty();
                 _builder_5.append("    ");
                 _builder_5.append("<that>");
-                String _replace_4 = this.getParamPromptByName(transition.getIntent(), key).replaceAll("[?.!]", " ").replace("&", "and");
+                String _replace_4 = this.getParamPromptByName(transition.getIntent(), key).replaceAll("[?.!]", " ").replace("&", this.ampersandSubstitution(transition.getIntent().getInputs().get(0).getLanguage())).replace("?", " #");
                 _builder_5.append(_replace_4);
                 _builder_5.append("</that>");
                 _builder_5.newLineIfNotEmpty();
@@ -864,7 +866,7 @@ public class PandorabotsGenerator {
             _builder_5.newLineIfNotEmpty();
             _builder_5.append("    ");
             _builder_5.append("<that>");
-            String _replace_4 = this.getParamPromptByName(transition.getIntent(), key).replaceAll("[?.!]", " ").replace("&", "and");
+            String _replace_4 = this.getParamPromptByName(transition.getIntent(), key).replaceAll("[?.!]", " ").replace("&", this.ampersandSubstitution(transition.getIntent().getInputs().get(0).getLanguage())).replace("?", " #");
             _builder_5.append(_replace_4);
             _builder_5.append("</that>");
             _builder_5.newLineIfNotEmpty();
@@ -935,7 +937,7 @@ public class PandorabotsGenerator {
       _builder_1.newLineIfNotEmpty();
       _builder_1.append((newIndent + "  "));
       _builder_1.append("<li value=\"unknown\">");
-      String _replace = this.getParamPromptByName(intent, currentParam).replace("&", "and");
+      String _replace = this.getParamPromptByName(intent, currentParam).replace("&", this.ampersandSubstitution(intent.getInputs().get(0).getLanguage()));
       _builder_1.append(_replace);
       _builder_1.append("</li>");
       _builder_1.newLineIfNotEmpty();
@@ -1382,7 +1384,7 @@ public class PandorabotsGenerator {
                 _builder.newLineIfNotEmpty();
                 {
                   Object _get = langActions.get(key);
-                  for(final String act : ((List<String>) _get)) {
+                  for(final String act : ((ArrayList<String>) _get)) {
                     _builder.append("          ");
                     _builder.append("<srai>");
                     String _upperCase = ((intentName + ((String) key)) + act).replaceAll("[ _]", "").toUpperCase();
@@ -1395,7 +1397,7 @@ public class PandorabotsGenerator {
                   if (((langActions.get("others") != null) && Objects.equal(flag, ""))) {
                     {
                       Object _get_1 = langActions.get("others");
-                      for(final String act_1 : ((List<String>) _get_1)) {
+                      for(final String act_1 : ((ArrayList<String>) _get_1)) {
                         _builder.append("          ");
                         _builder.append("<srai>");
                         String _replaceAll = (intentName + act_1).toUpperCase().replaceAll("[ _]", "");
@@ -1519,7 +1521,7 @@ public class PandorabotsGenerator {
                       for(final String response : _allIntentResponses) {
                         _builder.append("        ");
                         _builder.append("<li>");
-                        String _replace = response.replaceAll("[?.!]", " ").replace("&", "and");
+                        String _replace = response.replaceAll("[?.!]", " ").replace("&", this.ampersandSubstitution(language_1.getLanguage()));
                         _builder.append(_replace);
                         _builder.append("</li>");
                         _builder.newLineIfNotEmpty();
@@ -1537,7 +1539,7 @@ public class PandorabotsGenerator {
                   } else {
                     _builder.append("    ");
                     _builder.append("<template>");
-                    String _replace_1 = this.getAllIntentResponses(language_1).get(0).replaceAll("[?.!]", " ").replace("&", "and");
+                    String _replace_1 = this.getAllIntentResponses(language_1).get(0).replaceAll("[?.!]", " ").replace("&", this.ampersandSubstitution(language_1.getLanguage()));
                     _builder.append(_replace_1);
                     _builder.append("</template>");
                     _builder.newLineIfNotEmpty();
@@ -1555,10 +1557,8 @@ public class PandorabotsGenerator {
               _builder.newLineIfNotEmpty();
               _builder.append("    ");
               _builder.append("<pattern>");
-              String _languageAbbreviation = this.languageAbbreviation(bot.getLanguages().get(0));
-              String _plus = (intentName + _languageAbbreviation);
               String _name_1 = ((Empty)action).getName();
-              String _upperCase_2 = (_plus + _name_1).replaceAll("[ _]", "").toUpperCase();
+              String _upperCase_2 = (intentName + _name_1).replaceAll("[ _]", "").toUpperCase();
               _builder.append(_upperCase_2);
               _builder.append("</pattern>");
               _builder.newLineIfNotEmpty();
@@ -1607,8 +1607,8 @@ public class PandorabotsGenerator {
                   _builder.append("      ");
                   _builder.append("<callapi response_code_var=\"response_");
                   String _name_4 = ((HTTPRequest)action).getName();
-                  String _plus_1 = (prefix + _name_4);
-                  _builder.append(_plus_1);
+                  String _plus = (prefix + _name_4);
+                  _builder.append(_plus);
                   _builder.append("\">");
                   _builder.newLineIfNotEmpty();
                   _builder.append("        ");
@@ -1681,8 +1681,8 @@ public class PandorabotsGenerator {
                     _builder.append("      ");
                     _builder.append("<get name=\"response_");
                     String _name_8 = ((HTTPResponse) action).getHTTPRequest().getName();
-                    String _plus_2 = (prefix + _name_8);
-                    _builder.append(_plus_2);
+                    String _plus_1 = (prefix + _name_8);
+                    _builder.append(_plus_1);
                     _builder.append("\"/>");
                     _builder.newLineIfNotEmpty();
                     _builder.append("    ");
@@ -1700,6 +1700,45 @@ public class PandorabotsGenerator {
       }
     }
     return _builder;
+  }
+  
+  public String ampersandSubstitution(final Language lang) {
+    if (lang != null) {
+      switch (lang) {
+        case ENGLISH:
+          return "and";
+        case SPANISH:
+          return "y";
+        case DANISH:
+          return "og";
+        case GERMAN:
+          return "und";
+        case FRENCH:
+          return "et";
+        case INDONESIAN:
+          return "dan";
+        case ITALIAN:
+          return "e";
+        case DUTCH:
+          return "en";
+        case NORWEGIAN:
+          return "og";
+        case POLISH:
+          return "i";
+        case PORTUGUESE:
+          return "e";
+        case SWEDISH:
+          return "och";
+        case TURKISH:
+          return "ve";
+        case UKRANIAN:
+          return "i";
+        default:
+          return "and";
+      }
+    } else {
+      return "and";
+    }
   }
   
   public String languageAbbreviation(final Language lan) {
