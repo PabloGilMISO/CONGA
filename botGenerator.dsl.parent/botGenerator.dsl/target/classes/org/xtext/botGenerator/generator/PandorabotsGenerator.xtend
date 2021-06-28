@@ -46,13 +46,18 @@ class PandorabotsGenerator {
 
 		this.zip = zip
 
+//		for (lang: bot.languages) {
+//			var langPath = path + '/' + lang.languageAbbreviation
+			
 		// Creacion de fichero de propiedades .properties
+//		var systemPropertiesName = langPath + "/system/" + resourceName.toLowerCase().replace(' ', '_') + ".properties"
 		var systemPropertiesName = path + "/system/" + resourceName.toLowerCase().replace(' ', '_') + ".properties"
 		fsa.generateFile(systemPropertiesName, systemFileFill())
 		var systemPropertiesValue = fsa.readBinaryFile(systemPropertiesName)
 		zip.addFileToFolder("system", resourceName.toLowerCase().replace(' ', '_') + ".properties", systemPropertiesValue)
 
 		// Creacion de fichero UDC
+//		var udcName = langPath + "/files/" + "udc.aiml"
 		var udcName = path + "/files/" + "udc.aiml"
 		fsa.generateFile(udcName, udcFileFill())
 		var udcValue = fsa.readBinaryFile(udcName)
@@ -63,23 +68,29 @@ class PandorabotsGenerator {
 		
 		var utilsPath = Paths.get(congaPath + "utils.aiml")
 		var utils = new String(Files.readAllBytes(utilsPath))
+//		fsa.generateFile(langPath + "/files/utils.aiml", utils)
+//		var utilsValue = fsa.readBinaryFile(langPath + "/files/utils.aiml")
 		fsa.generateFile(path + "/files/utils.aiml", utils)
 		var utilsValue = fsa.readBinaryFile(path + "/files/utils.aiml")
 		zip.addFileToFolder("files", "utils.aiml", utilsValue)
 		
 		var aimlSLPath = Paths.get(congaPath + "aimlstandardlibrary.aiml")
 		var aimlSL = new String(Files.readAllBytes(aimlSLPath))
+//		fsa.generateFile(langPath + "/files/aimlstandardlibrary.aiml", aimlSL)
+//		var aimlSLValue = fsa.readBinaryFile(langPath + "/files/aimlstandardlibrary.aiml")
 		fsa.generateFile(path + "/files/aimlstandardlibrary.aiml", aimlSL)
 		var aimlSLValue = fsa.readBinaryFile(path + "/files/aimlstandardlibrary.aiml")
 		zip.addFileToFolder("files", "aimlstandardlibrary.aiml", aimlSLValue)
 		
 		// Generacion de ficheros de sustituciones automaticas vacios
-		generateEmptySubstitutions(fsa)
+//		generateEmptySubstitutions(fsa, '/' + lang.languageAbbreviation)
+		generateEmptySubstitutions(fsa, "")
 		
 		// Obtencion de todas las entities del modelo
 		var entities = resource.allContents.filter(Entity).toList
 		for (Entity entity : entities) {
 			// Creacion de map para la entity correspondiente
+//			var entityPath = langPath + "/maps/" + entity.name + ".map"
 			var entityPath = path + "/maps/" + entity.name + ".map"
 			
 			// Generacion del archivo map asociado a la entity concreta
@@ -92,6 +103,7 @@ class PandorabotsGenerator {
 				for (input : language_input.inputs) {
 					// Solo se contemplan SimpleInputs
 					if (input instanceof SimpleInput) {
+//						var inputSetPath = langPath + "/sets/" + input.name + ".set"
 						var inputSetPath = path + "/sets/" + input.name + ".set"
 						fsa.generateFile(inputSetPath, entitySetFill(input))
 						var inputSetValue = fsa.readBinaryFile(inputSetPath)
@@ -103,20 +115,22 @@ class PandorabotsGenerator {
 
 		// En flows se guardan los flujos de conversacion
 		for (UserInteraction transition : bot.flows) {
+//			createTransitionFiles(transition, lang.languageAbbreviation, fsa, bot)
 			createTransitionFiles(transition, "", fsa, bot)
 		}
 		
-		zip.close
+		zip.close	
+//		}
 	}
 	
 	// Genera los ficheros de sustituciones vacios para que no haya problemas de sustituciones indeseadas
-	def generateEmptySubstitutions(IFileSystemAccess2 fsa) {
+	def generateEmptySubstitutions(IFileSystemAccess2 fsa, String prefix) {
 		// Nombres de ficheros
-		var person2Name = path + "/substitutions/" + "person2.substitution"
-		var personName = path + "/substitutions/" + "person.substitution"
-		var normalName = path + "/substitutions/" + "normal.substitution"
-		var genderName = path + "/substitutions/" + "gender.substitution"
-		var denormalName = path + "/substitutions/" + "denormal.substitution"
+		var person2Name = path + prefix + "/substitutions/" + "person2.substitution"
+		var personName = path + prefix + "/substitutions/" + "person.substitution"
+		var normalName = path + prefix + "/substitutions/" + "normal.substitution"
+		var genderName = path + prefix + "/substitutions/" + "gender.substitution"
+		var denormalName = path + prefix + "/substitutions/" + "denormal.substitution"
 		
 		// Generacion de archivos
 		fsa.generateFile(person2Name, "[]")
@@ -212,7 +226,7 @@ class PandorabotsGenerator {
 
 	// Guarda los intents durante el recorrido de los flujos de conversación
 	def void createTransitionFiles(UserInteraction transition, String prefix, IFileSystemAccess2 fsa, Bot bot) {
-		var intentFileName = (prefix + transition.intent.name).toLowerCase().replaceAll('[ _]', '')
+		var intentFileName = (transition.intent.name).toLowerCase().replaceAll('[ _]', '')
 		var intentFileContent = '''
 		<?xml version="1.0" encoding="UTF-8"?>
 		«  »<aiml>
@@ -221,8 +235,8 @@ class PandorabotsGenerator {
 		intentFileContent += '''
 		</aiml>
 		'''
-		fsa.generateFile(path + "/files/" + intentFileName + ".aiml", intentFileContent)
-		var intentValue = fsa.readBinaryFile(path + "/files/" + intentFileName + ".aiml")
+		fsa.generateFile(path + '/' + prefix + "/files/" + intentFileName + ".aiml", intentFileContent)
+		var intentValue = fsa.readBinaryFile(path + '/' + prefix + "/files/" + intentFileName + ".aiml")
 		zip.addFileToFolder("files", intentFileName + ".aiml", intentValue)
 	}
 
@@ -317,6 +331,10 @@ class PandorabotsGenerator {
 							«intentFile(outcoming, bot, transition.intent.name, response.toString())»
 						«ENDFOR»
 					«ENDFOR»
+				«ENDFOR»
+			«ELSEIF action instanceof Empty»
+				«FOR outcoming: transition.target.outcoming»
+					«intentFile(outcoming, bot, transition.intent.name, "")»
 				«ENDFOR»
 			«ENDIF»
 		«ENDFOR»
@@ -668,47 +686,47 @@ class PandorabotsGenerator {
 	'''
 		«var intentName = ""»
 		«"  "»<!-- Main intents -->
-		«FOR language: transition.intent.inputs»
-			«var lang = ""»
-		  	«IF language.language != Language.EMPTY»
-		    	«{lang = language.language.languageAbbreviation; ""}»
-		  	«ELSE»
-		    	«{lang = bot.languages.get(0).languageAbbreviation; ""}»
-		    «ENDIF»
-			«{intentName = (prefix + transition.intent.name).toUpperCase().replaceAll('[ _]', ''); ""}»
-			«"  "»<category>
-			«"    "»<pattern>«intentName»</pattern>
-			«"    "»<template>
-			«"      "»<condition name="pandoralang">
-			«var flag = ""»
-			«var HashMap<?, ?> langActions»
-			«{langActions = getActionsByLanguage(transition); ""}»
-			«FOR key: langActions.keySet»
-				«IF key !== "others"»
-					«"        "»<li value="«key»">
-					«FOR act: (langActions.get(key) as ArrayList<String>)»
-						«"          "»<srai>«(intentName + (key as String) + act).replaceAll('[ _]', '').toUpperCase()»</srai>
-					«ENDFOR»
-					«IF langActions.get("others") !== null && flag == ""»
-						«FOR act: (langActions.get("others") as ArrayList<String>)»
-							«"          "»<srai>«(intentName + act).toUpperCase().replaceAll('[ _]', '')»</srai>
-						«ENDFOR»
-						«{flag="x"; ""}»
-					«ENDIF»
-					«"        "»</li>
-				«ENDIF»
-			«ENDFOR»
-			«IF langActions.size() == 1 && langActions.get("others") !== null»
-				«"        "»<li>
-				«FOR act: langActions.get("others") as List<String>»
-					«"          "»<srai>«(intentName + act).toUpperCase().replaceAll('[ _]', '')»</srai>
+«««		«FOR language: transition.intent.inputs»
+«««		«var lang = ""»
+«««	  	«IF language.language != Language.EMPTY»
+«««	    	«{lang = language.language.languageAbbreviation; ""}»
+«««	  	«ELSE»
+«««	    	«{lang = bot.languages.get(0).languageAbbreviation; ""}»
+«««	    «ENDIF»
+		«{intentName = (prefix + transition.intent.name).toUpperCase().replaceAll('[ _]', ''); ""}»
+		«"  "»<category>
+		«"    "»<pattern>«intentName»</pattern>
+		«"    "»<template>
+		«"      "»<condition name="pandoralang">
+		«var flag = ""»
+		«var HashMap<?, ?> langActions»
+		«{langActions = getActionsByLanguage(transition); ""}»
+		«FOR key: langActions.keySet»
+			«IF key !== "others"»
+				«"        "»<li value="«key»">
+				«FOR act: (langActions.get(key) as ArrayList<String>)»
+					«"          "»<srai>«(intentName + (key as String) + act).replaceAll('[ _]', '').toUpperCase()»</srai>
 				«ENDFOR»
+				«IF langActions.get("others") !== null && flag == ""»
+					«FOR act: (langActions.get("others") as ArrayList<String>)»
+						«"          "»<srai>«(intentName + act).toUpperCase().replaceAll('[ _]', '')»</srai>
+					«ENDFOR»
+					«{flag="x"; ""}»
+				«ENDIF»
 				«"        "»</li>
 			«ENDIF»
-			«"      "»</condition>
-			«"    "»</template>
-			«"  "»</category>
-	    «ENDFOR»
+		«ENDFOR»
+		«IF langActions.size() == 1 && langActions.get("others") !== null»
+			«"        "»<li>
+			«FOR act: langActions.get("others") as List<String>»
+				«"          "»<srai>«(intentName + act).toUpperCase().replaceAll('[ _]', '')»</srai>
+			«ENDFOR»
+			«"        "»</li>
+		«ENDIF»
+		«"      "»</condition>
+		«"    "»</template>
+		«"  "»</category>
+«««	    «ENDFOR»
 		«"  "»<!-- Action intents -->
 		«{intentName = (prefix + transition.intent.name).toUpperCase().replaceAll('[ _]', ''); ""}»
 		«FOR action: transition.target.actions»

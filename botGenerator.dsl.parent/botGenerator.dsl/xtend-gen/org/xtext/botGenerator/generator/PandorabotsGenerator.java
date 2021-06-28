@@ -87,7 +87,7 @@ public class PandorabotsGenerator {
       fsa.generateFile((this.path + "/files/aimlstandardlibrary.aiml"), aimlSL);
       InputStream aimlSLValue = fsa.readBinaryFile((this.path + "/files/aimlstandardlibrary.aiml"));
       zip.addFileToFolder("files", "aimlstandardlibrary.aiml", aimlSLValue);
-      this.generateEmptySubstitutions(fsa);
+      this.generateEmptySubstitutions(fsa, "");
       List<Entity> entities = IteratorExtensions.<Entity>toList(Iterators.<Entity>filter(resource.getAllContents(), Entity.class));
       for (final Entity entity : entities) {
         {
@@ -127,12 +127,12 @@ public class PandorabotsGenerator {
     }
   }
   
-  public void generateEmptySubstitutions(final IFileSystemAccess2 fsa) {
-    String person2Name = ((this.path + "/substitutions/") + "person2.substitution");
-    String personName = ((this.path + "/substitutions/") + "person.substitution");
-    String normalName = ((this.path + "/substitutions/") + "normal.substitution");
-    String genderName = ((this.path + "/substitutions/") + "gender.substitution");
-    String denormalName = ((this.path + "/substitutions/") + "denormal.substitution");
+  public void generateEmptySubstitutions(final IFileSystemAccess2 fsa, final String prefix) {
+    String person2Name = (((this.path + prefix) + "/substitutions/") + "person2.substitution");
+    String personName = (((this.path + prefix) + "/substitutions/") + "person.substitution");
+    String normalName = (((this.path + prefix) + "/substitutions/") + "normal.substitution");
+    String genderName = (((this.path + prefix) + "/substitutions/") + "gender.substitution");
+    String denormalName = (((this.path + prefix) + "/substitutions/") + "denormal.substitution");
     fsa.generateFile(person2Name, "[]");
     fsa.generateFile(personName, "[]");
     StringConcatenation _builder = new StringConcatenation();
@@ -297,8 +297,7 @@ public class PandorabotsGenerator {
   }
   
   public void createTransitionFiles(final UserInteraction transition, final String prefix, final IFileSystemAccess2 fsa, final Bot bot) {
-    String _name = transition.getIntent().getName();
-    String intentFileName = (prefix + _name).toLowerCase().replaceAll("[ _]", "");
+    String intentFileName = transition.getIntent().getName().toLowerCase().replaceAll("[ _]", "");
     StringConcatenation _builder = new StringConcatenation();
     _builder.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
     _builder.newLine();
@@ -313,8 +312,8 @@ public class PandorabotsGenerator {
     _builder_1.append("</aiml>");
     _builder_1.newLine();
     intentFileContent = (_intentFileContent_1 + _builder_1);
-    fsa.generateFile((((this.path + "/files/") + intentFileName) + ".aiml"), intentFileContent);
-    InputStream intentValue = fsa.readBinaryFile((((this.path + "/files/") + intentFileName) + ".aiml"));
+    fsa.generateFile((((((this.path + "/") + prefix) + "/files/") + intentFileName) + ".aiml"), intentFileContent);
+    InputStream intentValue = fsa.readBinaryFile((((((this.path + "/") + prefix) + "/files/") + intentFileName) + ".aiml"));
     this.zip.addFileToFolder("files", (intentFileName + ".aiml"), intentValue);
   }
   
@@ -456,6 +455,17 @@ public class PandorabotsGenerator {
                           }
                         }
                       }
+                    }
+                  }
+                }
+              } else {
+                if ((action instanceof Empty)) {
+                  {
+                    EList<UserInteraction> _outcoming_1 = transition.getTarget().getOutcoming();
+                    for(final UserInteraction outcoming_1 : _outcoming_1) {
+                      Object _intentFile_1 = this.intentFile(outcoming_1, bot, transition.getIntent().getName(), "");
+                      _builder.append(_intentFile_1);
+                      _builder.newLineIfNotEmpty();
                     }
                   }
                 }
@@ -1313,128 +1323,79 @@ public class PandorabotsGenerator {
     _builder.append("  ");
     _builder.append("<!-- Main intents -->");
     _builder.newLineIfNotEmpty();
+    String _xblockexpression = null;
     {
-      EList<IntentLanguageInputs> _inputs = transition.getIntent().getInputs();
-      for(final IntentLanguageInputs language : _inputs) {
-        String lang = "";
-        _builder.newLineIfNotEmpty();
+      String _name = transition.getIntent().getName();
+      intentName = (prefix + _name).toUpperCase().replaceAll("[ _]", "");
+      _xblockexpression = "";
+    }
+    _builder.append(_xblockexpression);
+    _builder.newLineIfNotEmpty();
+    _builder.append("  ");
+    _builder.append("<category>");
+    _builder.newLineIfNotEmpty();
+    _builder.append("    ");
+    _builder.append("<pattern>");
+    _builder.append(intentName);
+    _builder.append("</pattern>");
+    _builder.newLineIfNotEmpty();
+    _builder.append("    ");
+    _builder.append("<template>");
+    _builder.newLineIfNotEmpty();
+    _builder.append("      ");
+    _builder.append("<condition name=\"pandoralang\">");
+    _builder.newLineIfNotEmpty();
+    String flag = "";
+    _builder.newLineIfNotEmpty();
+    HashMap<?, ?> langActions = null;
+    _builder.newLineIfNotEmpty();
+    String _xblockexpression_1 = null;
+    {
+      langActions = this.getActionsByLanguage(transition);
+      _xblockexpression_1 = "";
+    }
+    _builder.append(_xblockexpression_1);
+    _builder.newLineIfNotEmpty();
+    {
+      Set<?> _keySet = langActions.keySet();
+      for(final Object key : _keySet) {
         {
-          Language _language = language.getLanguage();
-          boolean _notEquals = (!Objects.equal(_language, Language.EMPTY));
-          if (_notEquals) {
-            String _xblockexpression = null;
-            {
-              lang = this.languageAbbreviation(language.getLanguage());
-              _xblockexpression = "";
-            }
-            _builder.append(_xblockexpression);
+          if ((key != "others")) {
+            _builder.append("        ");
+            _builder.append("<li value=\"");
+            _builder.append(key);
+            _builder.append("\">");
             _builder.newLineIfNotEmpty();
-          } else {
-            String _xblockexpression_1 = null;
             {
-              lang = this.languageAbbreviation(bot.getLanguages().get(0));
-              _xblockexpression_1 = "";
-            }
-            _builder.append(_xblockexpression_1);
-            _builder.newLineIfNotEmpty();
-          }
-        }
-        String _xblockexpression_2 = null;
-        {
-          String _name = transition.getIntent().getName();
-          intentName = (prefix + _name).toUpperCase().replaceAll("[ _]", "");
-          _xblockexpression_2 = "";
-        }
-        _builder.append(_xblockexpression_2);
-        _builder.newLineIfNotEmpty();
-        _builder.append("  ");
-        _builder.append("<category>");
-        _builder.newLineIfNotEmpty();
-        _builder.append("    ");
-        _builder.append("<pattern>");
-        _builder.append(intentName);
-        _builder.append("</pattern>");
-        _builder.newLineIfNotEmpty();
-        _builder.append("    ");
-        _builder.append("<template>");
-        _builder.newLineIfNotEmpty();
-        _builder.append("      ");
-        _builder.append("<condition name=\"pandoralang\">");
-        _builder.newLineIfNotEmpty();
-        String flag = "";
-        _builder.newLineIfNotEmpty();
-        HashMap<?, ?> langActions = null;
-        _builder.newLineIfNotEmpty();
-        String _xblockexpression_3 = null;
-        {
-          langActions = this.getActionsByLanguage(transition);
-          _xblockexpression_3 = "";
-        }
-        _builder.append(_xblockexpression_3);
-        _builder.newLineIfNotEmpty();
-        {
-          Set<?> _keySet = langActions.keySet();
-          for(final Object key : _keySet) {
-            {
-              if ((key != "others")) {
-                _builder.append("        ");
-                _builder.append("<li value=\"");
-                _builder.append(key);
-                _builder.append("\">");
+              Object _get = langActions.get(key);
+              for(final String act : ((ArrayList<String>) _get)) {
+                _builder.append("          ");
+                _builder.append("<srai>");
+                String _upperCase = ((intentName + ((String) key)) + act).replaceAll("[ _]", "").toUpperCase();
+                _builder.append(_upperCase);
+                _builder.append("</srai>");
                 _builder.newLineIfNotEmpty();
+              }
+            }
+            {
+              if (((langActions.get("others") != null) && Objects.equal(flag, ""))) {
                 {
-                  Object _get = langActions.get(key);
-                  for(final String act : ((ArrayList<String>) _get)) {
+                  Object _get_1 = langActions.get("others");
+                  for(final String act_1 : ((ArrayList<String>) _get_1)) {
                     _builder.append("          ");
                     _builder.append("<srai>");
-                    String _upperCase = ((intentName + ((String) key)) + act).replaceAll("[ _]", "").toUpperCase();
-                    _builder.append(_upperCase);
+                    String _replaceAll = (intentName + act_1).toUpperCase().replaceAll("[ _]", "");
+                    _builder.append(_replaceAll);
                     _builder.append("</srai>");
                     _builder.newLineIfNotEmpty();
                   }
                 }
+                String _xblockexpression_2 = null;
                 {
-                  if (((langActions.get("others") != null) && Objects.equal(flag, ""))) {
-                    {
-                      Object _get_1 = langActions.get("others");
-                      for(final String act_1 : ((ArrayList<String>) _get_1)) {
-                        _builder.append("          ");
-                        _builder.append("<srai>");
-                        String _replaceAll = (intentName + act_1).toUpperCase().replaceAll("[ _]", "");
-                        _builder.append(_replaceAll);
-                        _builder.append("</srai>");
-                        _builder.newLineIfNotEmpty();
-                      }
-                    }
-                    String _xblockexpression_4 = null;
-                    {
-                      flag = "x";
-                      _xblockexpression_4 = "";
-                    }
-                    _builder.append(_xblockexpression_4);
-                    _builder.newLineIfNotEmpty();
-                  }
+                  flag = "x";
+                  _xblockexpression_2 = "";
                 }
-                _builder.append("        ");
-                _builder.append("</li>");
-                _builder.newLineIfNotEmpty();
-              }
-            }
-          }
-        }
-        {
-          if (((langActions.size() == 1) && (langActions.get("others") != null))) {
-            _builder.append("        ");
-            _builder.append("<li>");
-            _builder.newLineIfNotEmpty();
-            {
-              Object _get_2 = langActions.get("others");
-              for(final String act_2 : ((List<String>) _get_2)) {
-                _builder.append("          ");
-                _builder.append("<srai>");
-                String _replaceAll_1 = (intentName + act_2).toUpperCase().replaceAll("[ _]", "");
-                _builder.append(_replaceAll_1);
-                _builder.append("</srai>");
+                _builder.append(_xblockexpression_2);
                 _builder.newLineIfNotEmpty();
               }
             }
@@ -1443,27 +1404,48 @@ public class PandorabotsGenerator {
             _builder.newLineIfNotEmpty();
           }
         }
-        _builder.append("      ");
-        _builder.append("</condition>");
+      }
+    }
+    {
+      if (((langActions.size() == 1) && (langActions.get("others") != null))) {
+        _builder.append("        ");
+        _builder.append("<li>");
         _builder.newLineIfNotEmpty();
-        _builder.append("    ");
-        _builder.append("</template>");
-        _builder.newLineIfNotEmpty();
-        _builder.append("  ");
-        _builder.append("</category>");
+        {
+          Object _get_2 = langActions.get("others");
+          for(final String act_2 : ((List<String>) _get_2)) {
+            _builder.append("          ");
+            _builder.append("<srai>");
+            String _replaceAll_1 = (intentName + act_2).toUpperCase().replaceAll("[ _]", "");
+            _builder.append(_replaceAll_1);
+            _builder.append("</srai>");
+            _builder.newLineIfNotEmpty();
+          }
+        }
+        _builder.append("        ");
+        _builder.append("</li>");
         _builder.newLineIfNotEmpty();
       }
     }
+    _builder.append("      ");
+    _builder.append("</condition>");
+    _builder.newLineIfNotEmpty();
+    _builder.append("    ");
+    _builder.append("</template>");
+    _builder.newLineIfNotEmpty();
+    _builder.append("  ");
+    _builder.append("</category>");
+    _builder.newLineIfNotEmpty();
     _builder.append("  ");
     _builder.append("<!-- Action intents -->");
     _builder.newLineIfNotEmpty();
-    String _xblockexpression_5 = null;
+    String _xblockexpression_3 = null;
     {
       String _name = transition.getIntent().getName();
       intentName = (prefix + _name).toUpperCase().replaceAll("[ _]", "");
-      _xblockexpression_5 = "";
+      _xblockexpression_3 = "";
     }
-    _builder.append(_xblockexpression_5);
+    _builder.append(_xblockexpression_3);
     _builder.newLineIfNotEmpty();
     {
       EList<Action> _actions = transition.getTarget().getActions();
@@ -1471,28 +1453,28 @@ public class PandorabotsGenerator {
         {
           if ((action instanceof Text)) {
             {
-              EList<TextLanguageInput> _inputs_1 = ((Text)action).getInputs();
-              for(final TextLanguageInput language_1 : _inputs_1) {
-                String lang_1 = "";
+              EList<TextLanguageInput> _inputs = ((Text)action).getInputs();
+              for(final TextLanguageInput language : _inputs) {
+                String lang = "";
                 _builder.newLineIfNotEmpty();
                 {
-                  Language _language_1 = language_1.getLanguage();
-                  boolean _notEquals_1 = (!Objects.equal(_language_1, Language.EMPTY));
-                  if (_notEquals_1) {
-                    String _xblockexpression_6 = null;
+                  Language _language = language.getLanguage();
+                  boolean _notEquals = (!Objects.equal(_language, Language.EMPTY));
+                  if (_notEquals) {
+                    String _xblockexpression_4 = null;
                     {
-                      lang_1 = this.languageAbbreviation(language_1.getLanguage()).toUpperCase();
-                      _xblockexpression_6 = "";
+                      lang = this.languageAbbreviation(language.getLanguage()).toUpperCase();
+                      _xblockexpression_4 = "";
                     }
-                    _builder.append(_xblockexpression_6);
+                    _builder.append(_xblockexpression_4);
                     _builder.newLineIfNotEmpty();
                   } else {
-                    String _xblockexpression_7 = null;
+                    String _xblockexpression_5 = null;
                     {
-                      lang_1 = this.languageAbbreviation(bot.getLanguages().get(0)).toUpperCase();
-                      _xblockexpression_7 = "";
+                      lang = this.languageAbbreviation(bot.getLanguages().get(0)).toUpperCase();
+                      _xblockexpression_5 = "";
                     }
-                    _builder.append(_xblockexpression_7);
+                    _builder.append(_xblockexpression_5);
                     _builder.newLineIfNotEmpty();
                   }
                 }
@@ -1502,12 +1484,12 @@ public class PandorabotsGenerator {
                 _builder.append("    ");
                 _builder.append("<pattern>");
                 String _name = ((Text)action).getName();
-                String _upperCase_1 = ((intentName + lang_1) + _name).replaceAll("[ _]", "").toUpperCase();
+                String _upperCase_1 = ((intentName + lang) + _name).replaceAll("[ _]", "").toUpperCase();
                 _builder.append(_upperCase_1);
                 _builder.append("</pattern>");
                 _builder.newLineIfNotEmpty();
                 {
-                  int _length = ((Object[])Conversions.unwrapArray(this.getAllIntentResponses(language_1), Object.class)).length;
+                  int _length = ((Object[])Conversions.unwrapArray(this.getAllIntentResponses(language), Object.class)).length;
                   boolean _greaterThan = (_length > 1);
                   if (_greaterThan) {
                     _builder.append("    ");
@@ -1517,11 +1499,11 @@ public class PandorabotsGenerator {
                     _builder.append("<random>");
                     _builder.newLineIfNotEmpty();
                     {
-                      ArrayList<String> _allIntentResponses = this.getAllIntentResponses(language_1);
+                      ArrayList<String> _allIntentResponses = this.getAllIntentResponses(language);
                       for(final String response : _allIntentResponses) {
                         _builder.append("        ");
                         _builder.append("<li>");
-                        String _replace = response.replaceAll("[?.!]", " ").replace("&", this.ampersandSubstitution(language_1.getLanguage()));
+                        String _replace = response.replaceAll("[?.!]", " ").replace("&", this.ampersandSubstitution(language.getLanguage()));
                         _builder.append(_replace);
                         _builder.append("</li>");
                         _builder.newLineIfNotEmpty();
@@ -1539,7 +1521,7 @@ public class PandorabotsGenerator {
                   } else {
                     _builder.append("    ");
                     _builder.append("<template>");
-                    String _replace_1 = this.getAllIntentResponses(language_1).get(0).replaceAll("[?.!]", " ").replace("&", this.ampersandSubstitution(language_1.getLanguage()));
+                    String _replace_1 = this.getAllIntentResponses(language).get(0).replaceAll("[?.!]", " ").replace("&", this.ampersandSubstitution(language.getLanguage()));
                     _builder.append(_replace_1);
                     _builder.append("</template>");
                     _builder.newLineIfNotEmpty();
