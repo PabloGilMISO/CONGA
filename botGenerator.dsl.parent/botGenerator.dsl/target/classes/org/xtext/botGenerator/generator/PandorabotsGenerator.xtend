@@ -32,6 +32,7 @@ import org.eclipse.xtext.generator.IGeneratorContext
 import zipUtils.Zip
 import generator.KeyValue
 import generator.Empty
+import java.util.Map
 
 class PandorabotsGenerator {
 	String path;
@@ -275,16 +276,31 @@ class PandorabotsGenerator {
 	
 	// Devuelve una lista ordenada de pares <parametro, frase de peticion> de un intent concreto
 	def getIntentParameterPrompts(Intent intent) {
-		var ret = new ArrayList<Pair<String, String>>()
+//		var ret = new ArrayList<Pair<String, String>>()
+		var ret = new ArrayList<Pair<String, Map<String, List<String>>>>()
 		
-		for (parameter: intent.parameters)
-			ret.add(new Pair(parameter.name, parameter.prompts.get(0).prompts.get(0)))
+//		for (parameter: intent.parameters)
+//			ret.add(new Pair(parameter.name, parameter.prompts.get(0).prompts.get(0)))
+		for (parameter: intent.parameters) {
+			var langMap = new HashMap<String, List<String>>()
+			for (language: parameter.prompts) {
+				// Guardamos las frases de cada entity en cada lenguaje concreto en una lista dentro del diccionario 
+				// de lenguajes
+				var langPrompts = new ArrayList<String>()
+				for (prompt: language.prompts) {
+					langPrompts.add(prompt)
+				}
+				langMap.put(language.language.languageAbbreviation, langPrompts)
+			}
+			// Guardamos por cada entidad el diccionario con las entradas en cada idioma para solicitar una misma entidad
+			ret.add(new Pair(parameter.name, langMap))
+		}
 	
 		return ret
 	}
 	
 	// Extrae los nombres de parametros de una lista de pares <parametro, frase de peticion>
-	def getPromptsKeys(ArrayList<Pair<String, String>> list) {
+	def getPromptsKeys(ArrayList<Pair<String, Map<String, List<String>>>> list) {
 		var ret = new ArrayList<String>()
 		
 		for (elem: list)
@@ -293,7 +309,8 @@ class PandorabotsGenerator {
 		return ret
 	}
 	
-	// Devuelve el siguiente par <parametro, frase de peticion> de una frase concreta contenida en un intent concreto
+	// Devuelve el siguiente par <parametro, frases de peticion separadas por idioma> de una 
+	// frase concreta contenida en un intent concreto
 	def getNextParamPetition(Intent intent, TrainingPhrase phrase) {
 		var entities = getPhraseEntities(phrase)
 		var parameters = getIntentParameterPrompts(intent)
@@ -302,12 +319,12 @@ class PandorabotsGenerator {
 		keys.removeAll(entities)		
 		
 		if (keys.isEmpty())
-			return new Pair("", "")
+			return new Pair("", null)
 		
 		else
 			for	(param: parameters)
 				if(param.key == keys.get(0))
-					return param	
+					return param
 	}
 	
 	// Generador de codigo de un intent
@@ -371,10 +388,22 @@ class PandorabotsGenerator {
 				  	«ELSE»
 				    	«{lang = bot.languages.get(0).languageAbbreviation; ""}»
 				    «ENDIF»
-					«var String nextPrompt»
-					«{nextPrompt = getNextParamPetition(transition.intent, input).getValue(); ""}»
-					«IF nextPrompt !== ""»
-						«"      "»«nextPrompt»
+					«var Map<String, List<String>> nextPrompts»
+					«{nextPrompts = getNextParamPetition(transition.intent, input).getValue(); ""}»
+					«IF nextPrompts !== null»
+						«FOR promptLang: nextPrompts.keySet»
+							«IF promptLang == lang»
+								«IF nextPrompts.get(promptLang).length > 1»
+									«"      "»<random>
+									«FOR prompt: nextPrompts.get(promptLang)»
+										«"        "»<li>«prompt»<li/>
+									«ENDFOR»
+									«"      "»<random>
+								«ELSE»
+									«"      "»«nextPrompts.get(promptLang).get(0)»
+								«ENDIF»
+							«ENDIF»
+						«ENDFOR»
 					«ELSE»
 						«"      "»<think>
 						«"        "»<set name="pandoralang">«lang»</set>
@@ -402,79 +431,101 @@ class PandorabotsGenerator {
 			'''
 			for (key: parameters.keySet) {
 				var value = parameters.get(key)
-				var paramConditions = generateParamConditionsRec(transition.intent, new ArrayList<String>(parameters.keySet), "  ", prefix)
+//				var paramConditions = generateParamConditionsRec(transition.intent, new ArrayList<String>(parameters.keySet), "  ", prefix)
+				var String paramConditions
 				var completeKey = prefix + key
+				var paramPrompts = getParamPromptByName(transition.intent, key)
 				switch (value) {
 					case DefaultEntity.TEXT:
-						ret += 
-						'''
-						«"  "»<category>
-						«"    "»<pattern>*</pattern>
-						«"    "»<that>«getParamPromptByName(transition.intent, key).replaceAll('[?.!<>]', ' ').replace('&', transition.intent.inputs.get(0).language.ampersandSubstitution)»</that>
-						«"    "»<template>
-						«"      "»<think>
-						«"        "»<srai>SAVE«completeKey.toUpperCase()» <star/></srai>
-						«"      "»</think>
-						«paramConditions»
-						«"    "»</template>
-						«"  "»</category>
-						'''
+						for (language: paramPrompts.keySet) {
+							paramConditions = generateParamConditionsRec(transition.intent, new ArrayList<String>(parameters.keySet), "  ", prefix, language)
+							for (prompt: paramPrompts.get(language))
+								ret += 
+								'''
+								«"  "»<category>
+								«"    "»<pattern>*</pattern>
+								«"    "»<that>«prompt.replaceAll('[?.!<>]', ' ').replace('&', transition.intent.inputs.get(0).language.ampersandSubstitution)»</that>
+								«"    "»<template>
+								«"      "»<think>
+								«"        "»<srai>SAVE«completeKey.toUpperCase()» <star/></srai>
+								«"      "»</think>
+								«paramConditions»
+								«"    "»</template>
+								«"  "»</category>
+								'''
+						}
 					case DefaultEntity.TIME:
-						ret +=
-						'''
-						«"  "»<category>
-						«"    "»<pattern>* colon *</pattern>
-						«"    "»<that>«getParamPromptByName(transition.intent, key).replaceAll('[?.!<>]', ' ').replace('&', transition.intent.inputs.get(0).language.ampersandSubstitution)»</that>
-						«"    "»<template>
-						«"      "»<think>
-						«"        "»<srai>SAVE«completeKey.toUpperCase()» <star index="1"/>:<star index="2"/></srai>
-						«"      "»</think>
-						«paramConditions»
-						«"    "»</template>
-						«"  "»</category>
-						'''
+						for (language: paramPrompts.keySet) {
+							paramConditions = generateParamConditionsRec(transition.intent, new ArrayList<String>(parameters.keySet), "  ", prefix, language)
+							for (prompt: paramPrompts.get(language))
+								ret +=
+								'''
+								«"  "»<category>
+								«"    "»<pattern>* colon *</pattern>
+								«"    "»<that>«prompt.replaceAll('[?.!<>]', ' ').replace('&', transition.intent.inputs.get(0).language.ampersandSubstitution)»</that>
+								«"    "»<template>
+								«"      "»<think>
+								«"        "»<srai>SAVE«completeKey.toUpperCase()» <star index="1"/>:<star index="2"/></srai>
+								«"      "»</think>
+								«paramConditions»
+								«"    "»</template>
+								«"  "»</category>
+								'''
+						}
 					case DefaultEntity.DATE:
-						ret +=
-						'''
-						«"  "»<category>
-						«"    "»<pattern>* slash * slash *</pattern>
-						«"    "»<that>«getParamPromptByName(transition.intent, key).replaceAll('[.!]', ' ').replace('&', transition.intent.inputs.get(0).language.ampersandSubstitution).replace('?', " #")»</that>
-						«"    "»<template>
-						«"      "»<think>
-						«"        "»<srai>SAVE«completeKey.toUpperCase()» <star index="1"/>/<star index="2"/>/<star index="3"/></srai>
-						«"      "»</think>
-						«paramConditions»
-						«"    "»</template>
-						«"  "»</category>
-						'''
+						for (language: paramPrompts.keySet) {
+							paramConditions = generateParamConditionsRec(transition.intent, new ArrayList<String>(parameters.keySet), "  ", prefix, language)
+							for (prompt: paramPrompts.get(language))
+								ret +=
+								'''
+								«"  "»<category>
+								«"    "»<pattern>* slash * slash *</pattern>
+								«"    "»<that>«prompt.replaceAll('[.!]', ' ').replace('&', transition.intent.inputs.get(0).language.ampersandSubstitution).replace('?', " #")»</that>
+								«"    "»<template>
+								«"      "»<think>
+								«"        "»<srai>SAVE«completeKey.toUpperCase()» <star index="1"/>/<star index="2"/>/<star index="3"/></srai>
+								«"      "»</think>
+								«paramConditions»
+								«"    "»</template>
+								«"  "»</category>
+								'''
+						}
 					case DefaultEntity.NUMBER:
-						ret +=
-						'''
-						«"  "»<category>
-						«"    "»<pattern><set>number</set></pattern>
-						«"    "»<that>«getParamPromptByName(transition.intent, key).replaceAll('[?.!<>]', ' ').replace('&', transition.intent.inputs.get(0).language.ampersandSubstitution).replace('?', " #")»</that>
-						«"    "»<template>
-						«"      "»<think>
-						«"        "»<srai>SAVE«completeKey.toUpperCase()» <star/></srai>
-						«"      "»</think>
-						«paramConditions»
-						«"    "»</template>
-						«"  "»</category>
-						'''
+						for (language: paramPrompts.keySet) {
+							paramConditions = generateParamConditionsRec(transition.intent, new ArrayList<String>(parameters.keySet), "  ", prefix, language)
+							for (prompt: paramPrompts.get(language))
+								ret +=
+								'''
+								«"  "»<category>
+								«"    "»<pattern><set>number</set></pattern>
+								«"    "»<that>«prompt.replaceAll('[?.!<>]', ' ').replace('&', transition.intent.inputs.get(0).language.ampersandSubstitution).replace('?', " #")»</that>
+								«"    "»<template>
+								«"      "»<think>
+								«"        "»<srai>SAVE«completeKey.toUpperCase()» <star/></srai>
+								«"      "»</think>
+								«paramConditions»
+								«"    "»</template>
+								«"  "»</category>
+								'''
+						}
 					default: 
-						ret += 
-						'''
-						«"  "»<category>
-						«"    "»<pattern>*</pattern>
-						«"    "»<that>«getParamPromptByName(transition.intent, key).replaceAll('[?.!<>]', ' ').replace('&', transition.intent.inputs.get(0).language.ampersandSubstitution).replace('?', " #")»</that>
-						«"    "»<template>
-						«"      "»<think>
-						«"        "»<srai>SAVE«completeKey.toUpperCase()» <star/></srai>
-						«"      "»</think>
-						«paramConditions»
-						«"    "»</template>
-						«"  "»</category>
-						'''
+						for (language: paramPrompts.keySet) {
+							paramConditions = generateParamConditionsRec(transition.intent, new ArrayList<String>(parameters.keySet), "  ", prefix, language)
+							for (prompt: paramPrompts.get(language))
+								ret += 
+								'''
+								«"  "»<category>
+								«"    "»<pattern>*</pattern>
+								«"    "»<that>«prompt.replaceAll('[?.!<>]', ' ').replace('&', transition.intent.inputs.get(0).language.ampersandSubstitution).replace('?', " #")»</that>
+								«"    "»<template>
+								«"      "»<think>
+								«"        "»<srai>SAVE«completeKey.toUpperCase()» <star/></srai>
+								«"      "»</think>
+								«paramConditions»
+								«"    "»</template>
+								«"  "»</category>
+								'''
+						}
 				}
 			}
 			
@@ -485,33 +536,44 @@ class PandorabotsGenerator {
 	// Genera los arboles de solicitud de parametros en cada intent de forma recursiva
 	// TODO: cambiar para que acepte distintos lenguages. Hay que poner alguna condicion del lenguage en que se esten
 	// pidiendo los argumentos en ese momento concreto y en base a eso imprimir el que corresponda
-	def generateParamConditionsRec(Intent intent, List<String> params, String indent, String prefix) {
+	def generateParamConditionsRec(Intent intent, List<String> params, String indent, String prefix, String language) {
 		if (params.isEmpty())
 			return 
 			'''
 			«indent + "    "»<think>
-			«indent + "      "»<set name="pandoralang">«intent.inputs.get(0).language.languageAbbreviation»</set>
+			«indent + "      "»<set name="pandoralang">«language»</set>
 			«indent + "    "»</think>
 			«indent + "    "»<srai>«(prefix + intent.name).toUpperCase().replaceAll('[ _]', '').toUpperCase()»</srai>
 			'''
 		else {
 			var currentParam = params.get(0)
 			var newIndent = indent + "    "
-			
+			var prompts = getParamPromptByName(intent, currentParam).get(language)
 			params.remove(currentParam)
 			return
 			'''
 				«newIndent»<condition name="«prefix + currentParam»">
-				«newIndent + "  "»<li value="unknown">«getParamPromptByName(intent, currentParam).replace('&', intent.inputs.get(0).language.ampersandSubstitution)»</li>
+				«IF prompts.length > 1»
+					«newIndent + "  "»<li value="unknown">
+					«newIndent + "    "»<random>
+					«FOR prompt: prompts»
+						«newIndent + "      "»<li>«prompt»</li>
+					«ENDFOR»
+					«newIndent + "    "»</random>
+					«newIndent + "  "»</li>
+				«ELSE»
+					«newIndent + "  "»<li value="unknown">«prompts.get(0)»</li>
+				«ENDIF»
+«««				«newIndent + "  "»<li value="unknown">«getParamPromptByName(intent, currentParam).replace('&', intent.inputs.get(0).language.ampersandSubstitution)»</li>
 				«newIndent + "  "»<li>
-				«generateParamConditionsRec(intent, params, newIndent, prefix)»
+				«generateParamConditionsRec(intent, params, newIndent, prefix, language)»
 				«newIndent + "  "»</li>
 				«newIndent»</condition>
 			'''
 		}
 	}
 	
-	// Devuelve la peticion de parametro correspondiente dado el nombre del parametro
+	// Devuelve las peticiones de parametro correspondientes dado el nombre del parametro
 	def getParamPromptByName(Intent intent, String name) {
 		var params = getIntentParameterPrompts(intent)
 		for (param: params)
