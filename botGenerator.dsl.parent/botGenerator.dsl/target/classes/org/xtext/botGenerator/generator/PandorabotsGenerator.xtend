@@ -564,7 +564,6 @@ class PandorabotsGenerator {
 				«ELSE»
 					«newIndent + "  "»<li value="unknown">«prompts.get(0)»</li>
 				«ENDIF»
-«««				«newIndent + "  "»<li value="unknown">«getParamPromptByName(intent, currentParam).replace('&', intent.inputs.get(0).language.ampersandSubstitution)»</li>
 				«newIndent + "  "»<li>
 				«generateParamConditionsRec(intent, params, newIndent, prefix, language)»
 				«newIndent + "  "»</li>
