@@ -101,27 +101,19 @@ public class PandorabotsGenerator {
           String _name_1 = entity.getName();
           String _plus_3 = (_name_1 + ".map");
           zip.addFileToFolder("maps", _plus_3, entityValue);
-          EList<LanguageInput> _inputs = entity.getInputs();
-          for (final LanguageInput language_input : _inputs) {
-            EList<EntityInput> _inputs_1 = language_input.getInputs();
-            for (final EntityInput input : _inputs_1) {
-              if ((input instanceof SimpleInput)) {
-                String _name_2 = ((SimpleInput)input).getName();
-                String _plus_4 = ((this.path + "/sets/") + _name_2);
-                String inputSetPath = (_plus_4 + ".set");
-                fsa.generateFile(inputSetPath, this.entitySetFill(((SimpleInput)input)));
-                InputStream inputSetValue = fsa.readBinaryFile(inputSetPath);
-                String _name_3 = ((SimpleInput)input).getName();
-                String _plus_5 = (_name_3 + ".set");
-                zip.addFileToFolder("sets", _plus_5, inputSetValue);
-              }
-            }
-          }
+          String _name_2 = entity.getName();
+          String _plus_4 = ((this.path + "/sets/") + _name_2);
+          String entitySetPath = (_plus_4 + ".set");
+          fsa.generateFile(entitySetPath, this.entitySetFill(entity));
+          InputStream inputSetValue = fsa.readBinaryFile(entitySetPath);
+          String _name_3 = entity.getName();
+          String _plus_5 = (_name_3 + ".set");
+          zip.addFileToFolder("sets", _plus_5, inputSetValue);
         }
       }
       EList<UserInteraction> _flows = bot.getFlows();
       for (final UserInteraction transition : _flows) {
-        this.createTransitionFiles(transition, "", fsa, bot);
+        this.createTransitionFiles(resource, transition, "", fsa, bot);
       }
       zip.close();
     } catch (Throwable _e) {
@@ -213,24 +205,37 @@ public class PandorabotsGenerator {
     return _builder;
   }
   
-  public CharSequence entitySetFill(final SimpleInput input) {
+  public CharSequence entitySetFill(final Entity entity) {
     StringConcatenation _builder = new StringConcatenation();
     _builder.append("[");
     _builder.newLine();
     {
-      EList<String> _values = input.getValues();
-      for(final String synonym : _values) {
-        _builder.append("[\"");
-        _builder.append(synonym);
-        _builder.append("\"]");
+      EList<LanguageInput> _inputs = entity.getInputs();
+      for(final LanguageInput language_input : _inputs) {
         {
-          boolean _isTheLast = PandorabotsGenerator.isTheLast(input.getValues(), synonym);
-          boolean _not = (!_isTheLast);
-          if (_not) {
-            _builder.append(",");
+          EList<EntityInput> _inputs_1 = language_input.getInputs();
+          for(final EntityInput input : _inputs_1) {
+            {
+              if ((input instanceof SimpleInput)) {
+                {
+                  EList<String> _values = ((SimpleInput)input).getValues();
+                  for(final String synonym : _values) {
+                    _builder.append("[\"");
+                    _builder.append(synonym);
+                    _builder.append("\"]");
+                    {
+                      boolean _not = (!((PandorabotsGenerator.isTheLast(((SimpleInput)input).getValues(), synonym) && PandorabotsGenerator.isTheLast(language_input.getInputs(), input)) && PandorabotsGenerator.isTheLast(entity.getInputs(), language_input)));
+                      if (_not) {
+                        _builder.append(",");
+                      }
+                    }
+                    _builder.newLineIfNotEmpty();
+                  }
+                }
+              }
+            }
           }
         }
-        _builder.newLineIfNotEmpty();
       }
     }
     _builder.append("]");
@@ -298,7 +303,7 @@ public class PandorabotsGenerator {
     return _builder;
   }
   
-  public void createTransitionFiles(final UserInteraction transition, final String prefix, final IFileSystemAccess2 fsa, final Bot bot) {
+  public void createTransitionFiles(final Resource resource, final UserInteraction transition, final String prefix, final IFileSystemAccess2 fsa, final Bot bot) {
     String intentFileName = transition.getIntent().getName().toLowerCase().replaceAll("[ _]", "");
     StringConcatenation _builder = new StringConcatenation();
     _builder.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
@@ -307,7 +312,7 @@ public class PandorabotsGenerator {
     _builder.newLine();
     String intentFileContent = _builder.toString();
     String _intentFileContent = intentFileContent;
-    CharSequence _intentFile = this.intentFile(transition, bot, prefix, "");
+    CharSequence _intentFile = this.intentFile(resource, transition, bot, prefix, "");
     intentFileContent = (_intentFileContent + _intentFile);
     String _intentFileContent_1 = intentFileContent;
     StringConcatenation _builder_1 = new StringConcatenation();
@@ -418,9 +423,9 @@ public class PandorabotsGenerator {
     return null;
   }
   
-  public CharSequence intentFile(final UserInteraction transition, final Bot bot, final String prefix, final String that) {
+  public CharSequence intentFile(final Resource resource, final UserInteraction transition, final Bot bot, final String prefix, final String that) {
     StringConcatenation _builder = new StringConcatenation();
-    String _createSaveParameter = this.createSaveParameter(transition.getIntent(), prefix);
+    String _createSaveParameter = this.createSaveParameter(resource, transition.getIntent(), prefix);
     _builder.append(_createSaveParameter);
     _builder.newLineIfNotEmpty();
     _builder.append("  ");
@@ -429,10 +434,10 @@ public class PandorabotsGenerator {
     CharSequence _intentGenerator = this.intentGenerator(transition, bot, prefix);
     _builder.append(_intentGenerator);
     _builder.newLineIfNotEmpty();
-    CharSequence _createIntentInputs = this.createIntentInputs(transition, bot, prefix, that);
+    CharSequence _createIntentInputs = this.createIntentInputs(resource, transition, bot, prefix, that);
     _builder.append(_createIntentInputs);
     _builder.newLineIfNotEmpty();
-    String _createChainedParamIntents = this.createChainedParamIntents(transition, prefix);
+    String _createChainedParamIntents = this.createChainedParamIntents(resource, transition, prefix);
     _builder.append(_createChainedParamIntents);
     _builder.newLineIfNotEmpty();
     {
@@ -464,7 +469,7 @@ public class PandorabotsGenerator {
                         {
                           EList<UserInteraction> _outcoming = transition.getTarget().getOutcoming();
                           for(final UserInteraction outcoming : _outcoming) {
-                            Object _intentFile = this.intentFile(outcoming, bot, transition.getIntent().getName(), response.toString());
+                            Object _intentFile = this.intentFile(resource, outcoming, bot, transition.getIntent().getName(), response.toString());
                             _builder.append(_intentFile);
                             _builder.newLineIfNotEmpty();
                           }
@@ -478,7 +483,7 @@ public class PandorabotsGenerator {
                   {
                     EList<UserInteraction> _outcoming_1 = transition.getTarget().getOutcoming();
                     for(final UserInteraction outcoming_1 : _outcoming_1) {
-                      Object _intentFile_1 = this.intentFile(outcoming_1, bot, transition.getIntent().getName(), "");
+                      Object _intentFile_1 = this.intentFile(resource, outcoming_1, bot, transition.getIntent().getName(), "");
                       _builder.append(_intentFile_1);
                       _builder.newLineIfNotEmpty();
                     }
@@ -493,10 +498,19 @@ public class PandorabotsGenerator {
     return _builder;
   }
   
-  public CharSequence createIntentInputs(final UserInteraction transition, final Bot bot, final String prefix, final String that) {
+  public CharSequence createIntentInputs(final Resource resource, final UserInteraction transition, final Bot bot, final String prefix, final String that) {
     StringConcatenation _builder = new StringConcatenation();
     _builder.append("  ");
     _builder.append("<!-- Intent inputs -->");
+    _builder.newLineIfNotEmpty();
+    List<String> overallEntities = null;
+    _builder.newLineIfNotEmpty();
+    String _xblockexpression = null;
+    {
+      overallEntities = this.getEntityNames(resource);
+      _xblockexpression = "";
+    }
+    _builder.append(_xblockexpression);
     _builder.newLineIfNotEmpty();
     {
       EList<IntentLanguageInputs> _inputs = transition.getIntent().getInputs();
@@ -520,7 +534,17 @@ public class PandorabotsGenerator {
                         _builder.append(_replace);
                       } else {
                         if ((token instanceof ParameterReferenceToken)) {
-                          _builder.append("*");
+                          {
+                            boolean _contains = overallEntities.contains(((ParameterReferenceToken)token).getParameter().getName());
+                            if (_contains) {
+                              _builder.append("<set>");
+                              String _name = ((ParameterReferenceToken)token).getParameter().getName();
+                              _builder.append(_name);
+                              _builder.append("</set>");
+                            } else {
+                              _builder.append("*");
+                            }
+                          }
                         }
                       }
                     }
@@ -545,12 +569,12 @@ public class PandorabotsGenerator {
                 _builder.newLineIfNotEmpty();
                 List<String> entities = null;
                 _builder.newLineIfNotEmpty();
-                String _xblockexpression = null;
+                String _xblockexpression_1 = null;
                 {
                   entities = this.getPhraseEntities(((TrainingPhrase)input));
-                  _xblockexpression = "";
+                  _xblockexpression_1 = "";
                 }
-                _builder.append(_xblockexpression);
+                _builder.append(_xblockexpression_1);
                 _builder.newLineIfNotEmpty();
                 {
                   boolean _isEmpty_1 = entities.isEmpty();
@@ -590,31 +614,31 @@ public class PandorabotsGenerator {
                   Language _language = language.getLanguage();
                   boolean _notEquals = (!Objects.equal(_language, Language.EMPTY));
                   if (_notEquals) {
-                    String _xblockexpression_1 = null;
-                    {
-                      lang = this.languageAbbreviation(language.getLanguage());
-                      _xblockexpression_1 = "";
-                    }
-                    _builder.append(_xblockexpression_1);
-                    _builder.newLineIfNotEmpty();
-                  } else {
                     String _xblockexpression_2 = null;
                     {
-                      lang = this.languageAbbreviation(bot.getLanguages().get(0));
+                      lang = this.languageAbbreviation(language.getLanguage());
                       _xblockexpression_2 = "";
                     }
                     _builder.append(_xblockexpression_2);
+                    _builder.newLineIfNotEmpty();
+                  } else {
+                    String _xblockexpression_3 = null;
+                    {
+                      lang = this.languageAbbreviation(bot.getLanguages().get(0));
+                      _xblockexpression_3 = "";
+                    }
+                    _builder.append(_xblockexpression_3);
                     _builder.newLineIfNotEmpty();
                   }
                 }
                 Map<String, List<String>> nextPrompts = null;
                 _builder.newLineIfNotEmpty();
-                String _xblockexpression_3 = null;
+                String _xblockexpression_4 = null;
                 {
                   nextPrompts = this.getNextParamPetition(transition.getIntent(), ((TrainingPhrase)input)).getValue();
-                  _xblockexpression_3 = "";
+                  _xblockexpression_4 = "";
                 }
-                _builder.append(_xblockexpression_3);
+                _builder.append(_xblockexpression_4);
                 _builder.newLineIfNotEmpty();
                 {
                   if ((nextPrompts != null)) {
@@ -669,8 +693,8 @@ public class PandorabotsGenerator {
                     _builder.newLineIfNotEmpty();
                     _builder.append("      ");
                     _builder.append("<srai>");
-                    String _name = transition.getIntent().getName();
-                    String _upperCase_1 = (prefix + _name).toUpperCase().replaceAll("[ _]", "").toUpperCase();
+                    String _name_1 = transition.getIntent().getName();
+                    String _upperCase_1 = (prefix + _name_1).toUpperCase().replaceAll("[ _]", "").toUpperCase();
                     _builder.append(_upperCase_1);
                     _builder.append("</srai>");
                     _builder.newLineIfNotEmpty();
@@ -691,7 +715,7 @@ public class PandorabotsGenerator {
     return _builder;
   }
   
-  public String createChainedParamIntents(final UserInteraction transition, final String prefix) {
+  public String createChainedParamIntents(final Resource resource, final UserInteraction transition, final String prefix) {
     HashMap<String, DefaultEntity> parameters = this.getIntentParameters(transition.getIntent());
     boolean _isEmpty = parameters.isEmpty();
     if (_isEmpty) {
@@ -702,6 +726,7 @@ public class PandorabotsGenerator {
       _builder.append("<!-- Chained param intents -->");
       _builder.newLineIfNotEmpty();
       String ret = _builder.toString();
+      ArrayList<String> entities = this.getEntityNames(resource);
       Set<String> _keySet = parameters.keySet();
       for (final String key : _keySet) {
         {
@@ -721,44 +746,90 @@ public class PandorabotsGenerator {
                     paramConditions = this.generateParamConditionsRec(_intent, _arrayList, "  ", prefix, language);
                     List<String> _get = paramPrompts.get(language);
                     for (final String prompt : _get) {
-                      String _ret = ret;
-                      StringConcatenation _builder_1 = new StringConcatenation();
-                      _builder_1.append("  ");
-                      _builder_1.append("<category>");
-                      _builder_1.newLineIfNotEmpty();
-                      _builder_1.append("    ");
-                      _builder_1.append("<pattern>*</pattern>");
-                      _builder_1.newLineIfNotEmpty();
-                      _builder_1.append("    ");
-                      _builder_1.append("<that>");
-                      String _replace = prompt.replaceAll("[?.!<>]", " ").replace("&", this.ampersandSubstitution(transition.getIntent().getInputs().get(0).getLanguage()));
-                      _builder_1.append(_replace);
-                      _builder_1.append("</that>");
-                      _builder_1.newLineIfNotEmpty();
-                      _builder_1.append("    ");
-                      _builder_1.append("<template>");
-                      _builder_1.newLineIfNotEmpty();
-                      _builder_1.append("      ");
-                      _builder_1.append("<think>");
-                      _builder_1.newLineIfNotEmpty();
-                      _builder_1.append("        ");
-                      _builder_1.append("<srai>SAVE");
-                      String _upperCase = completeKey.toUpperCase();
-                      _builder_1.append(_upperCase);
-                      _builder_1.append(" <star/></srai>");
-                      _builder_1.newLineIfNotEmpty();
-                      _builder_1.append("      ");
-                      _builder_1.append("</think>");
-                      _builder_1.newLineIfNotEmpty();
-                      _builder_1.append(paramConditions);
-                      _builder_1.newLineIfNotEmpty();
-                      _builder_1.append("    ");
-                      _builder_1.append("</template>");
-                      _builder_1.newLineIfNotEmpty();
-                      _builder_1.append("  ");
-                      _builder_1.append("</category>");
-                      _builder_1.newLineIfNotEmpty();
-                      ret = (_ret + _builder_1);
+                      boolean _contains = entities.contains(key);
+                      if (_contains) {
+                        String _ret = ret;
+                        StringConcatenation _builder_1 = new StringConcatenation();
+                        _builder_1.append("  ");
+                        _builder_1.append("<category>");
+                        _builder_1.newLineIfNotEmpty();
+                        _builder_1.append("    ");
+                        _builder_1.append("<pattern><set>");
+                        _builder_1.append(key);
+                        _builder_1.append("</set></pattern>");
+                        _builder_1.newLineIfNotEmpty();
+                        _builder_1.append("    ");
+                        _builder_1.append("<that>");
+                        String _replace = prompt.replaceAll("[?.!<>]", " ").replace("&", this.ampersandSubstitution(transition.getIntent().getInputs().get(0).getLanguage()));
+                        _builder_1.append(_replace);
+                        _builder_1.append("</that>");
+                        _builder_1.newLineIfNotEmpty();
+                        _builder_1.append("    ");
+                        _builder_1.append("<template>");
+                        _builder_1.newLineIfNotEmpty();
+                        _builder_1.append("      ");
+                        _builder_1.append("<think>");
+                        _builder_1.newLineIfNotEmpty();
+                        _builder_1.append("        ");
+                        _builder_1.append("<srai>SAVE");
+                        String _upperCase = completeKey.toUpperCase();
+                        _builder_1.append(_upperCase);
+                        _builder_1.append(" <map name=\"");
+                        _builder_1.append(key);
+                        _builder_1.append("\"><star/></map></srai>");
+                        _builder_1.newLineIfNotEmpty();
+                        _builder_1.append("      ");
+                        _builder_1.append("</think>");
+                        _builder_1.newLineIfNotEmpty();
+                        _builder_1.append(paramConditions);
+                        _builder_1.newLineIfNotEmpty();
+                        _builder_1.append("    ");
+                        _builder_1.append("</template>");
+                        _builder_1.newLineIfNotEmpty();
+                        _builder_1.append("  ");
+                        _builder_1.append("</category>");
+                        _builder_1.newLineIfNotEmpty();
+                        ret = (_ret + _builder_1);
+                      } else {
+                        String _ret_1 = ret;
+                        StringConcatenation _builder_2 = new StringConcatenation();
+                        _builder_2.append("  ");
+                        _builder_2.append("<category>");
+                        _builder_2.newLineIfNotEmpty();
+                        _builder_2.append("    ");
+                        _builder_2.append("<pattern>*</pattern>");
+                        _builder_2.newLineIfNotEmpty();
+                        _builder_2.append("    ");
+                        _builder_2.append("<that>");
+                        String _replace_1 = prompt.replaceAll("[?.!<>]", " ").replace("&", this.ampersandSubstitution(transition.getIntent().getInputs().get(0).getLanguage()));
+                        _builder_2.append(_replace_1);
+                        _builder_2.append("</that>");
+                        _builder_2.newLineIfNotEmpty();
+                        _builder_2.append("    ");
+                        _builder_2.append("<template>");
+                        _builder_2.newLineIfNotEmpty();
+                        _builder_2.append("      ");
+                        _builder_2.append("<think>");
+                        _builder_2.newLineIfNotEmpty();
+                        _builder_2.append("        ");
+                        _builder_2.append("<srai>SAVE");
+                        String _upperCase_1 = completeKey.toUpperCase();
+                        _builder_2.append(_upperCase_1);
+                        _builder_2.append(" <star/></srai>");
+                        _builder_2.newLineIfNotEmpty();
+                        _builder_2.append("      ");
+                        _builder_2.append("</think>");
+                        _builder_2.newLineIfNotEmpty();
+                        _builder_2.append(paramConditions);
+                        _builder_2.newLineIfNotEmpty();
+                        _builder_2.append("    ");
+                        _builder_2.append("</template>");
+                        _builder_2.newLineIfNotEmpty();
+                        _builder_2.append("  ");
+                        _builder_2.append("</category>");
+                        _builder_2.newLineIfNotEmpty();
+                        ret = (_ret_1 + _builder_2);
+                      }
                     }
                   }
                 }
@@ -1150,13 +1221,23 @@ public class PandorabotsGenerator {
     return ret;
   }
   
-  public String createSaveParameter(final Intent intent, final String prefix) {
+  public ArrayList<String> getEntityNames(final Resource resource) {
+    ArrayList<String> ret = new ArrayList<String>();
+    List<Entity> entities = IteratorExtensions.<Entity>toList(Iterators.<Entity>filter(resource.getAllContents(), Entity.class));
+    for (final Entity entity : entities) {
+      ret.add(entity.getName());
+    }
+    return ret;
+  }
+  
+  public String createSaveParameter(final Resource resource, final Intent intent, final String prefix) {
     HashMap<String, DefaultEntity> parameters = this.getIntentParameters(intent);
     boolean _isEmpty = parameters.isEmpty();
     if (_isEmpty) {
       return "";
     } else {
       String ret = "  <!-- Entity saving -->\n";
+      ArrayList<String> entities = this.getEntityNames(resource);
       Set<String> _keySet = parameters.keySet();
       for (final String key : _keySet) {
         {
@@ -1165,93 +1246,68 @@ public class PandorabotsGenerator {
           if (value != null) {
             switch (value) {
               case TEXT:
-                String _ret = ret;
-                StringConcatenation _builder = new StringConcatenation();
-                _builder.append("  ");
-                _builder.append("<category>");
-                _builder.newLineIfNotEmpty();
-                _builder.append("    ");
-                _builder.append("<pattern>SAVE");
-                String _upperCase = completeKey.toUpperCase();
-                _builder.append(_upperCase);
-                _builder.append(" *</pattern>");
-                _builder.newLineIfNotEmpty();
-                _builder.append("    ");
-                _builder.append("<template>");
-                _builder.newLineIfNotEmpty();
-                _builder.append("      ");
-                _builder.append("<think><set name=\"");
-                _builder.append(completeKey);
-                _builder.append("\"><star/></set></think>");
-                _builder.newLineIfNotEmpty();
-                _builder.append("    ");
-                _builder.append("</template>");
-                _builder.newLineIfNotEmpty();
-                _builder.append("  ");
-                _builder.append("</category>");
-                _builder.newLineIfNotEmpty();
-                ret = (_ret + _builder);
+                boolean _contains = entities.contains(key);
+                if (_contains) {
+                  String _ret = ret;
+                  StringConcatenation _builder = new StringConcatenation();
+                  _builder.append("  ");
+                  _builder.append("<category>");
+                  _builder.newLineIfNotEmpty();
+                  _builder.append("    ");
+                  _builder.append("<pattern>SAVE");
+                  String _upperCase = completeKey.toUpperCase();
+                  _builder.append(_upperCase);
+                  _builder.append(" <set>");
+                  _builder.append(key);
+                  _builder.append("</set></pattern>");
+                  _builder.newLineIfNotEmpty();
+                  _builder.append("    ");
+                  _builder.append("<template>");
+                  _builder.newLineIfNotEmpty();
+                  _builder.append("      ");
+                  _builder.append("<think><set name=\"");
+                  _builder.append(completeKey);
+                  _builder.append("\"><map name=\"");
+                  _builder.append(key);
+                  _builder.append("\"><star/></map></set></think>");
+                  _builder.newLineIfNotEmpty();
+                  _builder.append("    ");
+                  _builder.append("</template>");
+                  _builder.newLineIfNotEmpty();
+                  _builder.append("  ");
+                  _builder.append("</category>");
+                  _builder.newLineIfNotEmpty();
+                  ret = (_ret + _builder);
+                } else {
+                  String _ret_1 = ret;
+                  StringConcatenation _builder_1 = new StringConcatenation();
+                  _builder_1.append("  ");
+                  _builder_1.append("<category>");
+                  _builder_1.newLineIfNotEmpty();
+                  _builder_1.append("    ");
+                  _builder_1.append("<pattern>SAVE");
+                  String _upperCase_1 = completeKey.toUpperCase();
+                  _builder_1.append(_upperCase_1);
+                  _builder_1.append(" *</pattern>");
+                  _builder_1.newLineIfNotEmpty();
+                  _builder_1.append("    ");
+                  _builder_1.append("<template>");
+                  _builder_1.newLineIfNotEmpty();
+                  _builder_1.append("      ");
+                  _builder_1.append("<think><set name=\"");
+                  _builder_1.append(completeKey);
+                  _builder_1.append("\"><star/></set></think>");
+                  _builder_1.newLineIfNotEmpty();
+                  _builder_1.append("    ");
+                  _builder_1.append("</template>");
+                  _builder_1.newLineIfNotEmpty();
+                  _builder_1.append("  ");
+                  _builder_1.append("</category>");
+                  _builder_1.newLineIfNotEmpty();
+                  ret = (_ret_1 + _builder_1);
+                }
                 break;
               case TIME:
-                String _ret_1 = ret;
-                StringConcatenation _builder_1 = new StringConcatenation();
-                _builder_1.append("  ");
-                _builder_1.append("<category>");
-                _builder_1.newLineIfNotEmpty();
-                _builder_1.append("    ");
-                _builder_1.append("<pattern>SAVE");
-                String _upperCase_1 = completeKey.toUpperCase();
-                _builder_1.append(_upperCase_1);
-                _builder_1.append(" * colon *</pattern>");
-                _builder_1.newLineIfNotEmpty();
-                _builder_1.append("    ");
-                _builder_1.append("<template>");
-                _builder_1.newLineIfNotEmpty();
-                _builder_1.append("      ");
-                _builder_1.append("<think>");
-                _builder_1.newLineIfNotEmpty();
-                _builder_1.append("        ");
-                _builder_1.append("<set name=\"");
-                _builder_1.append(completeKey);
-                _builder_1.append("_is_valid\"><srai>ISVALIDHOUR <star index=\"1\"/>:<star index=\"2\"/></srai></set>");
-                _builder_1.newLineIfNotEmpty();
-                _builder_1.append("      ");
-                _builder_1.append("</think>");
-                _builder_1.newLineIfNotEmpty();
-                _builder_1.append("      ");
-                _builder_1.append("<condition name=\"");
-                _builder_1.append(completeKey);
-                _builder_1.append("_is_valid\">");
-                _builder_1.newLineIfNotEmpty();
-                _builder_1.append("        ");
-                _builder_1.append("<li value=\"TRUE\">");
-                _builder_1.newLineIfNotEmpty();
-                _builder_1.append("          ");
-                _builder_1.append("<think>");
-                _builder_1.newLineIfNotEmpty();
-                _builder_1.append("            ");
-                _builder_1.append("<set name=\"");
-                _builder_1.append(completeKey);
-                _builder_1.append("\"><star index=\"1\"/>:<star index=\"2\"/></set>");
-                _builder_1.newLineIfNotEmpty();
-                _builder_1.append("          ");
-                _builder_1.append("</think>");
-                _builder_1.newLineIfNotEmpty();
-                _builder_1.append("        ");
-                _builder_1.append("</li>");
-                _builder_1.newLineIfNotEmpty();
-                _builder_1.append("      ");
-                _builder_1.append("</condition>");
-                _builder_1.newLineIfNotEmpty();
-                _builder_1.append("    ");
-                _builder_1.append("</template>");
-                _builder_1.newLineIfNotEmpty();
-                _builder_1.append("  ");
-                _builder_1.append("</category>");
-                _builder_1.newLineIfNotEmpty();
-                ret = (_ret_1 + _builder_1);
-                break;
-              case DATE:
                 String _ret_2 = ret;
                 StringConcatenation _builder_2 = new StringConcatenation();
                 _builder_2.append("  ");
@@ -1261,7 +1317,7 @@ public class PandorabotsGenerator {
                 _builder_2.append("<pattern>SAVE");
                 String _upperCase_2 = completeKey.toUpperCase();
                 _builder_2.append(_upperCase_2);
-                _builder_2.append(" * slash * slash *</pattern>");
+                _builder_2.append(" * colon *</pattern>");
                 _builder_2.newLineIfNotEmpty();
                 _builder_2.append("    ");
                 _builder_2.append("<template>");
@@ -1272,13 +1328,7 @@ public class PandorabotsGenerator {
                 _builder_2.append("        ");
                 _builder_2.append("<set name=\"");
                 _builder_2.append(completeKey);
-                _builder_2.append("_is_valid\">");
-                _builder_2.newLineIfNotEmpty();
-                _builder_2.append("          ");
-                _builder_2.append("<srai>VALIDDATE <star index=\"1\"/>/<star index=\"2\"/>/<star index=\"3\"/></srai>");
-                _builder_2.newLineIfNotEmpty();
-                _builder_2.append("        ");
-                _builder_2.append("</set>");
+                _builder_2.append("_is_valid\"><srai>ISVALIDHOUR <star index=\"1\"/>:<star index=\"2\"/></srai></set>");
                 _builder_2.newLineIfNotEmpty();
                 _builder_2.append("      ");
                 _builder_2.append("</think>");
@@ -1292,9 +1342,15 @@ public class PandorabotsGenerator {
                 _builder_2.append("<li value=\"TRUE\">");
                 _builder_2.newLineIfNotEmpty();
                 _builder_2.append("          ");
-                _builder_2.append("<think><set name=\"");
+                _builder_2.append("<think>");
+                _builder_2.newLineIfNotEmpty();
+                _builder_2.append("            ");
+                _builder_2.append("<set name=\"");
                 _builder_2.append(completeKey);
-                _builder_2.append("\"><star index=\"1\"/>/<star index=\"2\"/>/<star index=\"3\"/></set></think>");
+                _builder_2.append("\"><star index=\"1\"/>:<star index=\"2\"/></set>");
+                _builder_2.newLineIfNotEmpty();
+                _builder_2.append("          ");
+                _builder_2.append("</think>");
                 _builder_2.newLineIfNotEmpty();
                 _builder_2.append("        ");
                 _builder_2.append("</li>");
@@ -1310,7 +1366,7 @@ public class PandorabotsGenerator {
                 _builder_2.newLineIfNotEmpty();
                 ret = (_ret_2 + _builder_2);
                 break;
-              case NUMBER:
+              case DATE:
                 String _ret_3 = ret;
                 StringConcatenation _builder_3 = new StringConcatenation();
                 _builder_3.append("  ");
@@ -1320,15 +1376,46 @@ public class PandorabotsGenerator {
                 _builder_3.append("<pattern>SAVE");
                 String _upperCase_3 = completeKey.toUpperCase();
                 _builder_3.append(_upperCase_3);
-                _builder_3.append(" <set>number</set></pattern>");
+                _builder_3.append(" * slash * slash *</pattern>");
                 _builder_3.newLineIfNotEmpty();
                 _builder_3.append("    ");
                 _builder_3.append("<template>");
                 _builder_3.newLineIfNotEmpty();
                 _builder_3.append("      ");
+                _builder_3.append("<think>");
+                _builder_3.newLineIfNotEmpty();
+                _builder_3.append("        ");
+                _builder_3.append("<set name=\"");
+                _builder_3.append(completeKey);
+                _builder_3.append("_is_valid\">");
+                _builder_3.newLineIfNotEmpty();
+                _builder_3.append("          ");
+                _builder_3.append("<srai>VALIDDATE <star index=\"1\"/>/<star index=\"2\"/>/<star index=\"3\"/></srai>");
+                _builder_3.newLineIfNotEmpty();
+                _builder_3.append("        ");
+                _builder_3.append("</set>");
+                _builder_3.newLineIfNotEmpty();
+                _builder_3.append("      ");
+                _builder_3.append("</think>");
+                _builder_3.newLineIfNotEmpty();
+                _builder_3.append("      ");
+                _builder_3.append("<condition name=\"");
+                _builder_3.append(completeKey);
+                _builder_3.append("_is_valid\">");
+                _builder_3.newLineIfNotEmpty();
+                _builder_3.append("        ");
+                _builder_3.append("<li value=\"TRUE\">");
+                _builder_3.newLineIfNotEmpty();
+                _builder_3.append("          ");
                 _builder_3.append("<think><set name=\"");
                 _builder_3.append(completeKey);
-                _builder_3.append("\"><star/></set></think>");
+                _builder_3.append("\"><star index=\"1\"/>/<star index=\"2\"/>/<star index=\"3\"/></set></think>");
+                _builder_3.newLineIfNotEmpty();
+                _builder_3.append("        ");
+                _builder_3.append("</li>");
+                _builder_3.newLineIfNotEmpty();
+                _builder_3.append("      ");
+                _builder_3.append("</condition>");
                 _builder_3.newLineIfNotEmpty();
                 _builder_3.append("    ");
                 _builder_3.append("</template>");
@@ -1338,7 +1425,7 @@ public class PandorabotsGenerator {
                 _builder_3.newLineIfNotEmpty();
                 ret = (_ret_3 + _builder_3);
                 break;
-              default:
+              case NUMBER:
                 String _ret_4 = ret;
                 StringConcatenation _builder_4 = new StringConcatenation();
                 _builder_4.append("  ");
@@ -1348,7 +1435,7 @@ public class PandorabotsGenerator {
                 _builder_4.append("<pattern>SAVE");
                 String _upperCase_4 = completeKey.toUpperCase();
                 _builder_4.append(_upperCase_4);
-                _builder_4.append(" *</pattern>");
+                _builder_4.append(" <set>number</set></pattern>");
                 _builder_4.newLineIfNotEmpty();
                 _builder_4.append("    ");
                 _builder_4.append("<template>");
@@ -1366,34 +1453,62 @@ public class PandorabotsGenerator {
                 _builder_4.newLineIfNotEmpty();
                 ret = (_ret_4 + _builder_4);
                 break;
+              default:
+                String _ret_5 = ret;
+                StringConcatenation _builder_5 = new StringConcatenation();
+                _builder_5.append("  ");
+                _builder_5.append("<category>");
+                _builder_5.newLineIfNotEmpty();
+                _builder_5.append("    ");
+                _builder_5.append("<pattern>SAVE");
+                String _upperCase_5 = completeKey.toUpperCase();
+                _builder_5.append(_upperCase_5);
+                _builder_5.append(" *</pattern>");
+                _builder_5.newLineIfNotEmpty();
+                _builder_5.append("    ");
+                _builder_5.append("<template>");
+                _builder_5.newLineIfNotEmpty();
+                _builder_5.append("      ");
+                _builder_5.append("<think><set name=\"");
+                _builder_5.append(completeKey);
+                _builder_5.append("\"><star/></set></think>");
+                _builder_5.newLineIfNotEmpty();
+                _builder_5.append("    ");
+                _builder_5.append("</template>");
+                _builder_5.newLineIfNotEmpty();
+                _builder_5.append("  ");
+                _builder_5.append("</category>");
+                _builder_5.newLineIfNotEmpty();
+                ret = (_ret_5 + _builder_5);
+                break;
             }
           } else {
-            String _ret_4 = ret;
-            StringConcatenation _builder_4 = new StringConcatenation();
-            _builder_4.append("  ");
-            _builder_4.append("<category>");
-            _builder_4.newLineIfNotEmpty();
-            _builder_4.append("    ");
-            _builder_4.append("<pattern>SAVE");
-            String _upperCase_4 = completeKey.toUpperCase();
-            _builder_4.append(_upperCase_4);
-            _builder_4.append(" *</pattern>");
-            _builder_4.newLineIfNotEmpty();
-            _builder_4.append("    ");
-            _builder_4.append("<template>");
-            _builder_4.newLineIfNotEmpty();
-            _builder_4.append("      ");
-            _builder_4.append("<think><set name=\"");
-            _builder_4.append(completeKey);
-            _builder_4.append("\"><star/></set></think>");
-            _builder_4.newLineIfNotEmpty();
-            _builder_4.append("    ");
-            _builder_4.append("</template>");
-            _builder_4.newLineIfNotEmpty();
-            _builder_4.append("  ");
-            _builder_4.append("</category>");
-            _builder_4.newLineIfNotEmpty();
-            ret = (_ret_4 + _builder_4);
+            String _ret_5 = ret;
+            StringConcatenation _builder_5 = new StringConcatenation();
+            _builder_5.append("  ");
+            _builder_5.append("<category>");
+            _builder_5.newLineIfNotEmpty();
+            _builder_5.append("    ");
+            _builder_5.append("<pattern>SAVE");
+            String _upperCase_5 = completeKey.toUpperCase();
+            _builder_5.append(_upperCase_5);
+            _builder_5.append(" *</pattern>");
+            _builder_5.newLineIfNotEmpty();
+            _builder_5.append("    ");
+            _builder_5.append("<template>");
+            _builder_5.newLineIfNotEmpty();
+            _builder_5.append("      ");
+            _builder_5.append("<think><set name=\"");
+            _builder_5.append(completeKey);
+            _builder_5.append("\"><star/></set></think>");
+            _builder_5.newLineIfNotEmpty();
+            _builder_5.append("    ");
+            _builder_5.append("</template>");
+            _builder_5.newLineIfNotEmpty();
+            _builder_5.append("  ");
+            _builder_5.append("</category>");
+            _builder_5.newLineIfNotEmpty();
+            ret = (_ret_5 + _builder_5);
           }
         }
       }

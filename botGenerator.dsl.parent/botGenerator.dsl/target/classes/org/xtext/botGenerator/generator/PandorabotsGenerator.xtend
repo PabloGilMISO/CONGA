@@ -91,7 +91,6 @@ class PandorabotsGenerator {
 		var entities = resource.allContents.filter(Entity).toList
 		for (Entity entity : entities) {
 			// Creacion de map para la entity correspondiente
-//			var entityPath = langPath + "/maps/" + entity.name + ".map"
 			var entityPath = path + "/maps/" + entity.name + ".map"
 			
 			// Generacion del archivo map asociado a la entity concreta
@@ -99,25 +98,16 @@ class PandorabotsGenerator {
 			var entityValue = fsa.readBinaryFile(entityPath)
 			zip.addFileToFolder("maps", entity.name + ".map", entityValue)
 
-			// Generacion de sets correspondientes a cada input en la carpeta sets
-			for (language_input : entity.inputs) {
-				for (input : language_input.inputs) {
-					// Solo se contemplan SimpleInputs
-					if (input instanceof SimpleInput) {
-//						var inputSetPath = langPath + "/sets/" + input.name + ".set"
-						var inputSetPath = path + "/sets/" + input.name + ".set"
-						fsa.generateFile(inputSetPath, entitySetFill(input))
-						var inputSetValue = fsa.readBinaryFile(inputSetPath)
-						zip.addFileToFolder("sets", input.name + ".set", inputSetValue)
-					}
-				}
-			}
+			var entitySetPath = path + "/sets/" + entity.name + ".set"
+			fsa.generateFile(entitySetPath, entitySetFill(entity))
+			var inputSetValue = fsa.readBinaryFile(entitySetPath)
+			zip.addFileToFolder("sets", entity.name + ".set", inputSetValue)
 		}
 
 		// En flows se guardan los flujos de conversacion
 		for (UserInteraction transition : bot.flows) {
 //			createTransitionFiles(transition, lang.languageAbbreviation, fsa, bot)
-			createTransitionFiles(transition, "", fsa, bot)
+			createTransitionFiles(resource, transition, "", fsa, bot)
 		}
 		
 		zip.close	
@@ -191,10 +181,19 @@ class PandorabotsGenerator {
 	'''
 	
 	// Rellena el set correspondiente al input concreto (entity->inputs->inputs)
-	def entitySetFill(SimpleInput input) '''
+	def entitySetFill(Entity entity) '''
 		[
-		«FOR synonym : input.values»
-			["«synonym»"]«IF !input.values.isTheLast(synonym)»,«ENDIF»
+«««		«FOR synonym : input.values»
+«««			["«synonym»"]«IF !input.values.isTheLast(synonym)»,«ENDIF»
+«««		«ENDFOR»
+		«FOR language_input : entity.inputs»
+			«FOR input : language_input.inputs»
+				«IF input instanceof SimpleInput»
+					«FOR synonym : input.values»
+						["«synonym»"]«IF !(input.values.isTheLast(synonym) && language_input.inputs.isTheLast(input) && entity.inputs.isTheLast(language_input))»,«ENDIF»
+					«ENDFOR»
+				«ENDIF»
+			«ENDFOR»
 		«ENDFOR»
 		]
 	'''
@@ -226,13 +225,13 @@ class PandorabotsGenerator {
 	'''
 
 	// Guarda los intents durante el recorrido de los flujos de conversación
-	def void createTransitionFiles(UserInteraction transition, String prefix, IFileSystemAccess2 fsa, Bot bot) {
+	def void createTransitionFiles(Resource resource, UserInteraction transition, String prefix, IFileSystemAccess2 fsa, Bot bot) {
 		var intentFileName = (transition.intent.name).toLowerCase().replaceAll('[ _]', '')
 		var intentFileContent = '''
 		<?xml version="1.0" encoding="UTF-8"?>
 		«  »<aiml>
 		'''
-		intentFileContent += transition.intentFile(bot, prefix, "")
+		intentFileContent += intentFile(resource, transition, bot, prefix, "")
 		intentFileContent += '''
 		</aiml>
 		'''
@@ -329,13 +328,13 @@ class PandorabotsGenerator {
 	
 	// Generador de codigo de un intent
 	// TODO: Revisar impresion de parametros etc en HttpResponse <- Necesario acceso a llamadas HTTP con callapi
-	def intentFile(UserInteraction transition, Bot bot, String prefix, String that)
+	def intentFile(Resource resource, UserInteraction transition, Bot bot, String prefix, String that)
 	'''
-	«createSaveParameter(transition.intent, prefix)»
+	«createSaveParameter(resource, transition.intent, prefix)»
 	«"  "»<!-- Intent -->
 	«intentGenerator(transition, bot, prefix)»
-	«createIntentInputs(transition, bot, prefix, that)»
-	«createChainedParamIntents(transition, prefix)»
+	«createIntentInputs(resource, transition, bot, prefix, that)»
+	«createChainedParamIntents(resource, transition, prefix)»
 	«IF transition.target.outcoming.length >= 1»
 		«"  "»<!-- Nested outcoming intents -->
 		«FOR action: transition.target.actions»
@@ -345,13 +344,13 @@ class PandorabotsGenerator {
 					«{responses = language.getAllIntentResponses(); ""}»
 					«FOR response: responses»
 						«FOR outcoming: transition.target.outcoming»
-							«intentFile(outcoming, bot, transition.intent.name, response.toString())»
+							«intentFile(resource, outcoming, bot, transition.intent.name, response.toString())»
 						«ENDFOR»
 					«ENDFOR»
 				«ENDFOR»
 			«ELSEIF action instanceof Empty»
 				«FOR outcoming: transition.target.outcoming»
-					«intentFile(outcoming, bot, transition.intent.name, "")»
+					«intentFile(resource, outcoming, bot, transition.intent.name, "")»
 				«ENDFOR»
 			«ENDIF»
 		«ENDFOR»
@@ -360,13 +359,15 @@ class PandorabotsGenerator {
 	
 	// Crea los intents de Pandorabots relacionados con las entradas del usuario que generalmente conllevan guardado
 	// de argumentos
-	def createIntentInputs(UserInteraction transition, Bot bot, String prefix, String that) '''
+	def createIntentInputs(Resource resource, UserInteraction transition, Bot bot, String prefix, String that) '''
 		«"  "»<!-- Intent inputs -->
+		«var List<String> overallEntities»
+		«{overallEntities = getEntityNames(resource) ; ""}»
 		«FOR language: transition.intent.inputs»
 	  		«FOR input: language.inputs»
 	  			«IF input instanceof TrainingPhrase»
 					«"  "»<category>
-					«"    "»<pattern>«FOR token: input.tokens»«IF token instanceof Literal»«token.text.replace('?', ' #').replace('&', language.language.ampersandSubstitution)»«ELSEIF token instanceof ParameterReferenceToken»*«ENDIF»«ENDFOR»</pattern>
+					«"    "»<pattern>«FOR token: input.tokens»«IF token instanceof Literal»«token.text.replace('?', ' #').replace('&', language.language.ampersandSubstitution)»«ELSEIF token instanceof ParameterReferenceToken»«IF overallEntities.contains(token.parameter.name)»<set>«token.parameter.name»</set>«ELSE»*«ENDIF»«ENDIF»«ENDFOR»</pattern>
 					«IF !that.isEmpty()»
 						«"    "»<that>«that.replaceAll('[?.!<>]', ' ').replace('&', language.language.ampersandSubstitution)»</that>
 					«ENDIF»
@@ -419,7 +420,7 @@ class PandorabotsGenerator {
 		
 	// Generacion de codigo referente a la lectura de parametros por parte del usuario y posterior solicitud del resto
 	// de parametros requeridos
-	def createChainedParamIntents(UserInteraction transition, String prefix) {
+	def createChainedParamIntents(Resource resource, UserInteraction transition, String prefix) {
 		var parameters = getIntentParameters(transition.intent)
 		if (parameters.isEmpty())
 			return ""
@@ -429,6 +430,7 @@ class PandorabotsGenerator {
 			'''
 			«"  "»<!-- Chained param intents -->
 			'''
+			var entities = getEntityNames(resource)
 			for (key: parameters.keySet) {
 				var value = parameters.get(key)
 //				var paramConditions = generateParamConditionsRec(transition.intent, new ArrayList<String>(parameters.keySet), "  ", prefix)
@@ -439,20 +441,36 @@ class PandorabotsGenerator {
 					case DefaultEntity.TEXT:
 						for (language: paramPrompts.keySet) {
 							paramConditions = generateParamConditionsRec(transition.intent, new ArrayList<String>(parameters.keySet), "  ", prefix, language)
-							for (prompt: paramPrompts.get(language))
-								ret += 
-								'''
-								«"  "»<category>
-								«"    "»<pattern>*</pattern>
-								«"    "»<that>«prompt.replaceAll('[?.!<>]', ' ').replace('&', transition.intent.inputs.get(0).language.ampersandSubstitution)»</that>
-								«"    "»<template>
-								«"      "»<think>
-								«"        "»<srai>SAVE«completeKey.toUpperCase()» <star/></srai>
-								«"      "»</think>
-								«paramConditions»
-								«"    "»</template>
-								«"  "»</category>
-								'''
+							for (prompt: paramPrompts.get(language)) {
+								if (entities.contains(key))
+									ret += 
+									'''
+									«"  "»<category>
+									«"    "»<pattern><set>«key»</set></pattern>
+									«"    "»<that>«prompt.replaceAll('[?.!<>]', ' ').replace('&', transition.intent.inputs.get(0).language.ampersandSubstitution)»</that>
+									«"    "»<template>
+									«"      "»<think>
+									«"        "»<srai>SAVE«completeKey.toUpperCase()» <map name="«key»"><star/></map></srai>
+									«"      "»</think>
+									«paramConditions»
+									«"    "»</template>
+									«"  "»</category>
+									'''
+								else
+									ret += 
+									'''
+									«"  "»<category>
+									«"    "»<pattern>*</pattern>
+									«"    "»<that>«prompt.replaceAll('[?.!<>]', ' ').replace('&', transition.intent.inputs.get(0).language.ampersandSubstitution)»</that>
+									«"    "»<template>
+									«"      "»<think>
+									«"        "»<srai>SAVE«completeKey.toUpperCase()» <star/></srai>
+									«"      "»</think>
+									«paramConditions»
+									«"    "»</template>
+									«"  "»</category>
+									'''
+							}
 						}
 					case DefaultEntity.TIME:
 						for (language: paramPrompts.keySet) {
@@ -597,29 +615,53 @@ class PandorabotsGenerator {
 		return ret
 	}
 	
+	// Devuelve el nombre de los entities del chatbot
+	def getEntityNames(Resource resource) {
+		var ret = new ArrayList<String>()
+		var entities = resource.allContents.filter(Entity).toList
+		
+		for (entity: entities)
+			ret.add(entity.name)
+		
+		return ret
+	}
+	
 	// Genera los intents de pandorabots de tipo SAVE_PARAMETER para poder guardar los parametros de distintos
 	// tipos del intent concreto
-	def createSaveParameter(Intent intent, String prefix) {
+	def createSaveParameter(Resource resource, Intent intent, String prefix) {
 		var parameters = getIntentParameters(intent)
 		if (parameters.isEmpty())
 			return ""
 		
 		else {
 			var ret = "  <!-- Entity saving -->\n"
+			var entities = getEntityNames(resource)
+			
 			for (key: parameters.keySet) {
 				var value = parameters.get(key)
 				var completeKey = prefix + key
 				switch (value) {
 					case DefaultEntity.TEXT:
-						ret += 
-						'''
-						«"  "»<category>
-						«"    "»<pattern>SAVE«completeKey.toUpperCase()» *</pattern>
-						«"    "»<template>
-						«"      "»<think><set name="«completeKey»"><star/></set></think>
-						«"    "»</template>
-						«"  "»</category>
-						'''
+						if (entities.contains(key))
+							ret += 
+							'''
+							«"  "»<category>
+							«"    "»<pattern>SAVE«completeKey.toUpperCase()» <set>«key»</set></pattern>
+							«"    "»<template>
+							«"      "»<think><set name="«completeKey»"><map name="«key»"><star/></map></set></think>
+							«"    "»</template>
+							«"  "»</category>
+							'''
+						else
+							ret += 
+							'''
+							«"  "»<category>
+							«"    "»<pattern>SAVE«completeKey.toUpperCase()» *</pattern>
+							«"    "»<template>
+							«"      "»<think><set name="«completeKey»"><star/></set></think>
+							«"    "»</template>
+							«"  "»</category>
+							'''
 					case DefaultEntity.TIME:
 						ret +=
 						'''
