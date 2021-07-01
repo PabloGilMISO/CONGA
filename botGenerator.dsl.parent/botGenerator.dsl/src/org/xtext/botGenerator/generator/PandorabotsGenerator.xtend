@@ -46,19 +46,14 @@ class PandorabotsGenerator {
 		path = resourceName + "/Pandorabots"
 
 		this.zip = zip
-
-//		for (lang: bot.languages) {
-//			var langPath = path + '/' + lang.languageAbbreviation
 			
 		// Creacion de fichero de propiedades .properties
-//		var systemPropertiesName = langPath + "/system/" + resourceName.toLowerCase().replace(' ', '_') + ".properties"
 		var systemPropertiesName = path + "/system/" + resourceName.toLowerCase().replace(' ', '_') + ".properties"
 		fsa.generateFile(systemPropertiesName, systemFileFill())
 		var systemPropertiesValue = fsa.readBinaryFile(systemPropertiesName)
 		zip.addFileToFolder("system", resourceName.toLowerCase().replace(' ', '_') + ".properties", systemPropertiesValue)
 
 		// Creacion de fichero UDC
-//		var udcName = langPath + "/files/" + "udc.aiml"
 		var udcName = path + "/files/" + "udc.aiml"
 		fsa.generateFile(udcName, udcFileFill())
 		var udcValue = fsa.readBinaryFile(udcName)
@@ -69,49 +64,42 @@ class PandorabotsGenerator {
 		
 		var utilsPath = Paths.get(congaPath + "utils.aiml")
 		var utils = new String(Files.readAllBytes(utilsPath))
-//		fsa.generateFile(langPath + "/files/utils.aiml", utils)
-//		var utilsValue = fsa.readBinaryFile(langPath + "/files/utils.aiml")
 		fsa.generateFile(path + "/files/utils.aiml", utils)
 		var utilsValue = fsa.readBinaryFile(path + "/files/utils.aiml")
 		zip.addFileToFolder("files", "utils.aiml", utilsValue)
 		
 		var aimlSLPath = Paths.get(congaPath + "aimlstandardlibrary.aiml")
 		var aimlSL = new String(Files.readAllBytes(aimlSLPath))
-//		fsa.generateFile(langPath + "/files/aimlstandardlibrary.aiml", aimlSL)
-//		var aimlSLValue = fsa.readBinaryFile(langPath + "/files/aimlstandardlibrary.aiml")
 		fsa.generateFile(path + "/files/aimlstandardlibrary.aiml", aimlSL)
 		var aimlSLValue = fsa.readBinaryFile(path + "/files/aimlstandardlibrary.aiml")
 		zip.addFileToFolder("files", "aimlstandardlibrary.aiml", aimlSLValue)
 		
 		// Generacion de ficheros de sustituciones automaticas vacios
-//		generateEmptySubstitutions(fsa, '/' + lang.languageAbbreviation)
 		generateEmptySubstitutions(fsa, "")
 		
 		// Obtencion de todas las entities del modelo
 		var entities = resource.allContents.filter(Entity).toList
 		for (Entity entity : entities) {
 			// Creacion de map para la entity correspondiente
-			var entityPath = path + "/maps/" + entity.name + ".map"
+			var entityPath = path + "/maps/" + entity.name.replaceAll('[ _.]', '') + ".map"
 			
 			// Generacion del archivo map asociado a la entity concreta
 			fsa.generateFile(entityPath, entityMapFill(entity))
 			var entityValue = fsa.readBinaryFile(entityPath)
-			zip.addFileToFolder("maps", entity.name + ".map", entityValue)
+			zip.addFileToFolder("maps", entity.name.replaceAll('[ _.]', '') + ".map", entityValue)
 
-			var entitySetPath = path + "/sets/" + entity.name + ".set"
+			var entitySetPath = path + "/sets/" + entity.name.replaceAll('[ _.]', '') + ".set"
 			fsa.generateFile(entitySetPath, entitySetFill(entity))
 			var inputSetValue = fsa.readBinaryFile(entitySetPath)
-			zip.addFileToFolder("sets", entity.name + ".set", inputSetValue)
+			zip.addFileToFolder("sets", entity.name.replaceAll('[ _.]', '') + ".set", inputSetValue)
 		}
 
 		// En flows se guardan los flujos de conversacion
 		for (UserInteraction transition : bot.flows) {
-//			createTransitionFiles(transition, lang.languageAbbreviation, fsa, bot)
 			createTransitionFiles(resource, transition, "", fsa, bot)
 		}
 		
 		zip.close	
-//		}
 	}
 	
 	// Genera los ficheros de sustituciones vacios para que no haya problemas de sustituciones indeseadas
@@ -226,7 +214,7 @@ class PandorabotsGenerator {
 
 	// Guarda los intents durante el recorrido de los flujos de conversación
 	def void createTransitionFiles(Resource resource, UserInteraction transition, String prefix, IFileSystemAccess2 fsa, Bot bot) {
-		var intentFileName = (transition.intent.name).toLowerCase().replaceAll('[ _]', '')
+		var intentFileName = (transition.intent.name).toLowerCase().replaceAll('[ _.]', '')
 		var intentFileContent = '''
 		<?xml version="1.0" encoding="UTF-8"?>
 		«  »<aiml>

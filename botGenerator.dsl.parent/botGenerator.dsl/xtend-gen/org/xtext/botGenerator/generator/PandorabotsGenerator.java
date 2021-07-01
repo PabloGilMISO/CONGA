@@ -93,21 +93,21 @@ public class PandorabotsGenerator {
       List<Entity> entities = IteratorExtensions.<Entity>toList(Iterators.<Entity>filter(resource.getAllContents(), Entity.class));
       for (final Entity entity : entities) {
         {
-          String _name = entity.getName();
-          String _plus_2 = ((this.path + "/maps/") + _name);
+          String _replaceAll = entity.getName().replaceAll("[ _.]", "");
+          String _plus_2 = ((this.path + "/maps/") + _replaceAll);
           String entityPath = (_plus_2 + ".map");
           fsa.generateFile(entityPath, this.entityMapFill(entity));
           InputStream entityValue = fsa.readBinaryFile(entityPath);
-          String _name_1 = entity.getName();
-          String _plus_3 = (_name_1 + ".map");
+          String _replaceAll_1 = entity.getName().replaceAll("[ _.]", "");
+          String _plus_3 = (_replaceAll_1 + ".map");
           zip.addFileToFolder("maps", _plus_3, entityValue);
-          String _name_2 = entity.getName();
-          String _plus_4 = ((this.path + "/sets/") + _name_2);
+          String _replaceAll_2 = entity.getName().replaceAll("[ _.]", "");
+          String _plus_4 = ((this.path + "/sets/") + _replaceAll_2);
           String entitySetPath = (_plus_4 + ".set");
           fsa.generateFile(entitySetPath, this.entitySetFill(entity));
           InputStream inputSetValue = fsa.readBinaryFile(entitySetPath);
-          String _name_3 = entity.getName();
-          String _plus_5 = (_name_3 + ".set");
+          String _replaceAll_3 = entity.getName().replaceAll("[ _.]", "");
+          String _plus_5 = (_replaceAll_3 + ".set");
           zip.addFileToFolder("sets", _plus_5, inputSetValue);
         }
       }
@@ -304,7 +304,7 @@ public class PandorabotsGenerator {
   }
   
   public void createTransitionFiles(final Resource resource, final UserInteraction transition, final String prefix, final IFileSystemAccess2 fsa, final Bot bot) {
-    String intentFileName = transition.getIntent().getName().toLowerCase().replaceAll("[ _]", "");
+    String intentFileName = transition.getIntent().getName().toLowerCase().replaceAll("[ _.]", "");
     StringConcatenation _builder = new StringConcatenation();
     _builder.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
     _builder.newLine();
