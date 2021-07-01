@@ -540,8 +540,6 @@ class PandorabotsGenerator {
 	}
 	
 	// Genera los arboles de solicitud de parametros en cada intent de forma recursiva
-	// TODO: cambiar para que acepte distintos lenguages. Hay que poner alguna condicion del lenguage en que se esten
-	// pidiendo los argumentos en ese momento concreto y en base a eso imprimir el que corresponda
 	def generateParamConditionsRec(Intent intent, List<String> params, String indent, String prefix, String language) {
 		if (params.isEmpty())
 			return 
