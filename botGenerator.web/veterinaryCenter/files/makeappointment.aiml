@@ -1,0 +1,411 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<aiml>
+  <!-- Entity saving -->
+  <category>
+    <pattern>SAVEPETNAME *</pattern>
+    <template>
+      <think><set name="petName"><star/></set></think>
+    </template>
+  </category>
+  <category>
+    <pattern>SAVEDATE * slash * slash *</pattern>
+    <template>
+      <think>
+        <set name="date_is_valid">
+          <srai>VALIDDATE <star index="1"/>/<star index="2"/>/<star index="3"/></srai>
+        </set>
+      </think>
+      <condition name="date_is_valid">
+        <li value="TRUE">
+          <think><set name="date"><star index="1"/>/<star index="2"/>/<star index="3"/></set></think>
+        </li>
+      </condition>
+    </template>
+  </category>
+  <category>
+    <pattern>SAVETIME * colon *</pattern>
+    <template>
+      <think>
+        <set name="time_is_valid"><srai>ISVALIDHOUR <star index="1"/>:<star index="2"/></srai></set>
+      </think>
+      <condition name="time_is_valid">
+        <li value="TRUE">
+          <think>
+            <set name="time"><star index="1"/>:<star index="2"/></set>
+          </think>
+        </li>
+      </condition>
+    </template>
+  </category>
+  <category>
+    <pattern>SAVEPET <set>pet</set></pattern>
+    <template>
+      <think><set name="pet"><map name="pet"><star/></map></set></think>
+    </template>
+  </category>
+  <!-- Intent -->
+  <!-- Main intents -->
+  <category>
+    <pattern>MAKEAPPOINTMENT</pattern>
+    <template>
+      <condition name="pandoralang">
+        <li>
+          <srai>MAKEAPPOINTMENTHTTPREQUEST</srai>
+          <srai>MAKEAPPOINTMENTHTTPRESPONSE</srai>
+        </li>
+      </condition>
+    </template>
+  </category>
+  <!-- Action intents -->
+  <category>
+    <pattern>MAKEAPPOINTMENTHTTPREQUEST</pattern>
+    <template>
+      <callapi response_code_var="response_HttpRequest">
+        <url>https://dimo1.ii.uam.es:8443/VeterinarioApi/dialogflow</url>
+        <method>POST</method>
+        <header><name></name></header>
+        <query name="pet"><get name="pet"/></query>
+        <query name="petName"><get name="petName"/></query>
+        <query name="time"><get name="time"/></query>
+        <query name="date"><get name="date"/></query>
+      </callapi>
+    </template>
+  </category>
+  <category>
+    <pattern>MAKEAPPOINTMENTHTTPRESPONSE</pattern>
+    <template>
+      <get name="response_HttpRequest"/>
+    </template>
+  </category>
+  <!-- Intent inputs -->
+  <category>
+    <pattern>I need an appointment for * </pattern>
+    <template>
+      <think>
+        <srai>
+          SAVEPETNAME <star index="1"/>
+        </srai>
+      </think>
+      Okay, what day do you want an appointment?
+    </template>
+  </category>
+  <category>
+    <pattern>I need an appointment for my <set>pet</set> * at * on * </pattern>
+    <template>
+      <think>
+        <srai>
+          SAVEPET <star index="1"/>
+        </srai>
+        <srai>
+          SAVEPETNAME <star index="2"/>
+        </srai>
+        <srai>
+          SAVETIME <star index="3"/>
+        </srai>
+        <srai>
+          SAVEDATE <star index="4"/>
+        </srai>
+      </think>
+      <think>
+        <set name="pandoralang">en</set>
+      </think>
+      <srai>MAKEAPPOINTMENT</srai>
+    </template>
+  </category>
+  <category>
+    <pattern>My pet * is sick </pattern>
+    <template>
+      <think>
+        <srai>
+          SAVEPETNAME <star index="1"/>
+        </srai>
+      </think>
+      Okay, what day do you want an appointment?
+    </template>
+  </category>
+  <category>
+    <pattern>My <set>pet</set> * is sick </pattern>
+    <template>
+      <think>
+        <srai>
+          SAVEPET <star index="1"/>
+        </srai>
+        <srai>
+          SAVEPETNAME <star index="2"/>
+        </srai>
+      </think>
+      Okay, what day do you want an appointment?
+    </template>
+  </category>
+  <category>
+    <pattern>I need to make an appointment at * * </pattern>
+    <template>
+      <think>
+        <srai>
+          SAVETIME <star index="1"/>
+        </srai>
+        <srai>
+          SAVEDATE <star index="2"/>
+        </srai>
+      </think>
+      What is the pet name?
+    </template>
+  </category>
+  <category>
+    <pattern>Can I set up an appointment for * on *  #</pattern>
+    <template>
+      <think>
+        <srai>
+          SAVETIME <star index="1"/>
+        </srai>
+        <srai>
+          SAVEDATE <star index="2"/>
+        </srai>
+      </think>
+      What is the pet name?
+    </template>
+  </category>
+  <category>
+    <pattern>Can I schedule service for * *  #</pattern>
+    <template>
+      <think>
+        <srai>
+          SAVETIME <star index="1"/>
+        </srai>
+        <srai>
+          SAVEDATE <star index="2"/>
+        </srai>
+      </think>
+      What is the pet name?
+    </template>
+  </category>
+  <category>
+    <pattern>Can I schedule service *  # </pattern>
+    <template>
+      <think>
+        <srai>
+          SAVEDATE <star index="1"/>
+        </srai>
+      </think>
+      What time?
+    </template>
+  </category>
+  <category>
+    <pattern>I need to make an appointment on * </pattern>
+    <template>
+      <think>
+        <srai>
+          SAVEDATE <star index="1"/>
+        </srai>
+      </think>
+      What time?
+    </template>
+  </category>
+  <category>
+    <pattern>I need an appointment for my pet</pattern>
+    <template>
+      Okay, what day do you want an appointment?
+    </template>
+  </category>
+  <category>
+    <pattern>My pet is sick</pattern>
+    <template>
+      Okay, what day do you want an appointment?
+    </template>
+  </category>
+  <category>
+    <pattern>I need an appointment for my <set>pet</set> </pattern>
+    <template>
+      <think>
+        <srai>
+          SAVEPET <star index="1"/>
+        </srai>
+      </think>
+      Okay, what day do you want an appointment?
+    </template>
+  </category>
+  <category>
+    <pattern>My <set>pet</set> is sick </pattern>
+    <template>
+      <think>
+        <srai>
+          SAVEPET <star index="1"/>
+        </srai>
+      </think>
+      Okay, what day do you want an appointment?
+    </template>
+  </category>
+  <category>
+    <pattern>I need an appointment for my <set>pet</set> at * on * </pattern>
+    <template>
+      <think>
+        <srai>
+          SAVEPET <star index="1"/>
+        </srai>
+        <srai>
+          SAVETIME <star index="2"/>
+        </srai>
+        <srai>
+          SAVEDATE <star index="3"/>
+        </srai>
+      </think>
+      What is the pet name?
+    </template>
+  </category>
+  <category>
+    <pattern>I want schredule an appointment for my <set>pet</set> * on * at * </pattern>
+    <template>
+      <think>
+        <srai>
+          SAVEPET <star index="1"/>
+        </srai>
+        <srai>
+          SAVEPETNAME <star index="2"/>
+        </srai>
+        <srai>
+          SAVEDATE <star index="3"/>
+        </srai>
+        <srai>
+          SAVETIME <star index="4"/>
+        </srai>
+      </think>
+      <think>
+        <set name="pandoralang">en</set>
+      </think>
+      <srai>MAKEAPPOINTMENT</srai>
+    </template>
+  </category>
+  <!-- Chained param intents -->
+  <category>
+    <pattern>*</pattern>
+    <that>What is the pet name </that>
+    <template>
+      <think>
+        <srai>SAVEPETNAME <star/></srai>
+      </think>
+      <condition name="petName">
+        <li value="unknown">What is the pet name?</li>
+        <li>
+          <condition name="date">
+            <li value="unknown">Okay, what day do you want an appointment?</li>
+            <li>
+              <condition name="time">
+                <li value="unknown">What time?</li>
+                <li>
+                  <condition name="pet">
+                    <li value="unknown">What kind is your pet?</li>
+                    <li>
+                      <think>
+                        <set name="pandoralang">en</set>
+                      </think>
+                      <srai>MAKEAPPOINTMENT</srai>
+                    </li>
+                  </condition>
+                </li>
+              </condition>
+            </li>
+          </condition>
+        </li>
+      </condition>
+    </template>
+  </category>
+  <category>
+    <pattern>* slash * slash *</pattern>
+    <that>Okay, what day do you want an appointment #</that>
+    <template>
+      <think>
+        <srai>SAVEDATE <star index="1"/>/<star index="2"/>/<star index="3"/></srai>
+      </think>
+      <condition name="petName">
+        <li value="unknown">What is the pet name?</li>
+        <li>
+          <condition name="date">
+            <li value="unknown">Okay, what day do you want an appointment?</li>
+            <li>
+              <condition name="time">
+                <li value="unknown">What time?</li>
+                <li>
+                  <condition name="pet">
+                    <li value="unknown">What kind is your pet?</li>
+                    <li>
+                      <think>
+                        <set name="pandoralang">en</set>
+                      </think>
+                      <srai>MAKEAPPOINTMENT</srai>
+                    </li>
+                  </condition>
+                </li>
+              </condition>
+            </li>
+          </condition>
+        </li>
+      </condition>
+    </template>
+  </category>
+  <category>
+    <pattern>* colon *</pattern>
+    <that>What time </that>
+    <template>
+      <think>
+        <srai>SAVETIME <star index="1"/>:<star index="2"/></srai>
+      </think>
+      <condition name="petName">
+        <li value="unknown">What is the pet name?</li>
+        <li>
+          <condition name="date">
+            <li value="unknown">Okay, what day do you want an appointment?</li>
+            <li>
+              <condition name="time">
+                <li value="unknown">What time?</li>
+                <li>
+                  <condition name="pet">
+                    <li value="unknown">What kind is your pet?</li>
+                    <li>
+                      <think>
+                        <set name="pandoralang">en</set>
+                      </think>
+                      <srai>MAKEAPPOINTMENT</srai>
+                    </li>
+                  </condition>
+                </li>
+              </condition>
+            </li>
+          </condition>
+        </li>
+      </condition>
+    </template>
+  </category>
+  <category>
+    <pattern><set>pet</set></pattern>
+    <that>What kind is your pet </that>
+    <template>
+      <think>
+        <srai>SAVEPET <map name="pet"><star/></map></srai>
+      </think>
+      <condition name="petName">
+        <li value="unknown">What is the pet name?</li>
+        <li>
+          <condition name="date">
+            <li value="unknown">Okay, what day do you want an appointment?</li>
+            <li>
+              <condition name="time">
+                <li value="unknown">What time?</li>
+                <li>
+                  <condition name="pet">
+                    <li value="unknown">What kind is your pet?</li>
+                    <li>
+                      <think>
+                        <set name="pandoralang">en</set>
+                      </think>
+                      <srai>MAKEAPPOINTMENT</srai>
+                    </li>
+                  </condition>
+                </li>
+              </condition>
+            </li>
+          </condition>
+        </li>
+      </condition>
+    </template>
+  </category>
+</aiml>
