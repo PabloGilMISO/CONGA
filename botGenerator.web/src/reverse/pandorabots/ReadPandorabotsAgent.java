@@ -11,7 +11,9 @@ import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.dataformat.xml.JacksonXmlModule;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
+import com.fasterxml.jackson.module.jaxb.JaxbAnnotationModule;
 
 import reverse.pandorabots.agent.*;
 import zipUtils.Unzipper;
@@ -19,6 +21,11 @@ import zipUtils.Unzipper;
 // WIP: Clase para leer la información de un bot de Pandorabots
 public class ReadPandorabotsAgent {
 	XmlMapper mapper = new XmlMapper();
+
+//	public ReadPandorabotsAgent() {
+//		mapper.registerModule(new JaxbAnnotationModule());
+//		mapper.registerModule(new JacksonXmlModule());
+//	}
 
 	// Devuelve el agente, esto es: el bot creado con las clases intermedias al
 	// modelo final que es CONGA

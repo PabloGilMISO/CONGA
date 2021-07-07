@@ -3,8 +3,10 @@ package reverse.pandorabots.agent;
 import java.util.List;
 
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
+import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlText;
 
+@JacksonXmlRootElement(localName = "category")
 public class Category {
 	@JacksonXmlText(value = true)
 	public String pattern;

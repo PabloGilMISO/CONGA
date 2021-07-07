@@ -2,9 +2,16 @@ package reverse.pandorabots.agent;
 
 import java.util.List;
 
+import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
+import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
+
+@JacksonXmlRootElement(localName = "template")
 public class Template {
+	@JacksonXmlProperty(localName = "srai")
 	public List<String> links;
+	@JacksonXmlProperty
 	public String text;
+	@JacksonXmlProperty(localName = "condition")
 	public Condition condition;
 	
 	public Template(String text) {

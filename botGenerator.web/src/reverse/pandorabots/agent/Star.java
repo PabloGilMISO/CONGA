@@ -1,8 +1,10 @@
 package reverse.pandorabots.agent;
 
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
+import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlText;
 
+@JacksonXmlRootElement(localName = "star")
 public class Star {
 	@JacksonXmlProperty(isAttribute = true)
 	public int index;
