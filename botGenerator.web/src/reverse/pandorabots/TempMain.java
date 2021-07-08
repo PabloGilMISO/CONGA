@@ -5,11 +5,13 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.type.CollectionType;
 import com.fasterxml.jackson.dataformat.xml.JacksonXmlModule;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 
@@ -58,6 +60,8 @@ public class TempMain {
 		// para rellenarlo
 		PruebaAgent fullAgent = new PruebaAgent();
 		PruebaAgent tempAgent;
+		CollectionType tempCol = mapper.getTypeFactory().constructCollectionType(List.class, PruebaCategory.class);
+		List<PruebaCategory> tempCats;
 		List<File> files = new ArrayList<File>();
 
 		// Se añaden los archivos del bot para posterior lectura y eliminación
@@ -76,8 +80,11 @@ public class TempMain {
 						// Se ignoran los ficheros de funciones auxiliares necesarios en Pandorabots
 						// únicamente
 						if (!f.getName().equals("aimlstandardlibrary.aiml") && !f.getName().equals("utils.aiml")) {
-							tempAgent = mapper.readValue(f, PruebaAgent.class);
-							fullAgent.addCategories(tempAgent.categories);
+//							tempAgent = mapper.readValue(f, PruebaAgent.class);
+//							if (tempAgent.categories != null)
+//								fullAgent.addCategories(tempAgent.categories);
+							tempCats = mapper.readValue(f, tempCol);
+							System.out.println(tempCats);
 						}
 					}
 					// Si el zip está separado en subcarpetas
@@ -95,8 +102,10 @@ public class TempMain {
 					// únicamente
 					if (!currentFile.getName().equals("aimlstandardlibrary.aiml")
 							&& !currentFile.getName().equals("utils.aiml")) {
-						tempAgent = mapper.readValue(currentFile, PruebaAgent.class);
-						fullAgent.addCategories(tempAgent.categories);
+//						tempAgent = mapper.readValue(currentFile, PruebaAgent.class);
+//						fullAgent.addCategories(tempAgent.categories);
+						tempCats = mapper.readValue(currentFile, tempCol);
+						System.out.println(tempCats);
 					}
 				}
 			}

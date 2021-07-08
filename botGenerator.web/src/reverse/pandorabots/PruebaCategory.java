@@ -1,16 +1,20 @@
 package reverse.pandorabots;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlText;
 
 @JacksonXmlRootElement(localName = "category")
+@JsonIgnoreProperties(ignoreUnknown = true) 
+//@JsonPropertyOrder({"pattern", "template"})
 public class PruebaCategory {
-//	@JacksonXmlText(value = true)
-	@JacksonXmlProperty(localName = "pattern")
+//	@JacksonXmlText
+//	@JacksonXmlProperty(localName = "pattern")
 	public String pattern;
 //	@JacksonXmlText(value = true)
-	@JacksonXmlProperty(localName = "template")
+//	@JacksonXmlProperty(localName = "template")
 	public String template;
 
 	public String getPattern() {
