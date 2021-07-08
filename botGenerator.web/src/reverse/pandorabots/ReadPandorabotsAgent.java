@@ -11,6 +11,7 @@ import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.type.CollectionType;
 import com.fasterxml.jackson.dataformat.xml.JacksonXmlModule;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import com.fasterxml.jackson.module.jaxb.JaxbAnnotationModule;
@@ -22,10 +23,11 @@ import zipUtils.Unzipper;
 public class ReadPandorabotsAgent {
 	XmlMapper mapper = new XmlMapper();
 
-//	public ReadPandorabotsAgent() {
-//		mapper.registerModule(new JaxbAnnotationModule());
-//		mapper.registerModule(new JacksonXmlModule());
-//	}
+	public ReadPandorabotsAgent() {
+		mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
+				.configure(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY, true)
+				.configure(DeserializationFeature.ACCEPT_EMPTY_STRING_AS_NULL_OBJECT, true);
+	}
 
 	// Devuelve el agente, esto es: el bot creado con las clases intermedias al
 	// modelo final que es CONGA
@@ -38,7 +40,7 @@ public class ReadPandorabotsAgent {
 		// Declaración del modelo intermedio del bot y la lista de ficheros a recorrer
 		// para rellenarlo
 		Agent fullAgent = new Agent();
-		Agent tempAgent;
+		CollectionType categoryListType = mapper.getTypeFactory().constructCollectionType(List.class, Category.class);
 		List<File> files = new ArrayList<File>();
 
 		// Se añaden los archivos del bot para posterior lectura y eliminación
@@ -57,8 +59,8 @@ public class ReadPandorabotsAgent {
 						// Se ignoran los ficheros de funciones auxiliares necesarios en Pandorabots
 						// únicamente
 						if (!f.getName().equals("aimlstandardlibrary.aiml") && !f.getName().equals("utils.aiml")) {
-							tempAgent = mapper.readValue(f, Agent.class);
-							fullAgent.addCategories(tempAgent.categories);
+							List<Category> tempList = mapper.readValue(f, categoryListType);
+							fullAgent.addCategories(tempList);
 						}
 					}
 					// Lectura de sets
@@ -86,8 +88,8 @@ public class ReadPandorabotsAgent {
 					// únicamente
 					if (!currentFile.getName().equals("aimlstandardlibrary.aiml")
 							&& !currentFile.getName().equals("utils.aiml")) {
-						tempAgent = mapper.readValue(currentFile, Agent.class);
-						fullAgent.addCategories(tempAgent.categories);
+						List<Category> tempList = mapper.readValue(currentFile, categoryListType);
+						fullAgent.addCategories(tempList);
 					}
 				}
 				// Lectura de sets

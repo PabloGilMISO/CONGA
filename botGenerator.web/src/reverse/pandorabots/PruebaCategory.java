@@ -8,13 +8,8 @@ import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlText;
 
 @JacksonXmlRootElement(localName = "category")
 @JsonIgnoreProperties(ignoreUnknown = true) 
-//@JsonPropertyOrder({"pattern", "template"})
 public class PruebaCategory {
-//	@JacksonXmlText
-//	@JacksonXmlProperty(localName = "pattern")
 	public String pattern;
-//	@JacksonXmlText(value = true)
-//	@JacksonXmlProperty(localName = "template")
 	public String template;
 
 	public String getPattern() {

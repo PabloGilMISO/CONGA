@@ -27,11 +27,12 @@ public class TempMain {
 //		String pandorabotsPath = "C:/Users/pablo/CONGA/pandorabots/veterinaryCenter.zip";
 		String pandorabotsPath = "C:/Users/pablo/CONGA/pandorabots/prueba.zip";
 		File zip = new File(pandorabotsPath);
-//		ReadPandorabotsAgent reader = new ReadPandorabotsAgent();
-//		Agent fullAgent = reader.getAgent(zip);
-//		System.out.println(fullAgent);
+		ReadPandorabotsAgent reader = new ReadPandorabotsAgent();
+		Agent fullAgent = reader.getAgent(zip);
+		System.out.println(fullAgent);
 
-		System.out.println(getPruebaAgent(zip));
+		// Pruebas
+//		System.out.println(getPruebaAgent(zip));
 	}
 
 	public static PruebaAgent getPruebaAgent(File zip) throws JsonParseException, JsonMappingException, IOException {

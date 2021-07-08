@@ -2,17 +2,19 @@ package reverse.pandorabots.agent;
 
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
+import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlText;
 
 @JacksonXmlRootElement(localName = "set")
 public class Set {
 	@JacksonXmlProperty(isAttribute = true)
 	public String name;
 	public Star star;
-	@JacksonXmlProperty(isAttribute = true, localName = "star")
-	public String getVar;
-	@JacksonXmlProperty
+	public Get getVar;
+	@JacksonXmlText
 	public String content;
 
+	public Set() {}
+	
 	public String getName() {
 		return name;
 	}
@@ -29,11 +31,11 @@ public class Set {
 		this.star = star;
 	}
 
-	public String getGetVar() {
+	public Get getGetVar() {
 		return getVar;
 	}
 
-	public void setGetVar(String getVar) {
+	public void setGetVar(Get getVar) {
 		this.getVar = getVar;
 	}
 

@@ -11,6 +11,8 @@ public class Star {
 	@JacksonXmlText(value = true)
 	public String text;
 
+	public Star() {}
+	
 	public int getIndex() {
 		return index;
 	}

@@ -1,7 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <aiml>
   <category>
-    <pattern>Patron</pattern>
-    <template>Template</template>
+    <pattern>Patrón 1</pattern>
+    <template>Template 1</template>
+  </category>
+  <category>
+    <pattern>Patrón 2</pattern>
+    <template>Template 2</template>
+  </category>
+  <category>
+    <pattern>HOURS</pattern>
+    <template>
+      <condition name="pandoralang">
+        <li value="en">
+          HOURSENHOURSTXTRESP1
+        </li>
+      </condition>
+    </template>
   </category>
 </aiml>

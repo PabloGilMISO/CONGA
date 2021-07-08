@@ -2,6 +2,7 @@ package reverse.pandorabots.agent;
 
 import java.util.List;
 
+import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
 
@@ -9,11 +10,18 @@ import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
 public class Condition {
 	@JacksonXmlProperty(isAttribute = true)
 	public String name;
+//	@JacksonXmlElementWrapper(useWrapping = false, localName = "li")
+//	@JacksonXmlElementWrapper(useWrapping = false)
+	@JacksonXmlElementWrapper(useWrapping = false)
 	@JacksonXmlProperty(localName = "li")
 	public List<Option> options;
 
-	public Condition(String varName) {
-		this.name = varName;
+	public Condition() {
+	}
+
+	public Condition(String name, List<Option> options) {
+		this.name = name;
+		this.options = options;
 	}
 
 	public String getVarName() {
