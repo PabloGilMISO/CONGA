@@ -1,20 +1,77 @@
 package reverse.pandorabots.agent;
 
+import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonSetter;
+import com.fasterxml.jackson.annotation.Nulls;
+import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlText;
 
 @JacksonXmlRootElement(localName = "set")
 public class Set {
-	@JacksonXmlProperty(isAttribute = true)
+	@JacksonXmlProperty(isAttribute = true, localName = "name")
 	public String name;
-	public Star star;
+//	@JacksonXmlProperty(localName = "star")
+//	@JacksonXmlElementWrapper(localName = "star")
+	@JacksonXmlElementWrapper(useWrapping = false)
+	@JacksonXmlProperty(localName = "star")
+	@JsonSetter(nulls = Nulls.AS_EMPTY)
+	public List<Star> stars;
+	@JacksonXmlElementWrapper(useWrapping = false)
+	@JacksonXmlProperty(localName = "srai")
+	public List<Srai> srais;
 	public Get getVar;
 	@JacksonXmlText
-	public String content;
+	public String text;
 
-	public Set() {}
+	public Set() {
+	}
+
+	public Set(String name, List<Star> stars, List<reverse.pandorabots.agent.Srai> srais, Get getVar, String text) {
+		this.name = name;
+		this.stars = stars;
+		this.srais = srais;
+		this.getVar = getVar;
+		this.text = text;
+	}
+
+	public Set(String name, List<Star> stars, Get getVar, String text) {
+		this.name = name;
+		this.stars = stars;
+		this.getVar = getVar;
+		this.text = text;
+	}
+
+	public Set(String name, String text) {
+		this.name = name;
+		this.text = text;
+	}
+
+//	public Set(String name, List<Star> stars) {
+//		this.name = name;
+//		this.stars = stars;
+//	}
+//
+//	public Set(String name, List<Srai> srais) {
+//		this.name = name;
+//		this.srais = srais;
+//	}
+
+//	public Set(String name, List<?> sraiOrStar) {
+//		this.name = name;
+//		if (sraiOrStar.get(0) instanceof Star)
+//			this.stars = (List<Star>) sraiOrStar;
+//		
+//		else
+//			this.srais = (List<Srai>) sraiOrStar;
+//	}
 	
+	public Set(String name) {
+		this.name = name;
+	}
+
 	public String getName() {
 		return name;
 	}
@@ -23,12 +80,12 @@ public class Set {
 		this.name = name;
 	}
 
-	public Star getStar() {
-		return star;
+	public List<Star> getStars() {
+		return stars;
 	}
 
-	public void setStar(Star star) {
-		this.star = star;
+	public void setStars(List<Star> stars) {
+		this.stars = stars;
 	}
 
 	public Get getGetVar() {
@@ -39,16 +96,25 @@ public class Set {
 		this.getVar = getVar;
 	}
 
-	public String getContent() {
-		return content;
+	public List<Srai> getSrais() {
+		return srais;
 	}
 
-	public void setContent(String content) {
-		this.content = content;
+	public void setSrais(List<Srai> srais) {
+		this.srais = srais;
+	}
+
+	public String getText() {
+		return text;
+	}
+
+	public void setText(String text) {
+		this.text = text;
 	}
 
 	@Override
 	public String toString() {
-		return "Set [name=" + name + ", star=" + star + ", getVar=" + getVar + "]";
+		return "Set [name=" + name + ", stars=" + stars + ", srais=" + srais + ", getVar=" + getVar + ", text=" + text
+				+ "]";
 	}
 }

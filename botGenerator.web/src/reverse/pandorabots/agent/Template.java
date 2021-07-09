@@ -3,12 +3,14 @@ package reverse.pandorabots.agent;
 import java.util.List;
 
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper;
+import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlText;
 
 @JacksonXmlRootElement(localName = "template")
 public class Template {
-	@JacksonXmlElementWrapper(localName = "srai", useWrapping = false)
+//	@JacksonXmlElementWrapper(localName = "srai", useWrapping = false)
+	@JacksonXmlProperty(localName = "srai")
 	public List<String> links;
 	@JacksonXmlText
 	public String text;

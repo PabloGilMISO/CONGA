@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<aiml>
+  <!-- Entity saving -->
+  <category>
+    <pattern>SAVEPETNAME *</pattern>
+    <template>
+      <think><set name="petName"><star/></set></think>
+    </template>
+  </category>
+</aiml>

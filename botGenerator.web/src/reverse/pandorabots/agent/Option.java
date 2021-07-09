@@ -14,7 +14,7 @@ public class Option {
 	public Star star;
 	@JacksonXmlText
 	public String text;
-	@JacksonXmlElementWrapper(localName = "srai", useWrapping = false)
+	@JacksonXmlProperty(localName = "srai")
 	public List<String> links;
 	public Condition condition;
 
