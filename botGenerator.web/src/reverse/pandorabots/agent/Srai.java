@@ -12,16 +12,16 @@ import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlText;
 public class Srai {
 	@JacksonXmlText
 	public String text;
-	@JacksonXmlElementWrapper(localName = "star")
-	@JsonSetter(nulls=Nulls.AS_EMPTY)
-	public List<Star> stars;
+//	@JacksonXmlElementWrapper(localName = "star")
+//	@JsonSetter(nulls=Nulls.AS_EMPTY)
+//	public List<Star> stars;
 	
 	public Srai() {}
 	
-	public Srai(String text, List<Star> stars) {
-		this.text = text;
-		this.stars = stars;
-	}
+//	public Srai(String text, List<Star> stars) {
+//		this.text = text;
+//		this.stars = stars;
+//	}
 	
 	public Srai(String text) {
 		this.text = text;
@@ -35,11 +35,21 @@ public class Srai {
 		this.text = text;
 	}
 
-	public List<Star> getStars() {
-		return stars;
+	@Override
+	public String toString() {
+		return "Srai [text=" + text + "]";
 	}
 
-	public void setStars(List<Star> stars) {
-		this.stars = stars;
-	}
+//	public List<Star> getStars() {
+//		return stars;
+//	}
+//
+//	public void setStars(List<Star> stars) {
+//		this.stars = stars;
+//	}
+
+//	@Override
+//	public String toString() {
+//		return "Srai [text=" + text + ", stars=" + stars + "]";
+//	}
 }

@@ -1,2 +1,18 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<qualifiedTypeNameHistroy/>
+<qualifiedTypeNameHistroy>
+    <fullyQualifiedTypeName name="com.fasterxml.jackson.annotation.JsonProperty"/>
+    <fullyQualifiedTypeName name="com.fasterxml.jackson.annotation.JsonProperty.Access"/>
+    <fullyQualifiedTypeName name="com.fasterxml.jackson.databind.JsonDeserializer"/>
+    <fullyQualifiedTypeName name="com.fasterxml.jackson.core.JsonParser"/>
+    <fullyQualifiedTypeName name="com.fasterxml.jackson.databind.DeserializationContext"/>
+    <fullyQualifiedTypeName name="com.fasterxml.jackson.core.JsonProcessingException"/>
+    <fullyQualifiedTypeName name="com.fasterxml.jackson.databind.module.SimpleModule"/>
+    <fullyQualifiedTypeName name="reverse.pandorabots.agent.Category"/>
+    <fullyQualifiedTypeName name="com.fasterxml.jackson.databind.deser.std.StdDeserializer"/>
+    <fullyQualifiedTypeName name="reverse.pandorabots.agent.Srai"/>
+    <fullyQualifiedTypeName name="reverse.pandorabots.agent.Set"/>
+    <fullyQualifiedTypeName name="com.fasterxml.jackson.databind.deser.BeanDeserializerModifier"/>
+    <fullyQualifiedTypeName name="com.fasterxml.jackson.databind.DeserializationConfig"/>
+    <fullyQualifiedTypeName name="com.fasterxml.jackson.databind.BeanDescription"/>
+    <fullyQualifiedTypeName name="com.fasterxml.jackson.databind.annotation.JsonDeserialize"/>
+</qualifiedTypeNameHistroy>

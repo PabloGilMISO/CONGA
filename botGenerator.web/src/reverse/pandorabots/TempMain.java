@@ -9,15 +9,27 @@ import java.util.Collection;
 import java.util.List;
 
 import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.BeanDescription;
+import com.fasterxml.jackson.databind.DeserializationConfig;
+import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.deser.BeanDeserializerModifier;
+import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
+import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.databind.type.CollectionType;
 import com.fasterxml.jackson.dataformat.xml.JacksonXmlModule;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 
 import reverse.pandorabots.agent.Agent;
+import reverse.pandorabots.agent.Category;
 import reverse.pandorabots.agent.MapFile;
+import reverse.pandorabots.agent.Set;
 import reverse.pandorabots.agent.SetFile;
+import reverse.pandorabots.agent.Srai;
 import zipUtils.Unzipper;
 
 public class TempMain {
@@ -25,7 +37,8 @@ public class TempMain {
 	// Clase temporal para probar la conversión de Pandorabots a CONGA
 	public static void main(String[] args) throws IOException {
 //		String pandorabotsPath = "C:/Users/pablo/CONGA/pandorabots/veterinaryCenter.zip";
-		String pandorabotsPath = "C:/Users/pablo/CONGA/pandorabots/prueba.zip";
+//		String pandorabotsPath = "C:/Users/pablo/CONGA/pandorabots/prueba.zip";
+		String pandorabotsPath = "C:/CONGA/pandorabots/prueba.zip";
 		File zip = new File(pandorabotsPath);
 		ReadPandorabotsAgent reader = new ReadPandorabotsAgent();
 		Agent fullAgent = reader.getAgent(zip);
@@ -42,6 +55,20 @@ public class TempMain {
 		mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
 				.configure(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY, true)
 				.configure(DeserializationFeature.ACCEPT_EMPTY_STRING_AS_NULL_OBJECT, true);
+
+//		SimpleModule module = new SimpleModule("configModule", com.fasterxml.jackson.core.Version.unknownVersion());
+//		module.addDeserializer(Set.class, new DeSerializer());
+//		module.setDeserializerModifier(new BeanDeserializerModifier()
+//	    {
+//	      @Override public JsonDeserializer<?> modifyDeserializer(DeserializationConfig config, BeanDescription beanDesc, JsonDeserializer<?> deserializer)
+//	      {
+//	        if (beanDesc.getBeanClass() == Set.class)
+//	          return new UserEventDeserializer(deserializer);
+//	        return deserializer;
+//	      }
+//	    });
+//		mapper.registerModule(module);
+		
 //		mapper.configure(DeserializationFeature.ACCEPT_EMPTY_STRING_AS_NULL_OBJECT, true)
 //				.configure(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY, true);
 
@@ -61,7 +88,7 @@ public class TempMain {
 		// para rellenarlo
 		PruebaAgent fullAgent = new PruebaAgent();
 		PruebaAgent tempAgent;
-		CollectionType tempCol = mapper.getTypeFactory().constructCollectionType(List.class, PruebaCategory.class);
+		CollectionType tempCol = mapper.getTypeFactory().constructCollectionType(List.class, Category.class);
 		List<PruebaCategory> tempCats;
 		List<File> files = new ArrayList<File>();
 
@@ -120,3 +147,27 @@ public class TempMain {
 		return fullAgent;
 	}
 }
+
+//class UnEscapedSerializaer extends JsonDeserializer<Set> {
+//
+//	@Override
+//	public Set deserialize(JsonParser jp, DeserializationContext ctxt) throws IOException, JsonProcessingException {
+//		String s = jp.getValueAsString();
+//		return new Set(s);
+//
+//	}
+//}
+
+//class DeSerializer extends StdDeserializer<Set> {
+//
+//	protected DeSerializer() {
+//		super(Set.class);
+//	}
+//
+//	@Override
+//	public Set deserialize(JsonParser p, DeserializationContext ctxt) throws IOException, JsonProcessingException {
+//		// use p.getText() and p.nextToken to navigate through the xml and construct
+//		// Person object
+//		return new Set("nombre", p.getText());
+//	}
+//}
