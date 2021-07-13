@@ -11,9 +11,16 @@ public class Star {
 //	private String id;
 	@JacksonXmlProperty(isAttribute = true)
 	public int index;
-
+	@JacksonXmlText
+	public String text;
+	
 	public Star() {
 //		id = UUID.randomUUID().toString();
+	}
+
+	public Star(int index, String text) {
+		this.index = index;
+		this.text = text;
 	}
 
 	public Star(int index) {
@@ -29,9 +36,24 @@ public class Star {
 		this.index = index;
 	}
 
+	public String getText() {
+		return text;
+	}
+
+	public void setText(String text) {
+		this.text = text;
+	}
+
 	@Override
 	public String toString() {
-//		return "Star [id=" + id + ", index=" + index + "]";
-		return "Star [index=" + index + "]";
+		return "Star [index=" + index + ", text=" + text + "]";
 	}
+
+//	@Override
+//	public String toString() {
+////		return "Star [id=" + id + ", index=" + index + "]";
+//		return "Star [index=" + index + "]";
+//	}
+	
+	
 }
