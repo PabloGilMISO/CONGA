@@ -6,25 +6,25 @@ import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
 @JacksonXmlRootElement(localName = "category")
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Category {
-	public String pattern;
+	public Pattern pattern;
 	public String that;
 	public Think think;
 	public Template template;
 
 	public Category() {}
 
-	public Category(String pattern, String that, Think think, Template template) {
+	public Category(Pattern pattern, String that, Think think, Template template) {
 		this.pattern = pattern;
 		this.that = that;
 		this.think = think;
 		this.template = template;
 	}
 
-	public String getPattern() {
+	public Pattern getPattern() {
 		return pattern;
 	}
 
-	public void setPattern(String pattern) {
+	public void setPattern(Pattern pattern) {
 		this.pattern = pattern;
 	}
 

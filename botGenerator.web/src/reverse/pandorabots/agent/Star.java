@@ -36,6 +36,11 @@ public class Star {
 		this.index = index;
 	}
 
+//	@Override
+//	public String toString() {
+//		return "Star [index=" + index + "]";
+//	}
+
 	public String getText() {
 		return text;
 	}
@@ -47,13 +52,5 @@ public class Star {
 	@Override
 	public String toString() {
 		return "Star [index=" + index + ", text=" + text + "]";
-	}
-
-//	@Override
-//	public String toString() {
-////		return "Star [id=" + id + ", index=" + index + "]";
-//		return "Star [index=" + index + "]";
-//	}
-	
-	
+	}	
 }

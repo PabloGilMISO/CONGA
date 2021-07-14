@@ -1,0 +1,256 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<aiml version="2.0">
+    <!-- Credit to https://github.com/keiffster/botflow-y -->
+    <!-- Date Validation -->
+    <category>
+        <pattern>VALIDDATE <set>number</set>slash<set>number</set>slash<set>number</set></pattern>
+        <template>
+            <think>
+                <set name="validm"><srai>VALIDMONTH <star index="1"/> <star index="2"/></srai></set>
+            </think>
+                <condition name="validm">
+                    <li value="TRUE">TRUE</li>
+                    <li>FALSE</li>
+                </condition>
+        </template>
+    </category>
+    <!-- Valid day of month -->
+    <category>
+        <pattern>VALIDMONTH * *</pattern>
+        <template>
+            <think>
+                <set name="month"><star index="2"/></set>
+            </think>
+            <condition name="month">
+                <li value="1">
+                    <set name="mres"><srai>MONTH31 <star index="1"/></srai></set>
+                </li>
+                <li value="2">
+                    <set name="mres"><srai>FEBRUARY <star index="1"/></srai></set>
+                </li>
+                <li value="3">
+                    <set name="mres"><srai>MONTH31 <star index="1"/></srai></set>
+                </li>
+                <li value="4">
+                    <set name="mres"><srai>MONTH30 <star index="1"/></srai></set>
+                </li>
+                <li value="5">
+                    <set name="mres"><srai>MONTH31 <star index="1"/></srai></set>
+                </li>
+                <li value="6">
+                    <set name="mres"><srai>MONTH30 <star index="1"/></srai></set>
+                </li>
+                <li value="7">
+                    <set name="mres"><srai>MONTH31 <star index="1"/></srai></set>
+                </li>
+                <li value="8">
+                    <set name="mres"><srai>MONTH31 <star index="1"/></srai></set>
+                </li>
+                <li value="9">
+                    <set name="mres"><srai>MONTH30 <star index="1"/></srai></set>
+                </li>
+                <li value="10">
+                    <set name="mres"><srai>MONTH31 <star index="1"/></srai></set>
+                </li>
+                <li value="11">
+                    <set name="mres"><srai>MONTH30 <star index="1"/></srai></set>
+                </li>
+                <li value="12">
+                    <set name="mres"><srai>MONTH31 <star index="1"/></srai></set>
+                </li>
+                <li>FALSE</li>
+            </condition>
+        </template>
+    </category>
+    <!-- Month of 31 days -->
+    <category>
+        <pattern>MONTH31 *</pattern>
+        <template>
+            <think>
+                <set name="xle">
+                    <srai>XLE <person /> XS 31</srai>
+                </set>
+                <set name="xge">
+                    <srai>XGE <person /> XS 1</srai>
+                </set>
+            </think>
+            <condition name="xle">
+                <li value="TRUE">
+                    <condition name="xge">
+                        <li value="TRUE">TRUE</li>
+                        <li>FALSE</li>
+                    </condition>
+                </li>
+                <li>FALSE</li>
+            </condition>
+        </template>
+    </category>
+    <!-- Month of 30 days -->
+    <category>
+        <pattern>MONTH30 *</pattern>
+        <template>
+            <think>
+                <set name="xle">
+                    <srai>XLE <person /> XS 30</srai>
+                </set>
+                <set name="xge">
+                    <srai>XGE <person /> XS 1</srai>
+                </set>
+            </think>
+            <condition name="xle">
+                <li value="TRUE">
+                    <condition name="xge">
+                        <li value="TRUE">TRUE</li>
+                        <li>FALSE</li>
+                    </condition>
+                </li>
+                <li>FALSE</li>
+            </condition>
+        </template>
+    </category>
+    <!-- February -->
+    <category>
+        <pattern>FEBRUARY *</pattern>
+        <template>
+            <think>
+                <set name="xle">
+                    <srai>XLE <person /> XS 29</srai>
+                </set>
+                <set name="xge">
+                    <srai>XGE <person /> XS 1</srai>
+                </set>
+            </think>
+            <condition name="xle">
+                <li value="TRUE">
+                    <condition name="xge">
+                        <li value="TRUE">TRUE</li>
+                        <li>FALSE</li>
+                    </condition>
+                </li>
+                <li>FALSE</li>
+            </condition>
+        </template>
+    </category>
+    <!-- Valid hour -->
+    <category>
+        <pattern>ISVALIDHOUR <set>number</set> colon <set>number</set></pattern>
+        <template>
+            <think>
+                <set name="hour_xeq">
+                    <srai>
+                        XEQ <star index="1"/> XS 00
+                    </srai>
+                </set>
+                <set name="hour_xge">
+                    <srai>
+                        XGE <star index="1"/> XS 0
+                    </srai>
+                </set>
+                <set name="hour_xle">
+                    <srai>
+                        XLE <star index="1"/> XS 24
+                    </srai>
+                </set>
+                <set name="minute_xeq">
+                    <srai>
+                        XEQ <star index="2"/> XS 00
+                    </srai>
+                </set>
+                <set name="minute_xge">
+                    <srai>
+                        XGE <star index="2" /> XS 0
+                    </srai>
+                </set>
+                <set name="minute_xle">
+                    <srai>
+                        XLE <star index="2" /> XS 59
+                    </srai>
+                </set>
+            </think>
+            <condition name="hour_xle">
+                <li value="TRUE">
+                    <condition name="hour_xge">
+                        <li value="TRUE">
+                            <condition name="minute_xge">
+                                <li value="TRUE">
+                                    <condition name="minute_xle">
+                                        <li value="TRUE">TRUE</li>
+                                        <li>
+                                            <condition name="minute_xeq">
+                                                <li value="TRUE">TRUE</li>
+                                                <li>FALSE</li>
+                                            </condition>
+                                        </li>
+                                    </condition>
+                                </li>
+                                <li>
+                                    <condition name="minute_xeq">
+                                        <li value="TRUE">TRUE</li>
+                                        <li>FALSE</li>
+                                    </condition>
+                                </li>
+                            </condition>
+                        </li>
+                        <li>
+                            <condition name="hour_xeq">
+                                <li value="TRUE">
+                                    <condition name="minute_xle">
+                                        <li value="TRUE">
+                                            <condition name="minute_xge">
+                                                <li value="TRUE">TRUE</li>
+                                                <li>
+                                                    <condition name="minute_xeq">
+                                                        <li value="TRUE">TRUE</li>
+                                                        <li>FALSE</li>
+                                                    </condition>
+                                                </li>
+                                            </condition>
+                                        </li>
+                                        <li>
+                                            <condition name="minute_xeq">
+                                                <li value="TRUE">TRUE</li>
+                                                <li>FALSE</li>
+                                            </condition>
+                                        </li>
+                                    </condition>
+                                </li>
+                                <li>
+                                    <condition name="minute_xeq">
+                                        <li value="TRUE">TRUE</li>
+                                        <li>FALSE</li>
+                                    </condition>
+                                </li>
+                            </condition>
+                        </li>
+                    </condition>
+                </li>
+                <li>
+                    <condition name="hour_xeq">
+                        <li value="TRUE">
+                            <condition name="minute_xle">
+                                <li value="TRUE">
+                                    <condition name="minute_xge">
+                                        <li value="TRUE">TRUE</li>
+                                        <li>
+                                            <condition name="minute_xeq">
+                                                <li value="TRUE">TRUE</li>
+                                                <li>FALSE</li>
+                                            </condition>
+                                        </li>
+                                    </condition>
+                                </li>
+                                <li>
+                                    <condition name="minute_xeq">
+                                        <li value="TRUE">TRUE</li>
+                                        <li>FALSE</li>
+                                    </condition>
+                                </li>
+                            </condition>
+                        </li>
+                        <li>FALSE</li>
+                    </condition>
+                </li>
+            </condition>
+        </template>
+    </category>
+</aiml>

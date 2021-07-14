@@ -14,19 +14,23 @@ public class Option {
 	public Star star;
 	@JacksonXmlText
 	public String text;
+	@JacksonXmlElementWrapper(useWrapping = false)
 	@JacksonXmlProperty(localName = "srai")
-	public List<String> links;
+	public List<Srai> srais;
 	public Condition condition;
+	public Think think;
 
 	public Option() {
 	}
 
-	public Option(String value, Star star, String text, List<String> links, Condition condition) {
+	public Option(String value, Star star, String text, List<Srai> srais, Condition condition, Think think) {
+		super();
 		this.value = value;
 		this.star = star;
 		this.text = text;
-		this.links = links;
+		this.srais = srais;
 		this.condition = condition;
+		this.think = think;
 	}
 
 	public Option(String value, String text) {
@@ -39,12 +43,6 @@ public class Option {
 		super();
 		this.value = value;
 		this.star = star;
-	}
-
-	public Option(String value, List<String> links) {
-		super();
-		this.value = value;
-		this.links = links;
 	}
 
 	public Option(String value, Condition condition) {
@@ -76,14 +74,6 @@ public class Option {
 		this.star = star;
 	}
 
-	public List<String> getLinks() {
-		return links;
-	}
-
-	public void setLinks(List<String> links) {
-		this.links = links;
-	}
-
 	public Condition getCondition() {
 		return condition;
 	}
@@ -100,9 +90,25 @@ public class Option {
 		this.text = text;
 	}
 
+	public List<Srai> getSrais() {
+		return srais;
+	}
+
+	public void setSrais(List<Srai> srais) {
+		this.srais = srais;
+	}
+
+	public Think getThink() {
+		return think;
+	}
+
+	public void setThink(Think think) {
+		this.think = think;
+	}
+
 	@Override
 	public String toString() {
-		return "Option [value=" + value + ", star=" + star + ", text=" + text + ", links=" + links + ", condition="
-				+ condition + "]";
+		return "Option [value=" + value + ", star=" + star + ", text=" + text + ", srais=" + srais + ", condition="
+				+ condition + ", think=" + think + "]";
 	}
 }

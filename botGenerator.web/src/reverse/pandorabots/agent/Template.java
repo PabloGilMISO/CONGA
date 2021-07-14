@@ -11,42 +11,53 @@ import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlText;
 public class Template {
 //	@JacksonXmlElementWrapper(localName = "srai", useWrapping = false)
 	@JacksonXmlProperty(localName = "srai")
-	public List<String> links;
+	public List<Srai> srais;
 	@JacksonXmlText
 	public String text;
 	public Think think;
 	public Condition condition;
-	
-	public Template() {}
-	public Template(List<String> links, String text, Think think, Condition condition) {
-		this.links = links;
+	public Callapi callapi;
+
+	public Template() {
+	}
+
+	public Template(List<Srai> srais, String text, Think think, Condition condition, Callapi callapi) {
+		this.srais = srais;
+		this.text = text;
+		this.think = think;
+		this.condition = condition;
+		this.callapi = callapi;
+	}
+
+	public Template(List<Srai> srais, String text, Think think, Condition condition) {
+		this.srais = srais;
 		this.text = text;
 		this.think = think;
 		this.condition = condition;
 	}
-	
-	public Template(List<String> links) {
-		this.links = links;
+
+	public Template(List<Srai> srais) {
+		this.srais = srais;
 	}
-	
+
 	public Template(String text) {
 		this.text = text;
 	}
-	
+
 	public Template(Think think) {
 		this.think = think;
 	}
-	
+
 	public Template(Condition condition) {
 		this.condition = condition;
 	}
-	
-	public List<String> getLinks() {
-		return links;
+
+	public List<Srai> getSrais() {
+		return srais;
 	}
 
-	public void setLinks(List<String> links) {
-		this.links = links;
+	public void setSrais(List<Srai> srais) {
+		this.srais = srais;
 	}
 
 	public String getText() {
@@ -73,17 +84,17 @@ public class Template {
 		this.think = think;
 	}
 
-	@Override
-	public String toString() {
-		return "Template [links=" + links + ", text=" + text + ", think=" + think + ", condition=" + condition + "]";
+	public Callapi getCallapi() {
+		return callapi;
 	}
 
-//	@Override
-//	public String toString() {
-//		return "Template [\n"
-//				+ "  links=" + links + ", \n"
-//				+ "  text=" + text + ", \n"
-//				+ "  think=" + think + ", \n"
-//				+ "  condition=" + condition + "]";
-//	}
+	public void setCallapi(Callapi callapi) {
+		this.callapi = callapi;
+	}
+
+	@Override
+	public String toString() {
+		return "Template [srais=" + srais + ", text=" + text + ", think=" + think + ", condition=" + condition
+				+ ", callapi=" + callapi + "]";
+	}
 }

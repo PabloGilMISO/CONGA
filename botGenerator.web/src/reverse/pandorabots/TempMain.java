@@ -36,12 +36,13 @@ public class TempMain {
 
 	// Clase temporal para probar la conversión de Pandorabots a CONGA
 	public static void main(String[] args) throws IOException {
-//		String pandorabotsPath = "C:/Users/pablo/CONGA/pandorabots/veterinaryCenter.zip";
+		String pandorabotsPath = "C:/CONGA/pandorabots/veterinaryCenterPruebas.zip";
 //		String pandorabotsPath = "C:/Users/pablo/CONGA/pandorabots/prueba.zip";
-		String pandorabotsPath = "C:/CONGA/pandorabots/prueba.zip";
+//		String pandorabotsPath = "C:/CONGA/pandorabots/prueba.zip";
 		File zip = new File(pandorabotsPath);
 		ReadPandorabotsAgent reader = new ReadPandorabotsAgent();
 		Agent fullAgent = reader.getAgent(zip);
+		
 		System.out.println(fullAgent);
 
 		// Pruebas
@@ -55,11 +56,15 @@ public class TempMain {
 		mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
 				.configure(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY, true)
 				.configure(DeserializationFeature.ACCEPT_EMPTY_STRING_AS_NULL_OBJECT, true);
+//				.configure(DeserializationFeature.WRAP_EXCEPTIONS, true);
 
 //		SimpleModule module = new SimpleModule("configModule", com.fasterxml.jackson.core.Version.unknownVersion());
 //		module.addDeserializer(Set.class, new DeSerializer());
 //		module.setDeserializerModifier(new BeanDeserializerModifier()
-//	    {
+
+		
+		
+		//	    {
 //	      @Override public JsonDeserializer<?> modifyDeserializer(DeserializationConfig config, BeanDescription beanDesc, JsonDeserializer<?> deserializer)
 //	      {
 //	        if (beanDesc.getBeanClass() == Set.class)
@@ -81,9 +86,9 @@ public class TempMain {
 
 		// Descomprime el zip que contiene el bot
 		File agentFiles = new Unzipper(zip.getCanonicalPath()).unzip();
-		if (agentFiles == null) {
+		if (agentFiles == null)
 			return null;
-		}
+
 		// Declaración del modelo intermedio del bot y la lista de ficheros a recorrer
 		// para rellenarlo
 		PruebaAgent fullAgent = new PruebaAgent();

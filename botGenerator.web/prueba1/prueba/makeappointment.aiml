@@ -2,9 +2,20 @@
 <aiml>
   <!-- Entity saving -->
   <category>
-    <pattern>SAVEPETNAME *</pattern>
+    <pattern>SAVEPETNAME * *</pattern>
     <template>
-      <think><set name="petName"><star/></set></think>
+      <think><set name="petName"><star index="1"/>ignorado<star index="2"/></set></think>
+    </template>
+  </category>
+  <category>
+    <pattern>SAVEPETNAME * *</pattern>
+    <template>
+      <think>
+        <set name="petName">
+          <srai>FUNCTION1</srai>
+          <srai>FUNCTION2<star index="1"/>TEXTOINTERMEDIO1<star index="2"/></srai>
+        </set>
+      </think>
     </template>
   </category>
 </aiml>

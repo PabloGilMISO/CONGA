@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<aiml>
+  <!-- Entity saving -->
+  <category>
+    <pattern>SAVEPETNAME *</pattern>
+    <template>
+      <think><set name="petName"><star/></set></think>
+    </template>
+  </category>
+  <category>
+    <pattern>SAVEDATE * slash * slash *</pattern>
+    <template>
+      <think>
+        <set name="date_is_valid">
+          <srai>VALIDDATE <star index="1"/>/<star index="2"/>/<star index="3"/></srai>
+        </set>
+      </think>
+      <condition name="date_is_valid">
+        <li value="TRUE">
+          <think><set name="date"><star index="1"/>/<star index="2"/>/<star index="3"/></set></think>
+        </li>
+      </condition>
+    </template>
+  </category>
+  <category>
+    <pattern>SAVETIME * colon *</pattern>
+    <template>
+      <think>
+        <set name="time_is_valid"><srai>ISVALIDHOUR <star index="1"/>:<star index="2"/></srai></set>
+      </think>
+      <condition name="time_is_valid">
+        <li value="TRUE">
+          <think>
+            <set name="time"><star index="1"/>:<star index="2"/></set>
+          </think>
+        </li>
+      </condition>
+    </template>
+  </category>
+  <category>
+    <pattern>SAVEPET <set>pet</set></pattern>
+    <template>
+      <think><set name="pet"><map name="pet"><star/></map></set></think>
+    </template>
+  </category>
+  <!-- Intent -->
+  <!-- Main intents -->
+  <category>
+    <pattern>MAKEAPPOINTMENT</pattern>
+    <template>
+      <condition name="pandoralang">
+        <li value="en">
+          <srai>MAKEAPPOINTMENTENMAKEAPPOINTMENTEASYRESP</srai>
+          <srai>MAKEAPPOINTMENTHTTPREQUEST</srai>
+          <srai>MAKEAPPOINTMENTHTTPRESPONSE</srai>
+        </li>
+      </condition>
+    </template>
+  </category>
+  <!-- Action intents -->
+  <category>
+    <pattern>MAKEAPPOINTMENTENMAKEAPPOINTMENTEASYRESP</pattern>
+    <template>Ok, appointment done </template>
+  </category>
+  <category>
+    <pattern>MAKEAPPOINTMENTHTTPREQUEST</pattern>
+    <template>
+      <callapi response_code_var="response_HttpRequest">
+        <url>https://dimo1.ii.uam.es:8443/VeterinarioApi/dialogflow</url>
+        <method>POST</method>
+        <header><name></name></header>
+        <query name="pet"><get name="pet"/></query>
+        <query name="petName"><get name="petName"/></query>
+        <query name="time"><get name="time"/></query>
+        <query name="date"><get name="date"/></query>
+      </callapi>
+    </template>
+  </category>
+  <category>
+    <pattern>MAKEAPPOINTMENTHTTPRESPONSE</pattern>
+    <template>
+      <get name="response_HttpRequest"/>
+    </template>
+  </category>
+  <!-- Intent inputs -->
+  <category>
+    <pattern>I need an appointment for * </pattern>
+    <template>
+      <think>
+        <srai>
+          SAVEPETNAME <star index="1"/>
+        </srai>
+      </think>
+      Okay, what day do you want an appointment?
+    </template>
+  </category>
+  <category>
+    <pattern>I need an appointment for my <set>pet</set> * at * on * </pattern>
+    <template>
+      <think>
+        <srai>
+          SAVEPET <star index="1"/>
+        </srai>
+        <srai>
+          SAVEPETNAME <star index="2"/>
+        </srai>
+        <srai>
+          SAVETIME <star index="3"/>
+        </srai>
+        <srai>
+          SAVEDATE <star index="4"/>
+        </srai>
+      </think>
+      <think>
+        <set name="pandoralang">en</set>
+      </think>
+      <srai>MAKEAPPOINTMENT</srai>
+    </template>
+  </category>
+</aiml>

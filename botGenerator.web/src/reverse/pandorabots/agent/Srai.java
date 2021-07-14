@@ -29,11 +29,11 @@ import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlText;
 //@XmlAccessorType(XmlAccessType.FIELD)
 
 @JacksonXmlRootElement(localName = "srai")
-@JsonDeserialize(using = DeSerializer.class)
+//@JsonDeserialize(using = DeSerializer.class)
 public class Srai {
-//	@JacksonXmlElementWrapper(useWrapping = false)
-//	@JacksonXmlProperty(localName = "star")
-//	public List<Star> stars;
+	@JacksonXmlElementWrapper(useWrapping = false)
+	@JacksonXmlProperty(localName = "star")
+	public List<Star> stars;
 	@JacksonXmlText
 //	@XmlAnyElement(InnerXmlHandler.class)
 	public String text;
@@ -43,10 +43,10 @@ public class Srai {
 	
 	public Srai() {}
 	
-//	public Srai(String text, List<Star> stars) {
-//		this.text = text;
-//		this.stars = stars;
-//	}
+	public Srai(String text, List<Star> stars) {
+		this.text = text;
+		this.stars = stars;
+	}
 	
 	public Srai(String text) {
 		this.text = text;
@@ -61,23 +61,23 @@ public class Srai {
 	}
 
 
-//	public List<Star> getStars() {
-//		return stars;
-//	}
-//
-//	public void setStars(List<Star> stars) {
-//		this.stars = stars;
-//	}
-
-	@Override
-	public String toString() {
-		return "Srai [text=" + text + "]";
+	public List<Star> getStars() {
+		return stars;
 	}
-	
+
+	public void setStars(List<Star> stars) {
+		this.stars = stars;
+	}
+
 //	@Override
 //	public String toString() {
-//		return "Srai [text=" + text + ", stars=" + stars + "]";
+//		return "Srai [text=" + text + "]";
 //	}
+	
+	@Override
+	public String toString() {
+		return "Srai [text=" + text + ", stars=" + stars + "]";
+	}
 }
 
 class DeSerializer extends StdDeserializer<Srai> {

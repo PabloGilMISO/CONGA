@@ -12,8 +12,8 @@
     <template>
       <think>
         <set name="petName">
-          <srai>FUNCION</srai>
-          <srai>FUNCION2 <star index="1"/></srai>
+          <srai>FUNCTION1</srai>
+          <srai>FUNCTION2<star index="1"/>TEXTOINTERMEDIO1<star index="2"/></srai>
         </set>
       </think>
     </template>
