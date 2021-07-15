@@ -15,8 +15,16 @@ public class Think {
 	@JacksonXmlElementWrapper(useWrapping = false)
 	@JacksonXmlProperty(localName = "srai")
 	public List<Srai> srais;
+	@JacksonXmlText
+	public String text;
 
 	public Think() {
+	}
+
+	public Think(List<Set> sets, List<Srai> srais, String text) {
+		this.sets = sets;
+		this.srais = srais;
+		this.text = text;
 	}
 
 	public Think(List<Set> sets, List<Srai> srais) {
@@ -28,6 +36,10 @@ public class Think {
 		this.sets = sets;
 	}
 
+//	public Think(List<Srai> srais) {
+//		this.srais = srais;
+//	}
+
 	public List<Set> getSets() {
 		return sets;
 	}
@@ -36,8 +48,29 @@ public class Think {
 		this.sets = sets;
 	}
 
+	public List<Srai> getSrais() {
+		return srais;
+	}
+
+	public void setSrais(List<Srai> srais) {
+		this.srais = srais;
+	}
+
+	public String getText() {
+		return text;
+	}
+
+	public void setText(String text) {
+		this.text = text;
+	}
+
 	@Override
 	public String toString() {
-		return "Think [sets=" + sets + ", srais=" + srais + "]";
+		return "Think [sets=" + sets + ", srais=" + srais + ", text=" + text + "]";
 	}
+//	@Override
+//	public String toString() {
+//		return "Think [sets=" + sets + ", srais=" + srais + "]";
+//	}
+
 }

@@ -2,19 +2,24 @@ package reverse.pandorabots.agent;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class MapFile {
-	public List<String> content;
+	public Map<String, List<String>> content;
 
 	public MapFile() {
-		content = new ArrayList<String>();
+		super();
 	}
 
-	public List<String> getContent() {
+	public MapFile(Map<String, List<String>> content) {
+		this.content = content;
+	}
+
+	public Map<String, List<String>> getContent() {
 		return content;
 	}
 
-	public void setContent(List<String> content) {
+	public void setContent(Map<String, List<String>> content) {
 		this.content = content;
 	}
 

@@ -13,7 +13,6 @@
     <fullyQualifiedTypeName name="com.fasterxml.jackson.databind.JsonNode"/>
     <fullyQualifiedTypeName name="com.fasterxml.jackson.databind.node.ObjectNode"/>
     <fullyQualifiedTypeName name="com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper"/>
-    <fullyQualifiedTypeName name="com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlText"/>
     <fullyQualifiedTypeName name="javax.xml.bind.annotation.DomHandler"/>
     <fullyQualifiedTypeName name="javax.xml.transform.stream.StreamResult"/>
     <fullyQualifiedTypeName name="java.io.StringWriter"/>
@@ -33,4 +32,9 @@
     <fullyQualifiedTypeName name="java.io.IOException"/>
     <fullyQualifiedTypeName name="com.fasterxml.jackson.core.JsonProcessingException"/>
     <fullyQualifiedTypeName name="com.fasterxml.jackson.databind.annotation.JsonDeserialize"/>
+    <fullyQualifiedTypeName name="com.sun.tools.javac.util.List"/>
+    <fullyQualifiedTypeName name="reverse.pandorabots.agent.CallapiHeader"/>
+    <fullyQualifiedTypeName name="reverse.pandorabots.agent.CallapiHeaderName"/>
+    <fullyQualifiedTypeName name="java.util.List"/>
+    <fullyQualifiedTypeName name="com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlText"/>
 </qualifiedTypeNameHistroy>

@@ -2,10 +2,15 @@ package reverse.pandorabots;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import org.apache.commons.io.FileUtils;
 
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
@@ -70,8 +75,11 @@ public class ReadPandorabotsAgent {
 					}
 					// Lectura de maps
 					else if (f.getName().contains(".map")) {
-						MapFile tempMapFile = mapper.readValue(f, MapFile.class);
-						fullAgent.addMapFile(tempMapFile);
+//						MapFile tempMapFile = mapper.readValue(f, MapFile.class);
+//						fullAgent.addMapFile(tempMapFile);
+						if (currentFile.isDirectory())
+							for (File mapF : currentFile.listFiles()) 
+								fullAgent.addMapFile(getMapFile(mapF));
 					}
 					// Si el zip está separado en subcarpetas
 					else if (f.isDirectory()) {
@@ -100,8 +108,9 @@ public class ReadPandorabotsAgent {
 
 				// Lectura de maps
 				else if (currentFile.getName().contains(".map")) {
-					MapFile tempMapFile = mapper.readValue(currentFile, MapFile.class);
-					fullAgent.addMapFile(tempMapFile);
+					if (currentFile.isDirectory())
+						for (File mapF : currentFile.listFiles()) 
+							fullAgent.addMapFile(getMapFile(mapF));
 				}
 			}
 
@@ -112,5 +121,36 @@ public class ReadPandorabotsAgent {
 		// Se devuelve el bot con su información creada en un modelo intermedio previo a
 		// CONGA
 		return fullAgent;
+	}
+
+	public MapFile getMapFile(File file) throws IOException {
+		MapFile map = new MapFile();
+		String strFile = FileUtils.readFileToString(file, StandardCharsets.UTF_8);
+		Map ret = new HashMap<String, String>();
+		
+		strFile = strFile.replace("],", "").replace("]]", "").replace("\r\n", "");
+		
+		List<String> splittedStr = List.of(strFile.split("\\["));
+		List<List<String>> pairList = new ArrayList<List<String>>();
+		for (String elem: splittedStr) {
+			String elemAux = elem.replace("],", "").replace("\\]", "").replace("\\[", "").replace("]", "");
+			List<String> aux = List.of(elemAux.split(","));
+			List<String> aux2 = new ArrayList<String>();
+			
+			for (String a: aux) {
+				String clearStr = a.replace("\"", "").replace("\r\n", "");
+				if (clearStr.length() > 0 && clearStr.charAt(0) == ' ')
+					clearStr = clearStr.substring(1);
+				
+				aux2.add(clearStr);
+			}
+			
+			if (aux2.size() == 2)
+				ret.put(aux2.get(0), aux2.get(1));
+		}
+		
+		map.setContent(ret);
+
+		return map;
 	}
 }

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<aiml>
+  <!-- Intent -->
+  <!-- Main intents -->
+  <category>
+    <pattern>DEFAULTFALLBACK</pattern>
+    <template>
+      <condition name="pandoralang">
+        <li value="en">
+          <srai>DEFAULTFALLBACKENDEFAULTFALLBACKTXTRESP1</srai>
+        </li>
+      </condition>
+    </template>
+  </category>
+  <!-- Action intents -->
+  <category>
+    <pattern>DEFAULTFALLBACKENDEFAULTFALLBACKTXTRESP1</pattern>
+    <template>Sorry, I don't understand you</template>
+  </category>
+  <!-- Intent inputs -->
+  <category>
+    <pattern>*</pattern>
+    <template>
+      <think>
+        <set name="pandoralang">en</set>
+      </think>
+      <srai>DEFAULTFALLBACK</srai>
+    </template>
+  </category>
+</aiml>

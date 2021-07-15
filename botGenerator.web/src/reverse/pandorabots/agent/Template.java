@@ -15,6 +15,9 @@ public class Template {
 	@JacksonXmlText
 	public String text;
 	public Think think;
+//	@JacksonXmlElementWrapper(useWrapping = false)
+//	@JacksonXmlProperty(localName = "think")
+//	public List<Think> thinks;
 	public Condition condition;
 	public Callapi callapi;
 
@@ -36,16 +39,63 @@ public class Template {
 		this.condition = condition;
 	}
 
+	public Template(Think think) {
+		this.think = think;
+	}
+
 	public Template(List<Srai> srais) {
 		this.srais = srais;
 	}
+	
+	public Think getThink() {
+		return think;
+	}
+
+	public void setThink(Think think) {
+		this.think = think;
+	}
+	
+	@Override
+	public String toString() {
+		return "Template [srais=" + srais + ", text=" + text + ", think=" + think + ", condition=" + condition
+				+ ", callapi=" + callapi + "]";
+	}
+
+//	public Template(List<Srai> srais, String text, List<Think> thinks, Condition condition, Callapi callapi) {
+//		this.srais = srais;
+//		this.text = text;
+//		this.thinks = thinks;
+//		this.condition = condition;
+//		this.callapi = callapi;
+//	}
+//
+//	public Template(List<Srai> srais, String text, List<Think> thinks, Condition condition) {
+//		this.srais = srais;
+//		this.text = text;
+//		this.thinks = thinks;
+//		this.condition = condition;
+//	}
+//
+//	public Template(List<Think> thinks) {
+//		this.thinks = thinks;
+//	}
+//
+//	public List<Think> getThinks() {
+//		return thinks;
+//	}
+//
+//	public void setThinks(List<Think> thinks) {
+//		this.thinks = thinks;
+//	}
+//
+//	@Override
+//	public String toString() {
+//		return "Template [srais=" + srais + ", text=" + text + ", thinks=" + thinks + ", condition=" + condition
+//				+ ", callapi=" + callapi + "]";
+//	}
 
 	public Template(String text) {
 		this.text = text;
-	}
-
-	public Template(Think think) {
-		this.think = think;
 	}
 
 	public Template(Condition condition) {
@@ -76,14 +126,6 @@ public class Template {
 		this.condition = condition;
 	}
 
-	public Think getThink() {
-		return think;
-	}
-
-	public void setThink(Think think) {
-		this.think = think;
-	}
-
 	public Callapi getCallapi() {
 		return callapi;
 	}
@@ -92,9 +134,4 @@ public class Template {
 		this.callapi = callapi;
 	}
 
-	@Override
-	public String toString() {
-		return "Template [srais=" + srais + ", text=" + text + ", think=" + think + ", condition=" + condition
-				+ ", callapi=" + callapi + "]";
-	}
 }

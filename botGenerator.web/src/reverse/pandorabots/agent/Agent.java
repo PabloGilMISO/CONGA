@@ -33,10 +33,16 @@ public class Agent {
 	}
 
 	public void addSetFiles(List<SetFile> setFiles) {
+		if (this.setFiles == null)
+			this.setFiles = new ArrayList<SetFile>();
+		
 		this.setFiles.addAll(setFiles);
 	}
 
 	public void addSetFile(SetFile setFile) {
+		if (this.setFiles == null)
+			this.setFiles = new ArrayList<SetFile>();
+		
 		this.setFiles.add(setFile);
 	}
 
@@ -49,10 +55,16 @@ public class Agent {
 	}
 
 	public void addMapFiles(List<MapFile> mapFiles) {
+		if (this.mapFiles == null)
+			this.mapFiles = new ArrayList<MapFile>();
+		
 		this.mapFiles.addAll(mapFiles);
 	}
 
 	public void addMapFile(MapFile mapFile) {
+		if (this.mapFiles == null)
+			this.mapFiles = new ArrayList<MapFile>();
+		
 		this.mapFiles.add(mapFile);
 	}
 

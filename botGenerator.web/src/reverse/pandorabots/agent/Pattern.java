@@ -17,36 +17,39 @@ public class Pattern {
 	@JacksonXmlElementWrapper(useWrapping = false)
 	@JacksonXmlProperty(localName = "set")
 	public List<SetAttr> sets;
+//	@JacksonXmlProperty(localName = "set")
+//	public SetAttr set;
 
 	public Pattern() {
 	}
-
-//	public Pattern(String text, List<String> texts, List<SetAttr> sets) {
-//		this.text = text;
-//		this.texts = texts;
-//		this.sets = sets;
-//	}
 
 	public Pattern(String text, List<SetAttr> sets) {
 		this.text = text;
 		this.sets = sets;
 	}
 
+//	public Pattern(String text, SetAttr set) {
+//		super();
+//		this.text = text;
+//		this.set = set;
+//	}
+//
+//	public SetAttr getSet() {
+//		return set;
+//	}
+//
+//	public void setSet(SetAttr set) {
+//		this.set = set;
+//	}
+
+//	@Override
+//	public String toString() {
+//		return "Pattern [text=" + text + ", set=" + set + "]";
+//	}
+
 	public Pattern(String text) {
 		this.text = text;
 	}
-
-//	public Pattern(List<?> sets) {
-//		try {
-//			this.sets = (List<SetAttr>) sets;
-//		} catch (Exception e) {
-//			this.texts = (List<String>) sets;
-//		}
-//	}
-
-//	public Pattern(List<SetAttr> sets) {
-//		this.sets = sets;
-//	}
 
 	public String getText() {
 		return text;
@@ -68,17 +71,4 @@ public class Pattern {
 	public String toString() {
 		return "Pattern [text=" + text + ", sets=" + sets + "]";
 	}
-
-//	public List<String> getTexts() {
-//		return texts;
-//	}
-//
-//	public void setTexts(List<String> texts) {
-//		this.texts = texts;
-//	}
-
-//	@Override
-//	public String toString() {
-//		return "Pattern [text=" + text + ", texts=" + texts + ", sets=" + sets + "]";
-//	}
 }

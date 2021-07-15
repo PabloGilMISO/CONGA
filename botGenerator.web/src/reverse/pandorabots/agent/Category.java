@@ -1,6 +1,10 @@
 package reverse.pandorabots.agent;
 
+import java.util.List;
+
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper;
+import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
 
 @JacksonXmlRootElement(localName = "category")
@@ -9,6 +13,9 @@ public class Category {
 	public Pattern pattern;
 	public String that;
 	public Think think;
+//	@JacksonXmlElementWrapper(useWrapping = false)
+//	@JacksonXmlProperty(localName = "template")
+//	public List<Template> templates;
 	public Template template;
 
 	public Category() {}
@@ -44,6 +51,28 @@ public class Category {
 		this.think = think;
 	}
 
+//	public Category(Pattern pattern, String that, Think think, List<Template> templates) {
+//		super();
+//		this.pattern = pattern;
+//		this.that = that;
+//		this.think = think;
+//		this.templates = templates;
+//	}
+//
+//	public List<Template> getTemplates() {
+//		return templates;
+//	}
+//
+//	public void setTemplates(List<Template> templates) {
+//		this.templates = templates;
+//	}
+//
+//	@Override
+//	public String toString() {
+//		return "Category [pattern=" + pattern + ", that=" + that + ", think=" + think + ", templates=" + templates
+//				+ "]";
+//	}
+
 	public Template getTemplate() {
 		return template;
 	}
@@ -56,14 +85,4 @@ public class Category {
 	public String toString() {
 		return "Category [pattern=" + pattern + ", that=" + that + ", think=" + think + ", template=" + template + "]";
 	}
-
-//	@Override
-//	public String toString() {
-//		return "Category [\n"
-//				+ "  pattern=" + pattern + ", \n"
-//				+ "  that=" + that + ", \n"
-//				+ "  think=" + think + ", \n"
-//				+ "  template=" + template + "]";
-//	}
-	
 }

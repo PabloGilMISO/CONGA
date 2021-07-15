@@ -34,8 +34,8 @@ public class Srai {
 	@JacksonXmlElementWrapper(useWrapping = false)
 	@JacksonXmlProperty(localName = "star")
 	public List<Star> stars;
-	@JacksonXmlText
 //	@XmlAnyElement(InnerXmlHandler.class)
+	@JacksonXmlText
 	public String text;
 //	@JacksonXmlElementWrapper(localName = "star")
 //	@JsonSetter(nulls=Nulls.AS_EMPTY)
