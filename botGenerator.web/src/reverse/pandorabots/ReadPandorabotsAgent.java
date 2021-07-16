@@ -3,8 +3,6 @@ package reverse.pandorabots;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -12,19 +10,17 @@ import java.util.Map;
 
 import org.apache.commons.io.FileUtils;
 
-import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.type.CollectionType;
-import com.fasterxml.jackson.dataformat.xml.JacksonXmlModule;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
-import com.fasterxml.jackson.module.jaxb.JaxbAnnotationModule;
 
-import reverse.pandorabots.agent.*;
+import reverse.pandorabots.agent.Agent;
+import reverse.pandorabots.agent.Category;
+import reverse.pandorabots.agent.MapFile;
+import reverse.pandorabots.agent.SetFile;
 import zipUtils.Unzipper;
 
-// WIP: Clase para leer la información de un bot de Pandorabots
+// Clase para leer la información de un bot de Pandorabots
 public class ReadPandorabotsAgent {
 	XmlMapper mapper = new XmlMapper();
 
@@ -73,7 +69,7 @@ public class ReadPandorabotsAgent {
 						if (currentFile.isDirectory())
 							for (File setF : currentFile.listFiles())
 								fullAgent.addSetFile(getSetFile(setF));
-						
+
 						else
 							fullAgent.addSetFile(getSetFile(currentFile));
 					}
@@ -135,6 +131,7 @@ public class ReadPandorabotsAgent {
 		return fullAgent;
 	}
 
+	// Deserializador de ficheros map
 	public MapFile getMapFile(File file) throws IOException {
 		MapFile map = new MapFile();
 		String strFile = FileUtils.readFileToString(file, StandardCharsets.UTF_8);
@@ -143,7 +140,6 @@ public class ReadPandorabotsAgent {
 		strFile = strFile.replace("],", "").replace("]]", "").replace("\r\n", "");
 
 		List<String> splittedStr = List.of(strFile.split("\\["));
-		List<List<String>> pairList = new ArrayList<List<String>>();
 		for (String elem : splittedStr) {
 			String elemAux = elem.replace("],", "").replace("\\]", "").replace("\\[", "").replace("]", "");
 			List<String> aux = List.of(elemAux.split(","));
@@ -176,6 +172,7 @@ public class ReadPandorabotsAgent {
 		return map;
 	}
 
+	// Deserializador de ficheros set
 	public SetFile getSetFile(File file) throws IOException {
 		SetFile set = new SetFile();
 		String strFile = FileUtils.readFileToString(file, StandardCharsets.UTF_8);
