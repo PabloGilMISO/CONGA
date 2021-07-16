@@ -70,16 +70,21 @@ public class ReadPandorabotsAgent {
 					}
 					// Lectura de sets
 					else if (f.getName().contains(".set")) {
-						SetFile tempSetFile = mapper.readValue(f, SetFile.class);
-						fullAgent.addSetFile(tempSetFile);
+						if (currentFile.isDirectory())
+							for (File setF : currentFile.listFiles())
+								fullAgent.addSetFile(getSetFile(setF));
+						
+						else
+							fullAgent.addSetFile(getSetFile(currentFile));
 					}
 					// Lectura de maps
 					else if (f.getName().contains(".map")) {
-//						MapFile tempMapFile = mapper.readValue(f, MapFile.class);
-//						fullAgent.addMapFile(tempMapFile);
 						if (currentFile.isDirectory())
-							for (File mapF : currentFile.listFiles()) 
+							for (File mapF : currentFile.listFiles())
 								fullAgent.addMapFile(getMapFile(mapF));
+
+						else
+							fullAgent.addMapFile(getMapFile(currentFile));
 					}
 					// Si el zip está separado en subcarpetas
 					else if (f.isDirectory()) {
@@ -102,15 +107,22 @@ public class ReadPandorabotsAgent {
 				}
 				// Lectura de sets
 				else if (currentFile.getName().contains(".set")) {
-					SetFile tempSetFile = mapper.readValue(currentFile, SetFile.class);
-					fullAgent.addSetFile(tempSetFile);
+					if (currentFile.isDirectory())
+						for (File setF : currentFile.listFiles())
+							fullAgent.addSetFile(getSetFile(setF));
+
+					else
+						fullAgent.addSetFile(getSetFile(currentFile));
 				}
 
 				// Lectura de maps
 				else if (currentFile.getName().contains(".map")) {
 					if (currentFile.isDirectory())
-						for (File mapF : currentFile.listFiles()) 
+						for (File mapF : currentFile.listFiles())
 							fullAgent.addMapFile(getMapFile(mapF));
+
+					else
+						fullAgent.addMapFile(getMapFile(currentFile));
 				}
 			}
 
@@ -126,31 +138,62 @@ public class ReadPandorabotsAgent {
 	public MapFile getMapFile(File file) throws IOException {
 		MapFile map = new MapFile();
 		String strFile = FileUtils.readFileToString(file, StandardCharsets.UTF_8);
-		Map ret = new HashMap<String, String>();
-		
+		Map<String, List<String>> ret = new HashMap<String, List<String>>();
+
 		strFile = strFile.replace("],", "").replace("]]", "").replace("\r\n", "");
-		
+
 		List<String> splittedStr = List.of(strFile.split("\\["));
 		List<List<String>> pairList = new ArrayList<List<String>>();
-		for (String elem: splittedStr) {
+		for (String elem : splittedStr) {
 			String elemAux = elem.replace("],", "").replace("\\]", "").replace("\\[", "").replace("]", "");
 			List<String> aux = List.of(elemAux.split(","));
 			List<String> aux2 = new ArrayList<String>();
-			
-			for (String a: aux) {
+
+			for (String a : aux) {
 				String clearStr = a.replace("\"", "").replace("\r\n", "");
 				if (clearStr.length() > 0 && clearStr.charAt(0) == ' ')
 					clearStr = clearStr.substring(1);
-				
+
 				aux2.add(clearStr);
 			}
-			
-			if (aux2.size() == 2)
-				ret.put(aux2.get(0), aux2.get(1));
+
+			if (aux2.size() == 2) {
+				List<String> value;
+
+				if (ret.get(aux2.get(1)) == null)
+					value = new ArrayList<String>();
+
+				else
+					value = ret.get(aux2.get(1));
+
+				value.add(aux2.get(0));
+				ret.put(aux2.get(1), value);
+			}
 		}
-		
+
 		map.setContent(ret);
 
 		return map;
+	}
+
+	public SetFile getSetFile(File file) throws IOException {
+		SetFile set = new SetFile();
+		String strFile = FileUtils.readFileToString(file, StandardCharsets.UTF_8);
+		List<String> ret = new ArrayList<String>();
+
+		strFile = strFile.replace("],", "").replace("]]", "").replace("\r\n", "");
+
+		List<String> splittedStr = List.of(strFile.split("\\["));
+		for (String elem : splittedStr) {
+			String elemAux = elem.replace("],", "").replace("\\]", "").replace("\\[", "").replace("]", "").replace("\"",
+					"");
+
+			if (!elemAux.isEmpty())
+				ret.add(elemAux);
+		}
+
+		set.setContent(ret);
+
+		return set;
 	}
 }

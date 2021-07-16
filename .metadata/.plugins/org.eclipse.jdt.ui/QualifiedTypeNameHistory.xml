@@ -35,6 +35,17 @@
     <fullyQualifiedTypeName name="com.sun.tools.javac.util.List"/>
     <fullyQualifiedTypeName name="reverse.pandorabots.agent.CallapiHeader"/>
     <fullyQualifiedTypeName name="reverse.pandorabots.agent.CallapiHeaderName"/>
-    <fullyQualifiedTypeName name="java.util.List"/>
     <fullyQualifiedTypeName name="com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlText"/>
+    <fullyQualifiedTypeName name="com.fasterxml.jackson.annotation.JsonFormat.Feature"/>
+    <fullyQualifiedTypeName name="com.fasterxml.jackson.dataformat.xml.deser.FromXmlParser.Feature"/>
+    <fullyQualifiedTypeName name="java.util.List"/>
+    <fullyQualifiedTypeName name="com.fasterxml.jackson.annotation.JsonMerge"/>
+    <fullyQualifiedTypeName name="reverse.pandorabots.agent.MapFile"/>
+    <fullyQualifiedTypeName name="java.nio.file.Path"/>
+    <fullyQualifiedTypeName name="java.nio.charset.StandardCharsets"/>
+    <fullyQualifiedTypeName name="io.github.lukehutch.fastclasspathscanner.utils.FileUtils"/>
+    <fullyQualifiedTypeName name="org.apache.commons.io.FileUtils"/>
+    <fullyQualifiedTypeName name="java.util.Set"/>
+    <fullyQualifiedTypeName name="java.util.HashSet"/>
+    <fullyQualifiedTypeName name="java.util.Map"/>
 </qualifiedTypeNameHistroy>
