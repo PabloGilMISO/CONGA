@@ -41,6 +41,7 @@ public class ReadPandorabotsAgent {
 		// Declaración del modelo intermedio del bot y la lista de ficheros a recorrer
 		// para rellenarlo
 		Agent fullAgent = new Agent();
+		fullAgent.setName(agentFiles.getName());
 		CollectionType categoryListType = mapper.getTypeFactory().constructCollectionType(List.class, Category.class);
 		List<File> files = new ArrayList<File>();
 

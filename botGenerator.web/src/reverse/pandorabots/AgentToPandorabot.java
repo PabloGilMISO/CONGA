@@ -45,7 +45,7 @@ import reverse.dialogflow.agent.intents.Prompt;
 import reverse.dialogflow.agent.intents.Response;
 import reverse.dialogflow.agent.intents.UserSaysLanguage;
 
-public class ReadPandorabot {
+public class AgentToPandorabot {
 
 	private static final int TEXT_TYPE = 0;
 	private static final int IMAGE_TYPE = 3;
