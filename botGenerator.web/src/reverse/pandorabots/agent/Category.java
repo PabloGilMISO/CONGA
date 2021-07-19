@@ -13,9 +13,6 @@ public class Category {
 	public Pattern pattern;
 	public String that;
 	public Think think;
-//	@JacksonXmlElementWrapper(useWrapping = false)
-//	@JacksonXmlProperty(localName = "template")
-//	public List<Template> templates;
 	public Template template;
 
 	public Category() {}
@@ -50,28 +47,6 @@ public class Category {
 	public void setThink(Think think) {
 		this.think = think;
 	}
-
-//	public Category(Pattern pattern, String that, Think think, List<Template> templates) {
-//		super();
-//		this.pattern = pattern;
-//		this.that = that;
-//		this.think = think;
-//		this.templates = templates;
-//	}
-//
-//	public List<Template> getTemplates() {
-//		return templates;
-//	}
-//
-//	public void setTemplates(List<Template> templates) {
-//		this.templates = templates;
-//	}
-//
-//	@Override
-//	public String toString() {
-//		return "Category [pattern=" + pattern + ", that=" + that + ", think=" + think + ", templates=" + templates
-//				+ "]";
-//	}
 
 	public Template getTemplate() {
 		return template;

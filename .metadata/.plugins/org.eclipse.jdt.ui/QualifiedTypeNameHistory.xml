@@ -48,4 +48,14 @@
     <fullyQualifiedTypeName name="java.util.Set"/>
     <fullyQualifiedTypeName name="java.util.HashSet"/>
     <fullyQualifiedTypeName name="java.util.Map"/>
+    <fullyQualifiedTypeName name="generator.impl.EntityImpl"/>
+    <fullyQualifiedTypeName name="generator.Entity"/>
+    <fullyQualifiedTypeName name="generator.SimpleInput"/>
+    <fullyQualifiedTypeName name="generator.Intent"/>
+    <fullyQualifiedTypeName name="generator.TrainingPhrase"/>
+    <fullyQualifiedTypeName name="generator.Literal"/>
+    <fullyQualifiedTypeName name="generator.IntentLanguageInputs"/>
+    <fullyQualifiedTypeName name="generator.LanguageInput"/>
+    <fullyQualifiedTypeName name="generator.ParameterReferenceToken"/>
+    <fullyQualifiedTypeName name="generator.Parameter"/>
 </qualifiedTypeNameHistroy>

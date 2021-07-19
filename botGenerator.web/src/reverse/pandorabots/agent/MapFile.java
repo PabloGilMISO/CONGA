@@ -5,14 +5,26 @@ import java.util.List;
 import java.util.Map;
 
 public class MapFile {
+	public String name;
 	public Map<String, List<String>> content;
 
 	public MapFile() {
-		super();
+	}
+
+	public MapFile(String name) {
+		this.name = name;
 	}
 
 	public MapFile(Map<String, List<String>> content) {
 		this.content = content;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
 	}
 
 	public Map<String, List<String>> getContent() {
@@ -25,6 +37,7 @@ public class MapFile {
 
 	@Override
 	public String toString() {
-		return "MapFile [content=" + content + "]";
+		return "MapFile [name=" + name + ", content=" + content + "]";
 	}
+
 }
