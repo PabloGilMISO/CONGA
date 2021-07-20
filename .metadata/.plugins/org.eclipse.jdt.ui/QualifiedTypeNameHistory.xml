@@ -58,4 +58,5 @@
     <fullyQualifiedTypeName name="generator.LanguageInput"/>
     <fullyQualifiedTypeName name="generator.ParameterReferenceToken"/>
     <fullyQualifiedTypeName name="generator.Parameter"/>
+    <fullyQualifiedTypeName name="generator.Bot"/>
 </qualifiedTypeNameHistroy>

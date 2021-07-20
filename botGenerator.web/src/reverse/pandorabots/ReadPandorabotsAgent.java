@@ -134,7 +134,7 @@ public class ReadPandorabotsAgent {
 
 	// Deserializador de ficheros map
 	public MapFile getMapFile(File file) throws IOException {
-		MapFile map = new MapFile(file.getName());
+		MapFile map = new MapFile(file.getName().substring(0, file.getName().length() - 4));
 		String strFile = FileUtils.readFileToString(file, StandardCharsets.UTF_8);
 		Map<String, List<String>> ret = new HashMap<String, List<String>>();
 
@@ -175,7 +175,7 @@ public class ReadPandorabotsAgent {
 
 	// Deserializador de ficheros set
 	public SetFile getSetFile(File file) throws IOException {
-		SetFile set = new SetFile(file.getName());
+		SetFile set = new SetFile(file.getName().substring(0, file.getName().length() - 4));
 		String strFile = FileUtils.readFileToString(file, StandardCharsets.UTF_8);
 		List<String> ret = new ArrayList<String>();
 

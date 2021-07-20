@@ -11,6 +11,7 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.type.CollectionType;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 
+import generator.Bot;
 import reverse.pandorabots.agent.Agent;
 import reverse.pandorabots.agent.Category;
 import zipUtils.Unzipper;
@@ -25,6 +26,8 @@ public class TempMain {
 		File zip = new File(pandorabotsPath);
 		ReadPandorabotsAgent reader = new ReadPandorabotsAgent();
 		Agent fullAgent = reader.getAgent(zip);
+		
+		Bot bot = fullAgent.getBot();
 		
 		System.out.println(fullAgent);
 

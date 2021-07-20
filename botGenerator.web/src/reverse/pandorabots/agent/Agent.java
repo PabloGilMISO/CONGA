@@ -122,6 +122,7 @@ public class Agent {
 		for (String language: languages)
 			bot.getLanguages().add(castLanguage(language));
 		
+		bot.getIntents().addAll(getIntents(languages));
 //		saveAction(request, bot);
 //		saveAction(response, bot);
 //
@@ -187,48 +188,71 @@ public class Agent {
 		for (Category category: categories) {
 			Intent intent = GeneratorFactory.eINSTANCE.createIntent();
 			
-			if (category.pattern.text.contains("*")) {
-				IntentLanguageInputs languageInput = GeneratorFactory.eINSTANCE.createIntentLanguageInputs();
-				TrainingPhrase phrase = GeneratorFactory.eINSTANCE.createTrainingPhrase();
-				List<Set> sets = new ArrayList<Set>(category.template.think.sets);
-				
-				String[] tokens = category.pattern.text.split("*");				
-				for (String token: tokens) {
-					Literal literal = GeneratorFactory.eINSTANCE.createLiteral();					
-					
-					// Guardado de texto previo al parametro
-					literal.setText(token);
-					phrase.getTokens().add(literal);
+			if (category.pattern.text == null) {
+				if (!category.pattern.sets.isEmpty()) {
+					IntentLanguageInputs languageInput = GeneratorFactory.eINSTANCE.createIntentLanguageInputs();
+					TrainingPhrase phrase = GeneratorFactory.eINSTANCE.createTrainingPhrase();
 
-					// Guardado del parametro si el formato es correcto
-					if (!sets.isEmpty()) {						
+					for (SetAttr set: category.pattern.sets) {
 						ParameterReferenceToken parameterRef = GeneratorFactory.eINSTANCE.createParameterReferenceToken();
 						Parameter parameter = GeneratorFactory.eINSTANCE.createParameter();
 						
-						parameter.setName(sets.get(0).name);
-						sets.remove(0);
+						parameter.setName(set.name);
 						parameterRef.setParameter(parameter);
 						phrase.getTokens().add(parameterRef);
 					}
+					
+					languageInput.getInputs().add(phrase);
+					intent.getInputs().add(languageInput);
+				}
+			}
+			
+			else {
+				if (category.pattern.text.contains("\\*")) {
+					IntentLanguageInputs languageInput = GeneratorFactory.eINSTANCE.createIntentLanguageInputs();
+					TrainingPhrase phrase = GeneratorFactory.eINSTANCE.createTrainingPhrase();
+					List<Set> sets = new ArrayList<Set>(category.template.think.sets);
+					
+					String[] tokens = category.pattern.text.split("\\*");				
+					for (String token: tokens) {
+						Literal literal = GeneratorFactory.eINSTANCE.createLiteral();					
+						
+						// Guardado de texto previo al parametro
+						literal.setText(token);
+						phrase.getTokens().add(literal);
+						
+						// Guardado del parametro si el formato es correcto
+						if (!sets.isEmpty()) {						
+							ParameterReferenceToken parameterRef = GeneratorFactory.eINSTANCE.createParameterReferenceToken();
+							Parameter parameter = GeneratorFactory.eINSTANCE.createParameter();
+							
+							parameter.setName(sets.get(0).name);
+							sets.remove(0);
+							parameterRef.setParameter(parameter);
+							phrase.getTokens().add(parameterRef);
+						}
+					}
+					
+					languageInput.getInputs().add(phrase);
+					intent.getInputs().add(languageInput);
+				}				
+
+				// Creación de un intent simple
+				else {
+					IntentLanguageInputs languageInput = GeneratorFactory.eINSTANCE.createIntentLanguageInputs();
+					TrainingPhrase phrase = GeneratorFactory.eINSTANCE.createTrainingPhrase();
+					Literal literal = GeneratorFactory.eINSTANCE.createLiteral();
+					
+					literal.setText(category.pattern.text);
+					
+					phrase.getTokens().add(literal);
+					languageInput.getInputs().add(phrase);
+					intent.getInputs().add(languageInput);
 				}
 				
-				languageInput.getInputs().add(phrase);
+				intents.add(intent);
 			}
 			
-			// Creación de un intent simple
-			else {
-				IntentLanguageInputs languageInput = GeneratorFactory.eINSTANCE.createIntentLanguageInputs();
-				TrainingPhrase phrase = GeneratorFactory.eINSTANCE.createTrainingPhrase();
-				Literal literal = GeneratorFactory.eINSTANCE.createLiteral();
-				
-				literal.setText(category.pattern.text);
-				
-				phrase.getTokens().add(literal);
-				languageInput.getInputs().add(phrase);
-				intent.getInputs().add(languageInput);				
-			}
-			
-			intents.add(intent);
 		}
 		
 		return intents;
