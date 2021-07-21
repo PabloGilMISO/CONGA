@@ -49,8 +49,7 @@
     <pattern>MAKEAPPOINTMENT</pattern>
     <template>
       <condition name="pandoralang">
-        <li value="en">
-          <srai>MAKEAPPOINTMENTENMAKEAPPOINTMENTEASYRESP</srai>
+        <li>
           <srai>MAKEAPPOINTMENTHTTPREQUEST</srai>
           <srai>MAKEAPPOINTMENTHTTPRESPONSE</srai>
         </li>
@@ -58,10 +57,6 @@
     </template>
   </category>
   <!-- Action intents -->
-  <category>
-    <pattern>MAKEAPPOINTMENTENMAKEAPPOINTMENTEASYRESP</pattern>
-    <template>Ok, appointment done </template>
-  </category>
   <category>
     <pattern>MAKEAPPOINTMENTHTTPREQUEST</pattern>
     <template>
@@ -219,7 +214,7 @@
     </template>
   </category>
   <category>
-    <pattern>I need an appointment for my <set>pet</set> </pattern>
+    <pattern>I need an appointment for my <set>pet</set></pattern>
     <template>
       <think>
         <srai>

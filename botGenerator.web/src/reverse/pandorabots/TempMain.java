@@ -20,8 +20,8 @@ public class TempMain {
 
 	// Clase temporal para probar la conversión de Pandorabots a CONGA
 	public static void main(String[] args) throws IOException {
-		String pandorabotsPath = "C:/CONGA/pandorabots/veterinaryCenterPruebas.zip";
-//		String pandorabotsPath = "C:/Users/pablo/CONGA/pandorabots/prueba.zip";
+//		String pandorabotsPath = "C:/CONGA/pandorabots/veterinaryCenterPruebas.zip";
+		String pandorabotsPath = "C:/Users/pablo/CONGA/pandorabots/veterinaryCenterPruebas.zip";
 //		String pandorabotsPath = "C:/CONGA/pandorabots/prueba.zip";
 		File zip = new File(pandorabotsPath);
 		ReadPandorabotsAgent reader = new ReadPandorabotsAgent();
