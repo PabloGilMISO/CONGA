@@ -486,7 +486,7 @@ class PandorabotsGenerator {
 								'''
 								«"  "»<category>
 								«"    "»<pattern>* slash * slash *</pattern>
-								«"    "»<that>«prompt.replaceAll('[.!]', ' ').replace('&', transition.intent.inputs.get(0).language.ampersandSubstitution).replace('?', " #")»</that>
+								«"    "»<that>«prompt.replaceAll('[.!]', ' ').replace('&', transition.intent.inputs.get(0).language.ampersandSubstitution)»</that>
 								«"    "»<template>
 								«"      "»<think>
 								«"        "»<srai>SAVE«completeKey.toUpperCase()» <star index="1"/>/<star index="2"/>/<star index="3"/></srai>
@@ -504,7 +504,7 @@ class PandorabotsGenerator {
 								'''
 								«"  "»<category>
 								«"    "»<pattern><set>number</set></pattern>
-								«"    "»<that>«prompt.replaceAll('[?.!<>]', ' ').replace('&', transition.intent.inputs.get(0).language.ampersandSubstitution).replace('?', " #")»</that>
+								«"    "»<that>«prompt.replaceAll('[?.!<>]', ' ').replace('&', transition.intent.inputs.get(0).language.ampersandSubstitution)»</that>
 								«"    "»<template>
 								«"      "»<think>
 								«"        "»<srai>SAVE«completeKey.toUpperCase()» <star/></srai>
@@ -522,7 +522,7 @@ class PandorabotsGenerator {
 								'''
 								«"  "»<category>
 								«"    "»<pattern>*</pattern>
-								«"    "»<that>«prompt.replaceAll('[?.!<>]', ' ').replace('&', transition.intent.inputs.get(0).language.ampersandSubstitution).replace('?', " #")»</that>
+								«"    "»<that>«prompt.replaceAll('[?.!<>]', ' ').replace('&', transition.intent.inputs.get(0).language.ampersandSubstitution)»</that>
 								«"    "»<template>
 								«"      "»<think>
 								«"        "»<srai>SAVE«completeKey.toUpperCase()» <star/></srai>

@@ -906,7 +906,7 @@ public class PandorabotsGenerator {
                       _builder_1.newLineIfNotEmpty();
                       _builder_1.append("    ");
                       _builder_1.append("<that>");
-                      String _replace = prompt.replaceAll("[.!]", " ").replace("&", this.ampersandSubstitution(transition.getIntent().getInputs().get(0).getLanguage())).replace("?", " #");
+                      String _replace = prompt.replaceAll("[.!]", " ").replace("&", this.ampersandSubstitution(transition.getIntent().getInputs().get(0).getLanguage()));
                       _builder_1.append(_replace);
                       _builder_1.append("</that>");
                       _builder_1.newLineIfNotEmpty();
@@ -958,7 +958,7 @@ public class PandorabotsGenerator {
                       _builder_1.newLineIfNotEmpty();
                       _builder_1.append("    ");
                       _builder_1.append("<that>");
-                      String _replace = prompt.replaceAll("[?.!<>]", " ").replace("&", this.ampersandSubstitution(transition.getIntent().getInputs().get(0).getLanguage())).replace("?", " #");
+                      String _replace = prompt.replaceAll("[?.!<>]", " ").replace("&", this.ampersandSubstitution(transition.getIntent().getInputs().get(0).getLanguage()));
                       _builder_1.append(_replace);
                       _builder_1.append("</that>");
                       _builder_1.newLineIfNotEmpty();
@@ -1010,7 +1010,7 @@ public class PandorabotsGenerator {
                       _builder_1.newLineIfNotEmpty();
                       _builder_1.append("    ");
                       _builder_1.append("<that>");
-                      String _replace = prompt.replaceAll("[?.!<>]", " ").replace("&", this.ampersandSubstitution(transition.getIntent().getInputs().get(0).getLanguage())).replace("?", " #");
+                      String _replace = prompt.replaceAll("[?.!<>]", " ").replace("&", this.ampersandSubstitution(transition.getIntent().getInputs().get(0).getLanguage()));
                       _builder_1.append(_replace);
                       _builder_1.append("</that>");
                       _builder_1.newLineIfNotEmpty();
@@ -1063,7 +1063,7 @@ public class PandorabotsGenerator {
                   _builder_1.newLineIfNotEmpty();
                   _builder_1.append("    ");
                   _builder_1.append("<that>");
-                  String _replace = prompt.replaceAll("[?.!<>]", " ").replace("&", this.ampersandSubstitution(transition.getIntent().getInputs().get(0).getLanguage())).replace("?", " #");
+                  String _replace = prompt.replaceAll("[?.!<>]", " ").replace("&", this.ampersandSubstitution(transition.getIntent().getInputs().get(0).getLanguage()));
                   _builder_1.append(_replace);
                   _builder_1.append("</that>");
                   _builder_1.newLineIfNotEmpty();

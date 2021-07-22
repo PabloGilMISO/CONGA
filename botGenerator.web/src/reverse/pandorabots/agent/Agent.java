@@ -1,10 +1,13 @@
 package reverse.pandorabots.agent;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import generator.Action;
 import generator.Bot;
+import generator.BotInteraction;
 import generator.DefaultEntity;
 import generator.Entity;
 import generator.GeneratorFactory;
@@ -16,7 +19,11 @@ import generator.Literal;
 import generator.Parameter;
 import generator.ParameterReferenceToken;
 import generator.SimpleInput;
+import generator.Text;
+import generator.TextInput;
+import generator.TextLanguageInput;
 import generator.TrainingPhrase;
+import generator.UserInteraction;
 import generator.impl.EntityImpl;
 
 public class Agent {
@@ -123,7 +130,9 @@ public class Agent {
 		for (String language : languages)
 			bot.getLanguages().add(castLanguage(language));
 
-		bot.getIntents().addAll(getIntents(languages));
+		bot.getIntents().addAll(getIntents());
+		
+		bot.getFlows().addAll(getFlows(null));
 //		saveAction(request, bot);
 //		saveAction(response, bot);
 //
@@ -184,7 +193,7 @@ public class Agent {
 	}
 
 	// Recoge los intents de Pandorabots como intents de CONGA
-	public List<Intent> getIntents(List<String> languages) {
+	public List<Intent> getIntents() {
 		List<Intent> intents = new ArrayList<Intent>();
 
 		for (Category category : categories) {
@@ -283,25 +292,26 @@ public class Agent {
 										.createParameterReferenceToken();
 								Parameter parameter = GeneratorFactory.eINSTANCE.createParameter();
 								Entity entity = GeneratorFactory.eINSTANCE.createEntity();
-								
+
 								if (mapFiles != null) {
-									for (MapFile mapFile: mapFiles) {
+									for (MapFile mapFile : mapFiles) {
 										if (mapFile.name.equals(set.name)) {
-											LanguageInput entityLanguageInput = GeneratorFactory.eINSTANCE.createLanguageInput();
-											entityLanguageInput.setLanguage(castLanguage(languages.get(0)));
-											for (String key: mapFile.content.keySet()) {
+											LanguageInput entityLanguageInput = GeneratorFactory.eINSTANCE
+													.createLanguageInput();
+											entityLanguageInput.setLanguage(castLanguage("en"));
+											for (String key : mapFile.content.keySet()) {
 												SimpleInput attrVal = GeneratorFactory.eINSTANCE.createSimpleInput();
-												
+
 												attrVal.setName(key);
 												attrVal.getValues().addAll(mapFile.content.get(key));
 												entityLanguageInput.getInputs().add(attrVal);
 											}
-											
+
 											entity.getInputs().add(entityLanguageInput);
 										}
 									}
 								}
-								
+
 								parameter.setEntity(entity);
 								entity.setName(set.name);
 								parameter.setName(set.name);
@@ -310,7 +320,7 @@ public class Agent {
 								phrase.getTokens().add(parameterRef);
 							}
 						}
-						
+
 						languageInput.getInputs().add(phrase);
 						intent.getInputs().add(languageInput);
 					}
@@ -444,25 +454,26 @@ public class Agent {
 										.createParameterReferenceToken();
 								Parameter parameter = GeneratorFactory.eINSTANCE.createParameter();
 								Entity entity = GeneratorFactory.eINSTANCE.createEntity();
-								
+
 								if (mapFiles != null) {
-									for (MapFile mapFile: mapFiles) {
+									for (MapFile mapFile : mapFiles) {
 										if (mapFile.name.equals(set.name)) {
-											LanguageInput entityLanguageInput = GeneratorFactory.eINSTANCE.createLanguageInput();
-											entityLanguageInput.setLanguage(castLanguage(languages.get(0)));
-											for (String key: mapFile.content.keySet()) {
+											LanguageInput entityLanguageInput = GeneratorFactory.eINSTANCE
+													.createLanguageInput();
+											entityLanguageInput.setLanguage(castLanguage("en"));
+											for (String key : mapFile.content.keySet()) {
 												SimpleInput attrVal = GeneratorFactory.eINSTANCE.createSimpleInput();
-												
+
 												attrVal.setName(key);
 												attrVal.getValues().addAll(mapFile.content.get(key));
 												entityLanguageInput.getInputs().add(attrVal);
 											}
-											
+
 											entity.getInputs().add(entityLanguageInput);
 										}
 									}
 								}
-								
+
 								parameter.setEntity(entity);
 								entity.setName(set.name);
 								parameter.setName(set.name);
@@ -471,7 +482,7 @@ public class Agent {
 								phrase.getTokens().add(parameterRef);
 							}
 						}
-						
+
 						languageInput.getInputs().add(phrase);
 						intent.getInputs().add(languageInput);
 					}
@@ -517,25 +528,27 @@ public class Agent {
 											.createParameterReferenceToken();
 									Parameter parameter = GeneratorFactory.eINSTANCE.createParameter();
 									Entity entity = GeneratorFactory.eINSTANCE.createEntity();
-									
+
 									if (mapFiles != null) {
-										for (MapFile mapFile: mapFiles) {
+										for (MapFile mapFile : mapFiles) {
 											if (mapFile.name.equals(set.name)) {
-												LanguageInput entityLanguageInput = GeneratorFactory.eINSTANCE.createLanguageInput();
-												entityLanguageInput.setLanguage(castLanguage(languages.get(0)));
-												for (String key: mapFile.content.keySet()) {
-													SimpleInput attrVal = GeneratorFactory.eINSTANCE.createSimpleInput();
-													
+												LanguageInput entityLanguageInput = GeneratorFactory.eINSTANCE
+														.createLanguageInput();
+												entityLanguageInput.setLanguage(castLanguage("en"));
+												for (String key : mapFile.content.keySet()) {
+													SimpleInput attrVal = GeneratorFactory.eINSTANCE
+															.createSimpleInput();
+
 													attrVal.setName(key);
 													attrVal.getValues().addAll(mapFile.content.get(key));
 													entityLanguageInput.getInputs().add(attrVal);
 												}
-												
+
 												entity.getInputs().add(entityLanguageInput);
 											}
 										}
 									}
-									
+
 									parameter.setEntity(entity);
 									entity.setName(set.name);
 									parameter.setName(set.name);
@@ -544,7 +557,7 @@ public class Agent {
 									phrase.getTokens().add(parameterRef);
 								}
 							}
-							
+
 							languageInput.getInputs().add(phrase);
 							intent.getInputs().add(languageInput);
 						}
@@ -574,25 +587,27 @@ public class Agent {
 											.createParameterReferenceToken();
 									Parameter parameter = GeneratorFactory.eINSTANCE.createParameter();
 									Entity entity = GeneratorFactory.eINSTANCE.createEntity();
-									
+
 									if (mapFiles != null) {
-										for (MapFile mapFile: mapFiles) {
+										for (MapFile mapFile : mapFiles) {
 											if (mapFile.name.equals(set.name)) {
-												LanguageInput entityLanguageInput = GeneratorFactory.eINSTANCE.createLanguageInput();
-												entityLanguageInput.setLanguage(castLanguage(languages.get(0)));
-												for (String key: mapFile.content.keySet()) {
-													SimpleInput attrVal = GeneratorFactory.eINSTANCE.createSimpleInput();
-													
+												LanguageInput entityLanguageInput = GeneratorFactory.eINSTANCE
+														.createLanguageInput();
+												entityLanguageInput.setLanguage(castLanguage("en"));
+												for (String key : mapFile.content.keySet()) {
+													SimpleInput attrVal = GeneratorFactory.eINSTANCE
+															.createSimpleInput();
+
 													attrVal.setName(key);
 													attrVal.getValues().addAll(mapFile.content.get(key));
 													entityLanguageInput.getInputs().add(attrVal);
 												}
-												
+
 												entity.getInputs().add(entityLanguageInput);
 											}
 										}
 									}
-									
+
 									parameter.setEntity(entity);
 									entity.setName(set.name);
 									parameter.setName(set.name);
@@ -601,7 +616,7 @@ public class Agent {
 									phrase.getTokens().add(parameterRef);
 								}
 							}
-							
+
 							languageInput.getInputs().add(phrase);
 							intent.getInputs().add(languageInput);
 						}
@@ -624,25 +639,26 @@ public class Agent {
 										.createParameterReferenceToken();
 								Parameter parameter = GeneratorFactory.eINSTANCE.createParameter();
 								Entity entity = GeneratorFactory.eINSTANCE.createEntity();
-								
+
 								if (mapFiles != null) {
-									for (MapFile mapFile: mapFiles) {
+									for (MapFile mapFile : mapFiles) {
 										if (mapFile.name.equals(set.name)) {
-											LanguageInput entityLanguageInput = GeneratorFactory.eINSTANCE.createLanguageInput();
+											LanguageInput entityLanguageInput = GeneratorFactory.eINSTANCE
+													.createLanguageInput();
 											entityLanguageInput.setLanguage(castLanguage("en"));
-											for (String key: mapFile.content.keySet()) {
+											for (String key : mapFile.content.keySet()) {
 												SimpleInput attrVal = GeneratorFactory.eINSTANCE.createSimpleInput();
-												
+
 												attrVal.setName(key);
 												attrVal.getValues().addAll(mapFile.content.get(key));
 												entityLanguageInput.getInputs().add(attrVal);
 											}
-											
+
 											entity.getInputs().add(entityLanguageInput);
 										}
 									}
 								}
-								
+
 								parameter.setEntity(entity);
 								entity.setName(set.name);
 								parameter.setName(set.name);
@@ -659,12 +675,161 @@ public class Agent {
 
 				intents.add(intent);
 			}
-
 		}
 
 		return intents;
 	}
 
+	// Procesa los datos de Agent para extraer los flujos de conversación
+	public List<UserInteraction> getFlows(List<Intent> botIntents) {
+		List<UserInteraction> ret = new ArrayList<UserInteraction>();
+		List<Intent> intents = botIntents == null ? getIntents() : botIntents;
+
+		for (Category category: categories) {
+			if (category.that != null) {
+				// TODO: El intent del that es el origen, no el target
+				Intent targetIntent = findIntentByThat(intents, category.that);
+				if (targetIntent != null) {
+					UserInteraction flow = GeneratorFactory.eINSTANCE.createUserInteraction();
+					Intent intent = findIntentByPattern(intents, category.pattern.text);
+					BotInteraction target = GeneratorFactory.eINSTANCE.createBotInteraction();
+					Text targetText = GeneratorFactory.eINSTANCE.createText();
+					TextLanguageInput targetLanguage = GeneratorFactory.eINSTANCE.createTextLanguageInput();
+					TextInput targetTextInput = GeneratorFactory.eINSTANCE.createTextInput();
+					Literal targetLiteral = GeneratorFactory.eINSTANCE.createLiteral();
+					
+					if (intent != null)
+						flow.setIntent(intent);
+					
+					targetLiteral.setText(getIntentsText(intents).get(targetIntent));
+					targetTextInput.getTokens().add(targetLiteral);
+					targetLanguage.setLanguage(castLanguage("en"));
+					targetLanguage.getInputs().add(targetTextInput);
+					targetText.getInputs().add(targetLanguage);
+					target.getActions().add(targetText);
+					flow.setTarget(target);
+					flow.setIntent(intent);
+					ret.add(flow);
+				}
+			}
+		}
+
+		return ret;
+	}
+
+	// Devuelve el intent cuyo texto coincida con el that
+	public Intent findIntentByThat(List<Intent> intents, String that) {
+//		Map<Intent, String> intentMap = getIntentsText(intents);
+//
+//		for (Intent intent : intentMap.keySet()) {
+//			String intentPhrase = intentMap.get(intent).replaceAll("[?.!<>#]", " "); 
+//			if (intentPhrase.equals(that))
+//				return intent;
+//		}
+		
+		for (Category category: categories) {
+			List<String> categoryResponses = getCategoryResponses(category);
+			
+			if (categoryResponses.contains(that)) {
+				Intent intent = findIntentByPattern(intents, category.pattern.text);
+				return intent;
+			}
+		}
+
+		return null;
+	}
+
+	// Devuelve el intent que coincide con un texto concreto
+	public Intent findIntentByPattern(List<Intent> intents, String text) {
+		Map<Intent, String> intentMap = getIntentsText(intents);
+
+		for (Intent intent : intentMap.keySet()) {
+			String val = intentMap.get(intent);
+			if (intentMap.get(intent).contains("*")) {
+				List<String> auxList = List.of(intentMap.get(intent).split("\\*"));
+				
+				if (auxList.isEmpty()) {
+					if (intentMap.get(intent).equals(text)) {
+						return intent;
+					}
+				}
+				
+				else {
+					String intentText = intentMap.get(intent).split("\\*")[0];
+					
+					if (text.contains("*") && !List.of(text.split("\\*")).isEmpty()) {
+						String textClean = text.split("\\*")[0];
+						
+						if (intentText.equals(textClean))
+							return intent;
+					}
+				}
+			}
+		}
+		
+		return null;
+	}
+
+	// Devuelve los intents con su frase de entrada tal como ha sido leída de la
+	// categoría
+	public Map<Intent, String> getIntentsText(List<Intent> intents) {
+		Map<Intent, String> ret = new HashMap<Intent, String>();
+
+		for (Intent intent : intents) {
+			String phraseStr = "";
+
+			for (var token : ((TrainingPhrase) intent.getInputs().get(0).getInputs().get(0)).getTokens()) {
+				if (token instanceof Literal)
+					phraseStr += ((Literal) token).getText();
+
+				else if (token instanceof ParameterReferenceToken) {
+					// Si no es una entity, entonces se guardaba como una *
+					if (((ParameterReferenceToken) token).getParameter().getName() == null)
+						phraseStr += "*";
+				}
+			}
+
+			ret.put(intent, phraseStr);
+		}
+
+		return ret;
+	}
+
+	// Devuelve todas las posibles respuestas de una categoría
+	public List<String> getCategoryResponses(Category category) {
+		List<String> responses = new ArrayList<String>();
+		
+		if (category.template.text != null) {
+			String clearText = category.template.text;
+			clearText = clearText.replace("\n", "").replace("  ", "").replaceAll("[?.!<>#]", " ");
+			responses.add(clearText);
+		}
+		
+		if (category.template.condition != null) {
+			List<String> conditionResponses = getConditionResponsesRC(category.template.condition, new ArrayList<String>());
+			responses.addAll(conditionResponses);
+		}
+		
+		return responses;
+	}
+	
+	// Funcion recursiva para obtener todas las posibles respuestas de un intent con conditions
+	public List<String> getConditionResponsesRC(Condition condition, List<String> responses) {
+		List<Condition> conditionsLeft = new ArrayList<Condition>();
+		for (Option option: condition.options) {
+			if (option.text != null)
+				responses.add(option.text);
+
+			if (option.condition != null)
+				conditionsLeft.add(option.condition);
+		}
+		
+		if (!conditionsLeft.isEmpty())
+			for (Condition c: conditionsLeft)
+				return getConditionResponsesRC(c, responses);
+
+		return responses;
+	}
 	// Función original de dialogflow.Agent
 	public static Language castLanguage(String language) {
 		if (language == null) {
