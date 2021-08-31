@@ -130,9 +130,12 @@ public class Agent {
 		for (String language : languages)
 			bot.getLanguages().add(castLanguage(language));
 
+		// GUARDADO DE INTENTS BÁSICOS
 		bot.getIntents().addAll(getIntents());
 		
+		// GUARDADO DE FLUJOS EN INTENTS
 		bot.getFlows().addAll(getFlows(null));
+		
 //		saveAction(request, bot);
 //		saveAction(response, bot);
 //
@@ -199,9 +202,8 @@ public class Agent {
 		for (Category category : categories) {
 			Intent intent = GeneratorFactory.eINSTANCE.createIntent();
 
-			// Caso en que la categoría sólo contenga sets
+			// Caso en que la categoría sólo contenga sets de tipo <set>example</set>
 			if (category.pattern.text == null) {
-				// Si el pattern del intent no tiene texto ni sets
 				if (!category.pattern.sets.isEmpty()) {
 					IntentLanguageInputs languageInput = GeneratorFactory.eINSTANCE.createIntentLanguageInputs();
 					TrainingPhrase phrase = GeneratorFactory.eINSTANCE.createTrainingPhrase();
@@ -232,6 +234,8 @@ public class Agent {
 					TrainingPhrase phrase = GeneratorFactory.eINSTANCE.createTrainingPhrase();
 
 					// Si el template contiene sets
+					// TODO: Completar con sets que haya en condicionales. Hacer una función que extraiga los sets que hay
+					// en el think y los junte con los que hay en los condition mediante una intersección
 					if (category.template.think.sets != null) {
 						List<Set> sets = new ArrayList<Set>(category.template.think.sets);
 
@@ -242,7 +246,7 @@ public class Agent {
 									.createParameterReferenceToken();
 							Parameter parameter = GeneratorFactory.eINSTANCE.createParameter();
 
-							// Caso en que además de fechas haya otros argumentos
+							// Caso en que además de fechas haya otros argumentos en el fragmento
 							if (category.pattern.text.contains("*")) {
 								String[] innerTokens = category.pattern.text.split("\\*");
 								for (String innerToken : innerTokens) {
@@ -261,12 +265,14 @@ public class Agent {
 										innerParameter.setName(sets.get(0).name);
 										sets.remove(0);
 									}
+									
 									innerParameter.setDefaultEntity(DefaultEntity.TEXT);
 									innerParameterRef.setParameter(innerParameter);
 									phrase.getTokens().add(innerParameterRef);
 								}
 							}
 
+							// Caso en que el fragmento no contenga otros argumentos
 							else {
 								// Guardado de texto previo al parametro
 								literal.setText(token);
@@ -286,6 +292,7 @@ public class Agent {
 						}
 
 						// Caso en que contenga sets en el pattern
+						// TODO: Revisar
 						if (category.pattern.sets != null) {
 							for (SetAttr set : category.pattern.sets) {
 								ParameterReferenceToken parameterRef = GeneratorFactory.eINSTANCE
@@ -325,44 +332,64 @@ public class Agent {
 						intent.getInputs().add(languageInput);
 					}
 
-					// Si no hay sets en el template
+					// Si no hay sets en el template, se guarda el pattern como texto
 					else {
-						String[] tokens = category.pattern.text.split("\\* slash \\* slash \\*");
+//						Literal literal = GeneratorFactory.eINSTANCE.createLiteral();
+//						
+//						literal.setText(category.pattern.text);
+//						phrase.getTokens().add(literal);
+//						languageInput.getInputs().add(phrase);
+//						intent.getInputs().add(languageInput);
+						String[] tokens = category.pattern.text.split("\\*");
 						for (String token : tokens) {
 							Literal literal = GeneratorFactory.eINSTANCE.createLiteral();
 							ParameterReferenceToken parameterRef = GeneratorFactory.eINSTANCE
 									.createParameterReferenceToken();
 							Parameter parameter = GeneratorFactory.eINSTANCE.createParameter();
 
-							// Caso en que además de fechas haya otros argumentos
-							if (category.pattern.text.contains("*")) {
-								String[] innerTokens = category.pattern.text.split("\\*");
-								for (String innerToken : innerTokens) {
-									Literal innerLiteral = GeneratorFactory.eINSTANCE.createLiteral();
-									ParameterReferenceToken innerParameterRef = GeneratorFactory.eINSTANCE
-											.createParameterReferenceToken();
-									Parameter innerParameter = GeneratorFactory.eINSTANCE.createParameter();
+							// Guardado de texto previo al parametro
+							literal.setText(token);
+							phrase.getTokens().add(literal);
 
-									// Guardado de texto previo al parametro
-									innerLiteral.setText(innerToken);
-									phrase.getTokens().add(innerLiteral);
-
-									innerParameter.setDefaultEntity(DefaultEntity.TEXT);
-									innerParameterRef.setParameter(innerParameter);
-									phrase.getTokens().add(innerParameterRef);
-								}
-							}
-
-							else {
-								// Guardado de texto previo al parametro
-								literal.setText(token);
-								phrase.getTokens().add(literal);
-							}
-
-							// Guardado del parametro
-							parameter.setDefaultEntity(DefaultEntity.DATE);
+							parameter.setDefaultEntity(DefaultEntity.TEXT);
 							parameterRef.setParameter(parameter);
 							phrase.getTokens().add(parameterRef);
+						}
+
+						// Caso en que contenga sets en el pattern
+						if (category.pattern.sets != null) {
+							for (SetAttr set : category.pattern.sets) {
+								ParameterReferenceToken parameterRef = GeneratorFactory.eINSTANCE
+										.createParameterReferenceToken();
+								Parameter parameter = GeneratorFactory.eINSTANCE.createParameter();
+								Entity entity = GeneratorFactory.eINSTANCE.createEntity();
+
+								if (mapFiles != null) {
+									for (MapFile mapFile : mapFiles) {
+										if (mapFile.name.equals(set.name)) {
+											LanguageInput entityLanguageInput = GeneratorFactory.eINSTANCE
+													.createLanguageInput();
+											entityLanguageInput.setLanguage(castLanguage("en"));
+											for (String key : mapFile.content.keySet()) {
+												SimpleInput attrVal = GeneratorFactory.eINSTANCE.createSimpleInput();
+
+												attrVal.setName(key);
+												attrVal.getValues().addAll(mapFile.content.get(key));
+												entityLanguageInput.getInputs().add(attrVal);
+											}
+
+											entity.getInputs().add(entityLanguageInput);
+										}
+									}
+								}
+
+								parameter.setEntity(entity);
+								entity.setName(set.name);
+								parameter.setName(set.name);
+								parameter.setDefaultEntity(DefaultEntity.TEXT);
+								parameterRef.setParameter(parameter);
+								phrase.getTokens().add(parameterRef);
+							}
 						}
 
 						languageInput.getInputs().add(phrase);
@@ -487,7 +514,7 @@ public class Agent {
 						intent.getInputs().add(languageInput);
 					}
 				}
-
+				///////////////////////////////////////////////////////////////////////
 				// Caso en que no contenga fechas ni horas
 				else {
 					// Caso en que contenga *s

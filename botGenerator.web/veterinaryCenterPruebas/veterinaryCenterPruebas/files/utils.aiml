@@ -136,6 +136,11 @@
         <pattern>ISVALIDHOUR <set>number</set> colon <set>number</set></pattern>
         <template>
             <think>
+                <set name="hour_xeq">
+                    <srai>
+                        XEQ <star index="1"/> XS 00
+                    </srai>
+                </set>
                 <set name="hour_xge">
                     <srai>
                         XGE <star index="1"/> XS 0
@@ -144,6 +149,11 @@
                 <set name="hour_xle">
                     <srai>
                         XLE <star index="1"/> XS 24
+                    </srai>
+                </set>
+                <set name="minute_xeq">
+                    <srai>
+                        XEQ <star index="2"/> XS 00
                     </srai>
                 </set>
                 <set name="minute_xge">
@@ -165,16 +175,81 @@
                                 <li value="TRUE">
                                     <condition name="minute_xle">
                                         <li value="TRUE">TRUE</li>
+                                        <li>
+                                            <condition name="minute_xeq">
+                                                <li value="TRUE">TRUE</li>
+                                                <li>FALSE</li>
+                                            </condition>
+                                        </li>
+                                    </condition>
+                                </li>
+                                <li>
+                                    <condition name="minute_xeq">
+                                        <li value="TRUE">TRUE</li>
                                         <li>FALSE</li>
                                     </condition>
                                 </li>
-                                <li>FALSE</li>
+                            </condition>
+                        </li>
+                        <li>
+                            <condition name="hour_xeq">
+                                <li value="TRUE">
+                                    <condition name="minute_xle">
+                                        <li value="TRUE">
+                                            <condition name="minute_xge">
+                                                <li value="TRUE">TRUE</li>
+                                                <li>
+                                                    <condition name="minute_xeq">
+                                                        <li value="TRUE">TRUE</li>
+                                                        <li>FALSE</li>
+                                                    </condition>
+                                                </li>
+                                            </condition>
+                                        </li>
+                                        <li>
+                                            <condition name="minute_xeq">
+                                                <li value="TRUE">TRUE</li>
+                                                <li>FALSE</li>
+                                            </condition>
+                                        </li>
+                                    </condition>
+                                </li>
+                                <li>
+                                    <condition name="minute_xeq">
+                                        <li value="TRUE">TRUE</li>
+                                        <li>FALSE</li>
+                                    </condition>
+                                </li>
+                            </condition>
+                        </li>
+                    </condition>
+                </li>
+                <li>
+                    <condition name="hour_xeq">
+                        <li value="TRUE">
+                            <condition name="minute_xle">
+                                <li value="TRUE">
+                                    <condition name="minute_xge">
+                                        <li value="TRUE">TRUE</li>
+                                        <li>
+                                            <condition name="minute_xeq">
+                                                <li value="TRUE">TRUE</li>
+                                                <li>FALSE</li>
+                                            </condition>
+                                        </li>
+                                    </condition>
+                                </li>
+                                <li>
+                                    <condition name="minute_xeq">
+                                        <li value="TRUE">TRUE</li>
+                                        <li>FALSE</li>
+                                    </condition>
+                                </li>
                             </condition>
                         </li>
                         <li>FALSE</li>
                     </condition>
                 </li>
-                <li>FALSE</li>
             </condition>
         </template>
     </category>
