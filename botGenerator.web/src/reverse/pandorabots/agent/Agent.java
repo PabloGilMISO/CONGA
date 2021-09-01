@@ -134,7 +134,7 @@ public class Agent {
 		bot.getIntents().addAll(getIntents());
 		
 		// GUARDADO DE FLUJOS EN INTENTS
-		bot.getFlows().addAll(getFlows(null));
+//		bot.getFlows().addAll(getFlows(null));
 		
 //		saveAction(request, bot);
 //		saveAction(response, bot);
@@ -194,7 +194,7 @@ public class Agent {
 
 		return entities;
 	}
-
+	
 	// Recoge los intents de Pandorabots como intents de CONGA
 	public List<Intent> getIntents() {
 		List<Intent> intents = new ArrayList<Intent>();
@@ -203,507 +203,29 @@ public class Agent {
 			Intent intent = GeneratorFactory.eINSTANCE.createIntent();
 
 			// Caso en que la categoría sólo contenga sets de tipo <set>example</set>
-			if (category.pattern.text == null) {
-				if (!category.pattern.sets.isEmpty()) {
-					IntentLanguageInputs languageInput = GeneratorFactory.eINSTANCE.createIntentLanguageInputs();
-					TrainingPhrase phrase = GeneratorFactory.eINSTANCE.createTrainingPhrase();
-
-					for (SetAttr set : category.pattern.sets) {
-						ParameterReferenceToken parameterRef = GeneratorFactory.eINSTANCE
-								.createParameterReferenceToken();
-						Parameter parameter = GeneratorFactory.eINSTANCE.createParameter();
-
-						parameter.setName(set.name);
-						parameterRef.setParameter(parameter);
-						phrase.getTokens().add(parameterRef);
-					}
-
-					languageInput.getInputs().add(phrase);
-					intent.getInputs().add(languageInput);
-				}
-
-				// TODO: Caso de intent con pattern vacío
-			}
+			if (category.pattern.text == null)
+				AgentIntentsGetter.addCategoryWithOnlyPatternSets(category, intent);
 
 			// Caso en que contenga texto y pueda o no contener sets
 			else {
+				// TODO: Gestionar que pueda tener fechas y horas simultáneamente etc
+				
 				// Caso en que contenga fechas
 				if (category.pattern.text.contains("* slash * slash *")
-						|| category.pattern.text.contains("*slash*slash*")) {
-					IntentLanguageInputs languageInput = GeneratorFactory.eINSTANCE.createIntentLanguageInputs();
-					TrainingPhrase phrase = GeneratorFactory.eINSTANCE.createTrainingPhrase();
-
-					// Si el template contiene sets
-					// TODO: Completar con sets que haya en condicionales. Hacer una función que extraiga los sets que hay
-					// en el think y los junte con los que hay en los condition mediante una intersección
-					if (category.template.think.sets != null) {
-						List<Set> sets = new ArrayList<Set>(category.template.think.sets);
-
-						String[] tokens = category.pattern.text.split("\\* slash \\* slash \\*");
-						for (String token : tokens) {
-							Literal literal = GeneratorFactory.eINSTANCE.createLiteral();
-							ParameterReferenceToken parameterRef = GeneratorFactory.eINSTANCE
-									.createParameterReferenceToken();
-							Parameter parameter = GeneratorFactory.eINSTANCE.createParameter();
-
-							// Caso en que además de fechas haya otros argumentos en el fragmento
-							if (category.pattern.text.contains("*")) {
-								String[] innerTokens = category.pattern.text.split("\\*");
-								for (String innerToken : innerTokens) {
-									Literal innerLiteral = GeneratorFactory.eINSTANCE.createLiteral();
-									ParameterReferenceToken innerParameterRef = GeneratorFactory.eINSTANCE
-											.createParameterReferenceToken();
-									Parameter innerParameter = GeneratorFactory.eINSTANCE.createParameter();
-
-									// Guardado de texto previo al parametro
-									innerLiteral.setText(innerToken);
-									phrase.getTokens().add(innerLiteral);
-
-									// Si hay sets disponibles, se asocia el nombre del parametro al set que haya
-									// disponible
-									if (!sets.isEmpty()) {
-										innerParameter.setName(sets.get(0).name);
-										sets.remove(0);
-									}
-									
-									innerParameter.setDefaultEntity(DefaultEntity.TEXT);
-									innerParameterRef.setParameter(innerParameter);
-									phrase.getTokens().add(innerParameterRef);
-								}
-							}
-
-							// Caso en que el fragmento no contenga otros argumentos
-							else {
-								// Guardado de texto previo al parametro
-								literal.setText(token);
-								phrase.getTokens().add(literal);
-							}
-
-							// Si hay sets disponibles, se asocia el nombre del parametro al set que haya
-							// disponible
-							if (!sets.isEmpty()) {
-								parameter.setName(sets.get(0).name);
-								sets.remove(0);
-							}
-
-							parameter.setDefaultEntity(DefaultEntity.DATE);
-							parameterRef.setParameter(parameter);
-							phrase.getTokens().add(parameterRef);
-						}
-
-						// Caso en que contenga sets en el pattern
-						// TODO: Revisar
-						if (category.pattern.sets != null) {
-							for (SetAttr set : category.pattern.sets) {
-								ParameterReferenceToken parameterRef = GeneratorFactory.eINSTANCE
-										.createParameterReferenceToken();
-								Parameter parameter = GeneratorFactory.eINSTANCE.createParameter();
-								Entity entity = GeneratorFactory.eINSTANCE.createEntity();
-
-								if (mapFiles != null) {
-									for (MapFile mapFile : mapFiles) {
-										if (mapFile.name.equals(set.name)) {
-											LanguageInput entityLanguageInput = GeneratorFactory.eINSTANCE
-													.createLanguageInput();
-											entityLanguageInput.setLanguage(castLanguage("en"));
-											for (String key : mapFile.content.keySet()) {
-												SimpleInput attrVal = GeneratorFactory.eINSTANCE.createSimpleInput();
-
-												attrVal.setName(key);
-												attrVal.getValues().addAll(mapFile.content.get(key));
-												entityLanguageInput.getInputs().add(attrVal);
-											}
-
-											entity.getInputs().add(entityLanguageInput);
-										}
-									}
-								}
-
-								parameter.setEntity(entity);
-								entity.setName(set.name);
-								parameter.setName(set.name);
-								parameter.setDefaultEntity(DefaultEntity.TEXT);
-								parameterRef.setParameter(parameter);
-								phrase.getTokens().add(parameterRef);
-							}
-						}
-
-						languageInput.getInputs().add(phrase);
-						intent.getInputs().add(languageInput);
-					}
-
-					// Si no hay sets en el template, se guarda el pattern como texto
-					else {
-//						Literal literal = GeneratorFactory.eINSTANCE.createLiteral();
-//						
-//						literal.setText(category.pattern.text);
-//						phrase.getTokens().add(literal);
-//						languageInput.getInputs().add(phrase);
-//						intent.getInputs().add(languageInput);
-						String[] tokens = category.pattern.text.split("\\*");
-						for (String token : tokens) {
-							Literal literal = GeneratorFactory.eINSTANCE.createLiteral();
-							ParameterReferenceToken parameterRef = GeneratorFactory.eINSTANCE
-									.createParameterReferenceToken();
-							Parameter parameter = GeneratorFactory.eINSTANCE.createParameter();
-
-							// Guardado de texto previo al parametro
-							literal.setText(token);
-							phrase.getTokens().add(literal);
-
-							parameter.setDefaultEntity(DefaultEntity.TEXT);
-							parameterRef.setParameter(parameter);
-							phrase.getTokens().add(parameterRef);
-						}
-
-						// Caso en que contenga sets en el pattern
-						if (category.pattern.sets != null) {
-							for (SetAttr set : category.pattern.sets) {
-								ParameterReferenceToken parameterRef = GeneratorFactory.eINSTANCE
-										.createParameterReferenceToken();
-								Parameter parameter = GeneratorFactory.eINSTANCE.createParameter();
-								Entity entity = GeneratorFactory.eINSTANCE.createEntity();
-
-								if (mapFiles != null) {
-									for (MapFile mapFile : mapFiles) {
-										if (mapFile.name.equals(set.name)) {
-											LanguageInput entityLanguageInput = GeneratorFactory.eINSTANCE
-													.createLanguageInput();
-											entityLanguageInput.setLanguage(castLanguage("en"));
-											for (String key : mapFile.content.keySet()) {
-												SimpleInput attrVal = GeneratorFactory.eINSTANCE.createSimpleInput();
-
-												attrVal.setName(key);
-												attrVal.getValues().addAll(mapFile.content.get(key));
-												entityLanguageInput.getInputs().add(attrVal);
-											}
-
-											entity.getInputs().add(entityLanguageInput);
-										}
-									}
-								}
-
-								parameter.setEntity(entity);
-								entity.setName(set.name);
-								parameter.setName(set.name);
-								parameter.setDefaultEntity(DefaultEntity.TEXT);
-								parameterRef.setParameter(parameter);
-								phrase.getTokens().add(parameterRef);
-							}
-						}
-
-						languageInput.getInputs().add(phrase);
-						intent.getInputs().add(languageInput);
-					}
-				}
+						|| category.pattern.text.contains("*slash*slash*"))
+					AgentIntentsGetter.addCategoryWithDate(category, intent, mapFiles);
 
 				// Caso en que contenga horas
-				else if (category.pattern.text.contains("* colon *") || category.pattern.text.contains("*colon*")) {
-					IntentLanguageInputs languageInput = GeneratorFactory.eINSTANCE.createIntentLanguageInputs();
-					TrainingPhrase phrase = GeneratorFactory.eINSTANCE.createTrainingPhrase();
-
-					// Si el template contiene sets
-					if (category.template.think.sets != null) {
-						List<Set> sets = new ArrayList<Set>(category.template.think.sets);
-
-						String[] tokens = category.pattern.text.split("\\* colon \\*");
-						for (String token : tokens) {
-							Literal literal = GeneratorFactory.eINSTANCE.createLiteral();
-
-							// Guardado de texto previo al parametro
-							literal.setText(token);
-							phrase.getTokens().add(literal);
-
-							// Guardado del parametro si el formato es correcto
-							if (!sets.isEmpty()) {
-								// Caso en que no se guarden los parametros directamente
-								if (sets.get(0).srais.isEmpty()) {
-									ParameterReferenceToken parameterRef = GeneratorFactory.eINSTANCE
-											.createParameterReferenceToken();
-									Parameter parameter = GeneratorFactory.eINSTANCE.createParameter();
-
-									// Caso en que además de guardar horas guarde otros parámetros
-									// TODO: Probar
-									if (category.pattern.text.contains("*")) {
-										String[] innerTokens = category.pattern.text.split("\\*");
-										for (String innerToken : innerTokens) {
-											Literal innerLiteral = GeneratorFactory.eINSTANCE.createLiteral();
-											ParameterReferenceToken innerParameterRef = GeneratorFactory.eINSTANCE
-													.createParameterReferenceToken();
-											Parameter innerParameter = GeneratorFactory.eINSTANCE.createParameter();
-
-											// Guardado de texto previo al parametro
-											innerLiteral.setText(innerToken);
-											parameter.setDefaultEntity(DefaultEntity.TEXT);
-											phrase.getTokens().add(innerLiteral);
-
-//										parameter.setName(sets.get(0).name);
-											innerParameterRef.setParameter(innerParameter);
-											phrase.getTokens().add(innerParameterRef);
-										}
-									}
-
-									parameter.setName(sets.get(0).name);
-									parameter.setDefaultEntity(DefaultEntity.TIME);
-									sets.remove(0);
-									parameterRef.setParameter(parameter);
-									phrase.getTokens().add(parameterRef);
-								}
-							}
-						}
-
-						languageInput.getInputs().add(phrase);
-						intent.getInputs().add(languageInput);
-					}
-
-					// Caso en que el template no contiene sets
-					else {
-						String[] tokens = category.pattern.text.split("\\*");
-						for (String token : tokens) {
-							Literal literal = GeneratorFactory.eINSTANCE.createLiteral();
-							ParameterReferenceToken parameterRef = GeneratorFactory.eINSTANCE
-									.createParameterReferenceToken();
-							Parameter parameter = GeneratorFactory.eINSTANCE.createParameter();
-
-							// Guardado de texto previo al parametro
-							literal.setText(token);
-							phrase.getTokens().add(literal);
-
-							parameter.setDefaultEntity(DefaultEntity.TEXT);
-							parameterRef.setParameter(parameter);
-							phrase.getTokens().add(parameterRef);
-						}
-
-						// Caso en que contenga sets en el pattern
-						if (category.pattern.sets != null) {
-							for (SetAttr set : category.pattern.sets) {
-								ParameterReferenceToken parameterRef = GeneratorFactory.eINSTANCE
-										.createParameterReferenceToken();
-								Parameter parameter = GeneratorFactory.eINSTANCE.createParameter();
-								Entity entity = GeneratorFactory.eINSTANCE.createEntity();
-
-								if (mapFiles != null) {
-									for (MapFile mapFile : mapFiles) {
-										if (mapFile.name.equals(set.name)) {
-											LanguageInput entityLanguageInput = GeneratorFactory.eINSTANCE
-													.createLanguageInput();
-											entityLanguageInput.setLanguage(castLanguage("en"));
-											for (String key : mapFile.content.keySet()) {
-												SimpleInput attrVal = GeneratorFactory.eINSTANCE.createSimpleInput();
-
-												attrVal.setName(key);
-												attrVal.getValues().addAll(mapFile.content.get(key));
-												entityLanguageInput.getInputs().add(attrVal);
-											}
-
-											entity.getInputs().add(entityLanguageInput);
-										}
-									}
-								}
-
-								parameter.setEntity(entity);
-								entity.setName(set.name);
-								parameter.setName(set.name);
-								parameter.setDefaultEntity(DefaultEntity.TEXT);
-								parameterRef.setParameter(parameter);
-								phrase.getTokens().add(parameterRef);
-							}
-						}
-
-						languageInput.getInputs().add(phrase);
-						intent.getInputs().add(languageInput);
-					}
-				}
-				///////////////////////////////////////////////////////////////////////
-				// Caso en que no contenga fechas ni horas
-				else {
-					// Caso en que contenga *s
-					if (category.pattern.text.contains("*")) {
-						IntentLanguageInputs languageInput = GeneratorFactory.eINSTANCE.createIntentLanguageInputs();
-						TrainingPhrase phrase = GeneratorFactory.eINSTANCE.createTrainingPhrase();
-
-						// Si el template contiene sets
-						if (category.template.think.sets != null) {
-							List<Set> sets = new ArrayList<Set>(category.template.think.sets);
-
-							String[] tokens = category.pattern.text.split("\\*");
-							for (String token : tokens) {
-								Literal literal = GeneratorFactory.eINSTANCE.createLiteral();
-								ParameterReferenceToken parameterRef = GeneratorFactory.eINSTANCE
-										.createParameterReferenceToken();
-								Parameter parameter = GeneratorFactory.eINSTANCE.createParameter();
-
-								// Guardado de texto previo al parametro
-								literal.setText(token);
-								phrase.getTokens().add(literal);
-
-								// Guardado del parametro si el formato es correcto
-								if (!sets.isEmpty()) {
-									parameter.setName(sets.get(0).name);
-									sets.remove(0);
-								}
-
-								parameter.setDefaultEntity(DefaultEntity.TEXT);
-								parameterRef.setParameter(parameter);
-								phrase.getTokens().add(parameterRef);
-							}
-
-							// Caso en que contenga sets en el pattern
-							if (category.pattern.sets != null) {
-								for (SetAttr set : category.pattern.sets) {
-									ParameterReferenceToken parameterRef = GeneratorFactory.eINSTANCE
-											.createParameterReferenceToken();
-									Parameter parameter = GeneratorFactory.eINSTANCE.createParameter();
-									Entity entity = GeneratorFactory.eINSTANCE.createEntity();
-
-									if (mapFiles != null) {
-										for (MapFile mapFile : mapFiles) {
-											if (mapFile.name.equals(set.name)) {
-												LanguageInput entityLanguageInput = GeneratorFactory.eINSTANCE
-														.createLanguageInput();
-												entityLanguageInput.setLanguage(castLanguage("en"));
-												for (String key : mapFile.content.keySet()) {
-													SimpleInput attrVal = GeneratorFactory.eINSTANCE
-															.createSimpleInput();
-
-													attrVal.setName(key);
-													attrVal.getValues().addAll(mapFile.content.get(key));
-													entityLanguageInput.getInputs().add(attrVal);
-												}
-
-												entity.getInputs().add(entityLanguageInput);
-											}
-										}
-									}
-
-									parameter.setEntity(entity);
-									entity.setName(set.name);
-									parameter.setName(set.name);
-									parameter.setDefaultEntity(DefaultEntity.TEXT);
-									parameterRef.setParameter(parameter);
-									phrase.getTokens().add(parameterRef);
-								}
-							}
-
-							languageInput.getInputs().add(phrase);
-							intent.getInputs().add(languageInput);
-						}
-
-						// Si el template no contiene sets
-						else {
-							String[] tokens = category.pattern.text.split("\\*");
-							for (String token : tokens) {
-								Literal literal = GeneratorFactory.eINSTANCE.createLiteral();
-								ParameterReferenceToken parameterRef = GeneratorFactory.eINSTANCE
-										.createParameterReferenceToken();
-								Parameter parameter = GeneratorFactory.eINSTANCE.createParameter();
-
-								// Guardado de texto previo al parametro
-								literal.setText(token);
-								phrase.getTokens().add(literal);
-
-								parameter.setDefaultEntity(DefaultEntity.TEXT);
-								parameterRef.setParameter(parameter);
-								phrase.getTokens().add(parameterRef);
-							}
-
-							// Caso en que contenga sets en el pattern
-							if (category.pattern.sets != null) {
-								for (SetAttr set : category.pattern.sets) {
-									ParameterReferenceToken parameterRef = GeneratorFactory.eINSTANCE
-											.createParameterReferenceToken();
-									Parameter parameter = GeneratorFactory.eINSTANCE.createParameter();
-									Entity entity = GeneratorFactory.eINSTANCE.createEntity();
-
-									if (mapFiles != null) {
-										for (MapFile mapFile : mapFiles) {
-											if (mapFile.name.equals(set.name)) {
-												LanguageInput entityLanguageInput = GeneratorFactory.eINSTANCE
-														.createLanguageInput();
-												entityLanguageInput.setLanguage(castLanguage("en"));
-												for (String key : mapFile.content.keySet()) {
-													SimpleInput attrVal = GeneratorFactory.eINSTANCE
-															.createSimpleInput();
-
-													attrVal.setName(key);
-													attrVal.getValues().addAll(mapFile.content.get(key));
-													entityLanguageInput.getInputs().add(attrVal);
-												}
-
-												entity.getInputs().add(entityLanguageInput);
-											}
-										}
-									}
-
-									parameter.setEntity(entity);
-									entity.setName(set.name);
-									parameter.setName(set.name);
-									parameter.setDefaultEntity(DefaultEntity.TEXT);
-									parameterRef.setParameter(parameter);
-									phrase.getTokens().add(parameterRef);
-								}
-							}
-
-							languageInput.getInputs().add(phrase);
-							intent.getInputs().add(languageInput);
-						}
-
-					}
-
-					// Caso en que el intent no contenga *s
-					else {
-						IntentLanguageInputs languageInput = GeneratorFactory.eINSTANCE.createIntentLanguageInputs();
-						TrainingPhrase phrase = GeneratorFactory.eINSTANCE.createTrainingPhrase();
-						Literal literal = GeneratorFactory.eINSTANCE.createLiteral();
-
-						literal.setText(category.pattern.text);
-						phrase.getTokens().add(literal);
-
-						// Caso en que contenga sets en el pattern
-						if (category.pattern.sets != null) {
-							for (SetAttr set : category.pattern.sets) {
-								ParameterReferenceToken parameterRef = GeneratorFactory.eINSTANCE
-										.createParameterReferenceToken();
-								Parameter parameter = GeneratorFactory.eINSTANCE.createParameter();
-								Entity entity = GeneratorFactory.eINSTANCE.createEntity();
-
-								if (mapFiles != null) {
-									for (MapFile mapFile : mapFiles) {
-										if (mapFile.name.equals(set.name)) {
-											LanguageInput entityLanguageInput = GeneratorFactory.eINSTANCE
-													.createLanguageInput();
-											entityLanguageInput.setLanguage(castLanguage("en"));
-											for (String key : mapFile.content.keySet()) {
-												SimpleInput attrVal = GeneratorFactory.eINSTANCE.createSimpleInput();
-
-												attrVal.setName(key);
-												attrVal.getValues().addAll(mapFile.content.get(key));
-												entityLanguageInput.getInputs().add(attrVal);
-											}
-
-											entity.getInputs().add(entityLanguageInput);
-										}
-									}
-								}
-
-								parameter.setEntity(entity);
-								entity.setName(set.name);
-								parameter.setName(set.name);
-								parameter.setDefaultEntity(DefaultEntity.TEXT);
-								parameterRef.setParameter(parameter);
-								phrase.getTokens().add(parameterRef);
-							}
-						}
-
-						languageInput.getInputs().add(phrase);
-						intent.getInputs().add(languageInput);
-					}
-				}
-
-				intents.add(intent);
+				else if (category.pattern.text.contains("* colon *") || category.pattern.text.contains("*colon*"))
+					AgentIntentsGetter.addCategoryWithHour(category, intent, mapFiles);
+				
+				// Caso base: intents que contengan texto y puedan o no contener parámetros
+				else
+					AgentIntentsGetter.addCategoryBasic(category, intent, mapFiles);
 			}
+			
+			intents.add(intent);
 		}
-
 		return intents;
 	}
 
@@ -857,54 +379,56 @@ public class Agent {
 
 		return responses;
 	}
+	
 	// Función original de dialogflow.Agent
 	public static Language castLanguage(String language) {
 		if (language == null) {
 			return Language.ENGLISH;
 		}
+		
 		switch (language) {
-		case "en":
-			return Language.ENGLISH;
-		case "es":
-			return Language.SPANISH;
-		case "da":
-			return Language.DANISH;
-		case "de":
-			return Language.GERMAN;
-		case "fr":
-			return Language.FRENCH;
-		case "hi":
-			return Language.HINDI;
-		case "id":
-			return Language.INDONESIAN;
-		case "it":
-			return Language.ITALIAN;
-		case "ja":
-			return Language.JAPANESE;
-		case "ko":
-			return Language.KOREAN;
-		case "nl":
-			return Language.DUTCH;
-		case "no":
-			return Language.NORWEGIAN;
-		case "pl":
-			return Language.POLISH;
-		case "pt":
-			return Language.PORTUGUESE;
-		case "ru":
-			return Language.RUSIAN;
-		case "sv":
-			return Language.SWEDISH;
-		case "th":
-			return Language.THAI;
-		case "tr":
-			return Language.TURKISH;
-		case "uk":
-			return Language.UKRANIAN;
-		case "zh":
-			return Language.CHINESE;
-		default:
-			return Language.ENGLISH;
-		}
+			case "en":
+				return Language.ENGLISH;
+			case "es":
+				return Language.SPANISH;
+			case "da":
+				return Language.DANISH;
+			case "de":
+				return Language.GERMAN;
+			case "fr":
+				return Language.FRENCH;
+			case "hi":
+				return Language.HINDI;
+			case "id":
+				return Language.INDONESIAN;
+			case "it":
+				return Language.ITALIAN;
+			case "ja":
+				return Language.JAPANESE;
+			case "ko":
+				return Language.KOREAN;
+			case "nl":
+				return Language.DUTCH;
+			case "no":
+				return Language.NORWEGIAN;
+			case "pl":
+				return Language.POLISH;
+			case "pt":
+				return Language.PORTUGUESE;
+			case "ru":
+				return Language.RUSIAN;
+			case "sv":
+				return Language.SWEDISH;
+			case "th":
+				return Language.THAI;
+			case "tr":
+				return Language.TURKISH;
+			case "uk":
+				return Language.UKRANIAN;
+			case "zh":
+				return Language.CHINESE;
+			default:
+				return Language.ENGLISH;
+			}
 	}
 }
