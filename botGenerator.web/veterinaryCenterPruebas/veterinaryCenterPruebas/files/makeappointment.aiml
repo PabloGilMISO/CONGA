@@ -13,10 +13,50 @@
       <think><set name="pet"><map name="pet"><star/></map></set></think>
     </template>
   </category>
-   <category>
+  <category>
     <pattern><set>pet</set></pattern>
     <template>
       <think><set name="pet"><map name="pet"><star/></map></set></think>
+    </template>
+  </category>
+  <category>
+    <pattern>Texto antes * slash * slash * texto despues</pattern>
+    <template>
+      <think>
+        <set name="date_is_valid">
+          <srai>VALIDDATE <star index="1"/>/<star index="2"/>/<star index="3"/></srai>
+        </set>
+      </think>
+      <condition name="date_is_valid">
+        <li value="TRUE">
+          <think><set name="date"><star index="1"/>/<star index="2"/>/<star index="3"/></set></think>
+        </li>
+      </condition>
+    </template>
+  </category>
+  <category>
+    <pattern>* slash * slash *</pattern>
+    <template>
+    </template>
+  </category>
+  <category>
+    <pattern>Fecha: * slash * slash *, hora: * colon *, Parametro *</pattern>
+    <template>
+    </template>
+  </category>
+  <category>
+    <pattern>La hora es: * colon *</pattern>
+    <template>
+    </template>
+  </category>
+  <category>
+    <pattern>* colon *</pattern>
+    <template>
+    </template>
+  </category>
+  <category>
+    <pattern>* colon * y luego *</pattern>
+    <template>
     </template>
   </category>
 </aiml>

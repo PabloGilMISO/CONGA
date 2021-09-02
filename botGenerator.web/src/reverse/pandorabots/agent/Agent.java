@@ -216,7 +216,8 @@ public class Agent {
 					AgentIntentsGetter.addCategoryWithDate(category, intent, mapFiles);
 
 				// Caso en que contenga horas
-				else if (category.pattern.text.contains("* colon *") || category.pattern.text.contains("*colon*"))
+				else if (category.pattern.text.contains("* colon *") || 
+						 category.pattern.text.contains("*colon*"))
 					AgentIntentsGetter.addCategoryWithHour(category, intent, mapFiles);
 				
 				// Caso base: intents que contengan texto y puedan o no contener parámetros

@@ -38,18 +38,26 @@ public class AgentIntentsGetter {
 	}
 
 	// Función para gestionar los intents cuya entrada contenga fechas en el formato DD/MM/AA
-	// TODO: Revisar y completar cuando se hayan terminado funciones de captura de intents de menor complejidad
 	public static void addCategoryWithDate(Category category, Intent intent, List<MapFile> mapFiles) {
 		IntentLanguageInputs languageInput = GeneratorFactory.eINSTANCE.createIntentLanguageInputs();
 		TrainingPhrase phrase = GeneratorFactory.eINSTANCE.createTrainingPhrase();
 
 		String[] tokens1 = category.pattern.text.split("\\* slash \\* slash \\*");
 		String[] tokens2 = category.pattern.text.split("\\*slash\\*slash\\*");
-		String[] tokens = (tokens1.length == 0 || 
-						  (tokens1.length > tokens2.length && tokens2.length != 0)) ? tokens1 : tokens2;
-
+		
+		List<String> tokens;
+		if (tokens1.length > tokens2.length && tokens2.length != 0 || tokens1.length == 0) {
+			tokens = List.of(tokens1);
+		}
+		
+		else if (tokens1.length == tokens2.length && tokens2.length == 1)
+			tokens = List.of(tokens1[0].length() < tokens2[0].length() ? tokens1 : tokens2);
+		
+		else
+			tokens = List.of(tokens2);
+		
 		// Caso en que el intent únicamente esté formado por la fecha
-		if (tokens.length == 0) {
+		if (tokens.size() == 0) {
 			ParameterReferenceToken parameterRef = GeneratorFactory.eINSTANCE.createParameterReferenceToken();
 			Parameter parameter = GeneratorFactory.eINSTANCE.createParameter();
 			
@@ -60,183 +68,135 @@ public class AgentIntentsGetter {
 		
 		// Caso en que el intent está formado por fecha y otros elementos
 		else {
+			int dateOccurrences1 = countOccurrences(category.pattern.text, "* slash * slash *");
+			int dateOccurrences2 = countOccurrences(category.pattern.text, "*slash*slash*");
+			int dateCount = dateOccurrences1 > dateOccurrences2 ? dateOccurrences1 : dateOccurrences2;
+			ParameterReferenceToken dateParameterRef = GeneratorFactory.eINSTANCE.createParameterReferenceToken();
+			Parameter dateParameter = GeneratorFactory.eINSTANCE.createParameter();
+			
+//			literal.setText(tokens.get(0));
+//			phrase.getTokens().add(literal);
+//			tokens.remove(0);
+
 			for (String token : tokens) {
-				// TODO: Caso en que haya horas en el fragmento y otros elementos o no (!!)
+				// Caso en que haya horas en el fragmento y otros elementos o no
 				if (token.contains("* colon *") || token.contains("*colon*")) {
-//					String[] innerTokens1 = category.pattern.text.split("\\* slash \\* slash \\*");
-//					String[] innerTokens2 = category.pattern.text.split("\\*slash\\*slash\\*");
-//					String[] innerTokens = (innerTokens1.length == 0 || 
-//									  	   (innerTokens1.length > innerTokens2.length && innerTokens2.length != 0)) ? 
-//									  			   innerTokens1 : innerTokens2;
-					ParameterReferenceToken parameterRef = GeneratorFactory.eINSTANCE.createParameterReferenceToken();
-					Parameter parameter = GeneratorFactory.eINSTANCE.createParameter();
+					String[] innerTokens1 = token.split("\\* colon \\*");
+					String[] innerTokens2 = token.split("\\*colon\\*");
+
+					List<String> innerTokens; 
+					if (innerTokens1.length > innerTokens2.length && innerTokens2.length != 0)
+						innerTokens = List.of(innerTokens1);
 					
-					parameter.setDefaultEntity(DefaultEntity.TIME);
-					parameterRef.setParameter(parameter);
-					phrase.getTokens().add(parameterRef);
+					else if (innerTokens1.length == innerTokens2.length && innerTokens2.length == 1)
+						innerTokens = List.of(innerTokens1[0].length() < innerTokens2[0].length() ? innerTokens1 : innerTokens2);
+					
+					else
+						innerTokens = List.of(innerTokens2);
+					
+					// Caso en que el fragmento únicamente contenga hora
+					if (innerTokens.size() == 0) {
+						ParameterReferenceToken innerParameterRef = GeneratorFactory.eINSTANCE.createParameterReferenceToken();
+						Parameter innerParameter = GeneratorFactory.eINSTANCE.createParameter();
+						
+						innerParameter.setDefaultEntity(DefaultEntity.TIME);
+						innerParameterRef.setParameter(innerParameter);
+						phrase.getTokens().add(innerParameterRef);
+					}
+					
+					// Caso en que el fragmento contenga más información además de la hora
+					else {
+						int timeOccurrences1 = countOccurrences(category.pattern.text, "* colon *");
+						int timeOccurrences2 = countOccurrences(category.pattern.text, "*colon*");
+						int timeCount = timeOccurrences1 > timeOccurrences2 ? timeOccurrences1 : timeOccurrences2;
+						
+						for (String innerToken : innerTokens) {
+							ParameterReferenceToken hourParameterRef = GeneratorFactory.eINSTANCE.createParameterReferenceToken();
+							Parameter hourParameter = GeneratorFactory.eINSTANCE.createParameter();
+							
+							// Caso en que haya otros parámetros en el fragmento
+							if (innerToken.contains("*")) {
+								String[] innerTokensStar = innerToken.split("\\*");
+								for (String innerToken2 : innerTokensStar) {
+									Literal innerLiteral = GeneratorFactory.eINSTANCE.createLiteral();
+									ParameterReferenceToken innerParameterRef = GeneratorFactory.eINSTANCE.createParameterReferenceToken();
+									Parameter innerParameter = GeneratorFactory.eINSTANCE.createParameter();
+									
+									// Guardado de texto previo al parametro
+									innerLiteral.setText(innerToken2);
+									phrase.getTokens().add(innerLiteral);
+
+									// Guardado del parámetro
+									innerParameter.setDefaultEntity(DefaultEntity.TEXT);
+									innerParameterRef.setParameter(innerParameter);
+									phrase.getTokens().add(innerParameterRef);
+								}
+							}
+							
+							// Caso en que el fragmento sólo contenga texto
+							else {
+								Literal innerLiteral = GeneratorFactory.eINSTANCE.createLiteral();
+								
+								// Guardado de texto previo al parametro
+								innerLiteral.setText(innerToken);
+								phrase.getTokens().add(innerLiteral);
+							}
+							
+							// Control de adición de parámetros de tipo hora
+							if (timeCount > 0) {
+								hourParameter.setDefaultEntity(DefaultEntity.TIME);
+								hourParameterRef.setParameter(hourParameter);
+								phrase.getTokens().add(hourParameterRef);
+								timeCount -= 1;
+							}
+						}
+					}
 				}
 				
 				// Caso en que haya otros parámetros en el fragmento
-				if (token.contains("*")) {
-					// Sets contenidos en todo el template
-					List<Set> sets = getAllTemplateSets(category.template);
-				
+				else if (token.contains("*")) {				
 					String[] innerTokens = category.pattern.text.split("\\*");
 					for (String innerToken : innerTokens) {
-						Literal literal = GeneratorFactory.eINSTANCE.createLiteral();
+						Literal innerLiteral = GeneratorFactory.eINSTANCE.createLiteral();
 						ParameterReferenceToken parameterRef = GeneratorFactory.eINSTANCE.createParameterReferenceToken();
 						Parameter parameter = GeneratorFactory.eINSTANCE.createParameter();
 						
 						// Guardado de texto previo al parametro
-						literal.setText(token);
-						phrase.getTokens().add(literal);
+						innerLiteral.setText(innerToken);
+						phrase.getTokens().add(innerLiteral);
 
 						// Guardado del parámetro
 						parameter.setDefaultEntity(DefaultEntity.TEXT);
 						parameterRef.setParameter(parameter);
 						phrase.getTokens().add(parameterRef);
 					}
-
-					languageInput.getInputs().add(phrase);
-					intent.getInputs().add(languageInput);
 				}
 				
-				// Caso en que contenga sets en el pattern
-				if (category.pattern.sets != null)
-					intentAddSets(category.pattern.sets, intent, mapFiles, phrase);
-				
-				////////////////////////
-				// Caso en que el fragmento no contenga otros argumentos
+				// Caso en que el fragmento sólo contenga texto
 				else {
+					Literal innerLiteral = GeneratorFactory.eINSTANCE.createLiteral();
+					
 					// Guardado de texto previo al parametro
-					literal.setText(token);
-					phrase.getTokens().add(literal);
+					innerLiteral.setText(token);
+					phrase.getTokens().add(innerLiteral);
 				}
 				
-				// Si hay sets disponibles, se asocia el nombre del parametro al set que haya
-				// disponible
-				if (!sets.isEmpty()) {
-					parameter.setName(sets.get(0).name);
-					sets.remove(0);
+				// Control de adición de parámetros de tipo fecha
+				if (dateCount > 0) {
+					dateParameter.setDefaultEntity(DefaultEntity.DATE);
+					dateParameterRef.setParameter(dateParameter);
+					phrase.getTokens().add(dateParameterRef);
+					dateCount -= 1;
 				}
-				
-				parameter.setDefaultEntity(DefaultEntity.DATE);
-				parameterRef.setParameter(parameter);
-				phrase.getTokens().add(parameterRef);
 			}
 			
+			// Caso en que contenga sets en el pattern
+			if (category.pattern.sets != null)
+				intentAddSets(category.pattern.sets, intent, mapFiles, phrase);
 		}
 		
-		
-		// Si el template contiene sets
-		// TODO: Completar con sets que haya en condicionales. Hacer una función que
-		// extraiga los sets que hay
-		// en el think y los junte con los que hay en los condition mediante una
-		// intersección
-		if (category.template.think.sets != null) {
-			List<Set> sets = new ArrayList<Set>(category.template.think.sets);
-
-			
-
-			// Caso en que contenga sets en el pattern
-			// TODO: Revisar
-			if (category.pattern.sets != null) {
-				for (SetAttr set : category.pattern.sets) {
-					ParameterReferenceToken parameterRef = GeneratorFactory.eINSTANCE.createParameterReferenceToken();
-					Parameter parameter = GeneratorFactory.eINSTANCE.createParameter();
-					Entity entity = GeneratorFactory.eINSTANCE.createEntity();
-
-					if (mapFiles != null) {
-						for (MapFile mapFile : mapFiles) {
-							if (mapFile.name.equals(set.name)) {
-								LanguageInput entityLanguageInput = GeneratorFactory.eINSTANCE.createLanguageInput();
-								
-								for (String key : mapFile.content.keySet()) {
-									SimpleInput attrVal = GeneratorFactory.eINSTANCE.createSimpleInput();
-
-									attrVal.setName(key);
-									attrVal.getValues().addAll(mapFile.content.get(key));
-									entityLanguageInput.getInputs().add(attrVal);
-								}
-
-								entity.getInputs().add(entityLanguageInput);
-							}
-						}
-					}
-
-					parameter.setEntity(entity);
-					entity.setName(set.name);
-					parameter.setName(set.name);
-					parameter.setDefaultEntity(DefaultEntity.TEXT);
-					parameterRef.setParameter(parameter);
-					phrase.getTokens().add(parameterRef);
-				}
-			}
-
-			languageInput.getInputs().add(phrase);
-			intent.getInputs().add(languageInput);
-		}
-
-		// Si no hay sets en el template, se guarda el pattern como texto
-		else {
-//			Literal literal = GeneratorFactory.eINSTANCE.createLiteral();
-//			
-//			literal.setText(category.pattern.text);
-//			phrase.getTokens().add(literal);
-//			languageInput.getInputs().add(phrase);
-//			intent.getInputs().add(languageInput);
-			String[] tokens = category.pattern.text.split("\\*");
-			for (String token : tokens) {
-				Literal literal = GeneratorFactory.eINSTANCE.createLiteral();
-				ParameterReferenceToken parameterRef = GeneratorFactory.eINSTANCE.createParameterReferenceToken();
-				Parameter parameter = GeneratorFactory.eINSTANCE.createParameter();
-
-				// Guardado de texto previo al parametro
-				literal.setText(token);
-				phrase.getTokens().add(literal);
-
-				parameter.setDefaultEntity(DefaultEntity.TEXT);
-				parameterRef.setParameter(parameter);
-				phrase.getTokens().add(parameterRef);
-			}
-
-			// Caso en que contenga sets en el pattern
-			if (category.pattern.sets != null) {
-				for (SetAttr set : category.pattern.sets) {
-					ParameterReferenceToken parameterRef = GeneratorFactory.eINSTANCE.createParameterReferenceToken();
-					Parameter parameter = GeneratorFactory.eINSTANCE.createParameter();
-					Entity entity = GeneratorFactory.eINSTANCE.createEntity();
-
-					if (mapFiles != null) {
-						for (MapFile mapFile : mapFiles) {
-							if (mapFile.name.equals(set.name)) {
-								LanguageInput entityLanguageInput = GeneratorFactory.eINSTANCE.createLanguageInput();
-								
-								for (String key : mapFile.content.keySet()) {
-									SimpleInput attrVal = GeneratorFactory.eINSTANCE.createSimpleInput();
-
-									attrVal.setName(key);
-									attrVal.getValues().addAll(mapFile.content.get(key));
-									entityLanguageInput.getInputs().add(attrVal);
-								}
-
-								entity.getInputs().add(entityLanguageInput);
-							}
-						}
-					}
-
-					parameter.setEntity(entity);
-					entity.setName(set.name);
-					parameter.setName(set.name);
-					parameter.setDefaultEntity(DefaultEntity.TEXT);
-					parameterRef.setParameter(parameter);
-					phrase.getTokens().add(parameterRef);
-				}
-			}
-
-			languageInput.getInputs().add(phrase);
-			intent.getInputs().add(languageInput);
-		}
+		languageInput.getInputs().add(phrase);
+		intent.getInputs().add(languageInput);
 	}
 
 	// Función para gestionar los intents cuya entrada contenga horas en el formato HH:MM
@@ -244,118 +204,79 @@ public class AgentIntentsGetter {
 	public static void addCategoryWithHour(Category category, Intent intent, List<MapFile> mapFiles) {
 		IntentLanguageInputs languageInput = GeneratorFactory.eINSTANCE.createIntentLanguageInputs();
 		TrainingPhrase phrase = GeneratorFactory.eINSTANCE.createTrainingPhrase();
+		String[] tokens1 = category.pattern.text.split("\\* colon \\*");
+		String[] tokens2 = category.pattern.text.split("\\*colon\\*");
 
-		// Si el template contiene sets
-		if (category.template.think.sets != null) {
-			List<Set> sets = new ArrayList<Set>(category.template.think.sets);
-
-			String[] tokens = category.pattern.text.split("\\* colon \\*");
-			for (String token : tokens) {
-				Literal literal = GeneratorFactory.eINSTANCE.createLiteral();
-
-				// Guardado de texto previo al parametro
-				literal.setText(token);
-				phrase.getTokens().add(literal);
-
-				// Guardado del parametro si el formato es correcto
-				if (!sets.isEmpty()) {
-					// Caso en que no se guarden los parametros directamente
-					if (sets.get(0).srais.isEmpty()) {
-						ParameterReferenceToken parameterRef = GeneratorFactory.eINSTANCE
-								.createParameterReferenceToken();
-						Parameter parameter = GeneratorFactory.eINSTANCE.createParameter();
-
-						// Caso en que además de guardar horas guarde otros parámetros
-						// TODO: Probar
-						if (category.pattern.text.contains("*")) {
-							String[] innerTokens = category.pattern.text.split("\\*");
-							for (String innerToken : innerTokens) {
-								Literal innerLiteral = GeneratorFactory.eINSTANCE.createLiteral();
-								ParameterReferenceToken innerParameterRef = GeneratorFactory.eINSTANCE
-										.createParameterReferenceToken();
-								Parameter innerParameter = GeneratorFactory.eINSTANCE.createParameter();
-
-								// Guardado de texto previo al parametro
-								innerLiteral.setText(innerToken);
-								parameter.setDefaultEntity(DefaultEntity.TEXT);
-								phrase.getTokens().add(innerLiteral);
-
-//							parameter.setName(sets.get(0).name);
-								innerParameterRef.setParameter(innerParameter);
-								phrase.getTokens().add(innerParameterRef);
-							}
-						}
-
-						parameter.setName(sets.get(0).name);
-						parameter.setDefaultEntity(DefaultEntity.TIME);
-						sets.remove(0);
-						parameterRef.setParameter(parameter);
-						phrase.getTokens().add(parameterRef);
-					}
-				}
-			}
-
-			languageInput.getInputs().add(phrase);
-			intent.getInputs().add(languageInput);
+		List<String> tokens; 
+		if (tokens1.length > tokens2.length && tokens2.length != 0 || tokens1.length == 0)
+			tokens = List.of(tokens1);
+		
+		else if (tokens1.length == tokens2.length && tokens2.length == 1)
+			tokens = List.of(tokens1[0].length() < tokens2[0].length() ? tokens1 : tokens2);
+		
+		else
+			tokens = List.of(tokens2);
+		
+		// Caso en que el fragmento únicamente contenga hora
+		if (tokens.size() == 0) {
+			ParameterReferenceToken innerParameterRef = GeneratorFactory.eINSTANCE.createParameterReferenceToken();
+			Parameter innerParameter = GeneratorFactory.eINSTANCE.createParameter();
+			
+			innerParameter.setDefaultEntity(DefaultEntity.TIME);
+			innerParameterRef.setParameter(innerParameter);
+			phrase.getTokens().add(innerParameterRef);
 		}
-
-		// Caso en que el template no contiene sets
+		
+		// Caso en que el fragmento contenga más información además de la hora
 		else {
-			String[] tokens = category.pattern.text.split("\\*");
+			int timeOccurrences1 = countOccurrences(category.pattern.text, "* colon *");
+			int timeOccurrences2 = countOccurrences(category.pattern.text, "*colon*");
+			int timeCount = timeOccurrences1 > timeOccurrences2 ? timeOccurrences1 : timeOccurrences2;
+			
 			for (String token : tokens) {
-				Literal literal = GeneratorFactory.eINSTANCE.createLiteral();
-				ParameterReferenceToken parameterRef = GeneratorFactory.eINSTANCE
-						.createParameterReferenceToken();
-				Parameter parameter = GeneratorFactory.eINSTANCE.createParameter();
+				ParameterReferenceToken hourParameterRef = GeneratorFactory.eINSTANCE.createParameterReferenceToken();
+				Parameter hourParameter = GeneratorFactory.eINSTANCE.createParameter();
+				
+				// Caso en que haya otros parámetros en el fragmento
+				if (token.contains("*")) {
+					String[] innerTokensStar = token.split("\\*");
+					for (String innerToken2 : innerTokensStar) {
+						Literal innerLiteral = GeneratorFactory.eINSTANCE.createLiteral();
+						ParameterReferenceToken innerParameterRef = GeneratorFactory.eINSTANCE.createParameterReferenceToken();
+						Parameter innerParameter = GeneratorFactory.eINSTANCE.createParameter();
+						
+						// Guardado de texto previo al parametro
+						innerLiteral.setText(innerToken2);
+						phrase.getTokens().add(innerLiteral);
 
-				// Guardado de texto previo al parametro
-				literal.setText(token);
-				phrase.getTokens().add(literal);
-
-				parameter.setDefaultEntity(DefaultEntity.TEXT);
-				parameterRef.setParameter(parameter);
-				phrase.getTokens().add(parameterRef);
-			}
-
-			// Caso en que contenga sets en el pattern
-			if (category.pattern.sets != null) {
-				for (SetAttr set : category.pattern.sets) {
-					ParameterReferenceToken parameterRef = GeneratorFactory.eINSTANCE
-							.createParameterReferenceToken();
-					Parameter parameter = GeneratorFactory.eINSTANCE.createParameter();
-					Entity entity = GeneratorFactory.eINSTANCE.createEntity();
-
-					if (mapFiles != null) {
-						for (MapFile mapFile : mapFiles) {
-							if (mapFile.name.equals(set.name)) {
-								LanguageInput entityLanguageInput = GeneratorFactory.eINSTANCE
-										.createLanguageInput();
-
-								for (String key : mapFile.content.keySet()) {
-									SimpleInput attrVal = GeneratorFactory.eINSTANCE.createSimpleInput();
-
-									attrVal.setName(key);
-									attrVal.getValues().addAll(mapFile.content.get(key));
-									entityLanguageInput.getInputs().add(attrVal);
-								}
-
-								entity.getInputs().add(entityLanguageInput);
-							}
-						}
+						// Guardado del parámetro
+						innerParameter.setDefaultEntity(DefaultEntity.TEXT);
+						innerParameterRef.setParameter(innerParameter);
+						phrase.getTokens().add(innerParameterRef);
 					}
-
-					parameter.setEntity(entity);
-					entity.setName(set.name);
-					parameter.setName(set.name);
-					parameter.setDefaultEntity(DefaultEntity.TEXT);
-					parameterRef.setParameter(parameter);
-					phrase.getTokens().add(parameterRef);
+				}
+				
+				// Caso en que el fragmento sólo contenga texto
+				else {
+					Literal innerLiteral = GeneratorFactory.eINSTANCE.createLiteral();
+					
+					// Guardado de texto previo al parametro
+					innerLiteral.setText(token);
+					phrase.getTokens().add(innerLiteral);
+				}
+				
+				// Control de adición de parámetros de tipo hora
+				if (timeCount > 0) {
+					hourParameter.setDefaultEntity(DefaultEntity.TIME);
+					hourParameterRef.setParameter(hourParameter);
+					phrase.getTokens().add(hourParameterRef);
+					timeCount -= 1;
 				}
 			}
-
-			languageInput.getInputs().add(phrase);
-			intent.getInputs().add(languageInput);
 		}
+		
+		languageInput.getInputs().add(phrase);
+		intent.getInputs().add(languageInput);
 	}
 
 	// Función para gestionar los intents básicos, es decir, aquellos que están formados por texto y parámetros o sets
@@ -480,5 +401,23 @@ public class AgentIntentsGetter {
 					ret.addAll(li.think.sets);
 			
 		return ret;
+	}
+	
+	// Cuenta el numero de apariciones de un substring en un string
+	// Credit: https://stackoverflow.com/questions/767759/occurrences-of-substring-in-a-string
+	public static int countOccurrences(String source, String substring) {
+		int lastIndex = 0;
+		int count = 0;
+
+		while(lastIndex != -1){
+		    lastIndex = source.indexOf(substring, lastIndex);
+
+		    if(lastIndex != -1) {
+		        count ++;
+		        lastIndex += substring.length();
+		    }
+		}
+		
+		return count;
 	}
 }
