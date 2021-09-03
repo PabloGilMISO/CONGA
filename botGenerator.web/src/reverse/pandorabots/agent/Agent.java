@@ -112,23 +112,11 @@ public class Agent {
 
 	public Bot getBot() {
 		Bot bot = GeneratorFactory.eINSTANCE.createBot();
-		List<String> languages = getLanguages();
 
 		bot.setName(name);
 
 		// GUARDADO DE ENTITIES
-		// Si se han guardado idiomas de la manera esperada
-		if (!languages.isEmpty())
-			for (String language : languages)
-				bot.getEntities().addAll(getEntities(language));
-
-		// En caso de no detectar los idiomas del bot se usa inglés
-		else
-			bot.getEntities().addAll(getEntities("en"));
-
-		// GUARDADO DE LENGUAJES
-		for (String language : languages)
-			bot.getLanguages().add(castLanguage(language));
+		bot.getEntities().addAll(getEntities());
 
 		// GUARDADO DE INTENTS BÁSICOS
 		bot.getIntents().addAll(getIntents());
@@ -156,22 +144,9 @@ public class Agent {
 		return bot;
 	}
 
-	// Devuelve la lista de lenguajes en que está escrito el bot
-	public List<String> getLanguages() {
-		List<String> ret = new ArrayList<String>();
-
-		for (Category category : categories)
-			if (category.think != null)
-				for (Set set : category.think.sets)
-					if (set.name.contains("lang") && !ret.contains(set.text))
-						ret.add(set.text);
-
-		return ret;
-	}
-
 	// Recoge las entities siempre y cuando se utilicen los maps de Pandorabots como
 	// entities
-	public List<generator.Entity> getEntities(String language) {
+	public List<generator.Entity> getEntities() {
 		List<generator.Entity> entities = new ArrayList<generator.Entity>();
 
 		for (MapFile map : mapFiles) {
@@ -179,7 +154,7 @@ public class Agent {
 			LanguageInput languageInput = GeneratorFactory.eINSTANCE.createLanguageInput();
 
 			entity.setName(map.name);
-			languageInput.setLanguage(castLanguage(language));
+			languageInput.setLanguage(Language.ENGLISH);
 
 			for (String key : map.content.keySet()) {
 				SimpleInput input = GeneratorFactory.eINSTANCE.createSimpleInput();

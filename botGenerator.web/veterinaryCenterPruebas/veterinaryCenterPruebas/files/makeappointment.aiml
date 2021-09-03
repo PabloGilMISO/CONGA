@@ -8,6 +8,15 @@
     </template>
   </category>
   <category>
+    <pattern>SAVETOWPARAMS * *</pattern>
+    <template>
+      <think>
+        <set name="param1"><star index="1"/></set>
+        <set name="param2"><star index="2"/></set>
+      </think>
+    </template>
+  </category>
+  <category>
     <pattern>SAVEPET <set>pet</set></pattern>
     <template>
       <think><set name="pet"><map name="pet"><star/></map></set></think>
@@ -58,5 +67,17 @@
     <pattern>* colon * y luego *</pattern>
     <template>
     </template>
+  </category>
+  <category>
+    <pattern>Flow de nivel 1</pattern>
+    <template>Template con solo texto</template>
+  </category>
+  <category>
+    <pattern>Flow de nivel 1 con un parametro *</pattern>
+    <template>SAVEPETNAME <star/></template>
+  </category>
+  <category>
+    <pattern>Flow de nivel 1 con dos parametros * *</pattern>
+    <template>SAVETOWPARAMS <star index="1"/> <star index="2"/></template>
   </category>
 </aiml>

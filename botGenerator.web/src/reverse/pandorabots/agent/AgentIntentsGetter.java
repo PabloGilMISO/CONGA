@@ -13,6 +13,8 @@ import generator.Literal;
 import generator.Parameter;
 import generator.ParameterReferenceToken;
 import generator.SimpleInput;
+import generator.TextInput;
+import generator.TextLanguageInput;
 import generator.TrainingPhrase;
 
 public class AgentIntentsGetter {
@@ -30,6 +32,7 @@ public class AgentIntentsGetter {
 				parameter.setName(set.name);
 				parameterRef.setParameter(parameter);
 				phrase.getTokens().add(parameterRef);
+				intent.getParameters().add(parameter);
 			}
 
 			languageInput.getInputs().add(phrase);
@@ -64,6 +67,7 @@ public class AgentIntentsGetter {
 			parameter.setDefaultEntity(DefaultEntity.DATE);
 			parameterRef.setParameter(parameter);
 			phrase.getTokens().add(parameterRef);
+			intent.getParameters().add(parameter);
 		}
 		
 		// Caso en que el intent está formado por fecha y otros elementos
@@ -102,6 +106,7 @@ public class AgentIntentsGetter {
 						innerParameter.setDefaultEntity(DefaultEntity.TIME);
 						innerParameterRef.setParameter(innerParameter);
 						phrase.getTokens().add(innerParameterRef);
+						intent.getParameters().add(innerParameter);
 					}
 					
 					// Caso en que el fragmento contenga más información además de la hora
@@ -130,6 +135,7 @@ public class AgentIntentsGetter {
 									innerParameter.setDefaultEntity(DefaultEntity.TEXT);
 									innerParameterRef.setParameter(innerParameter);
 									phrase.getTokens().add(innerParameterRef);
+									intent.getParameters().add(innerParameter);
 								}
 							}
 							
@@ -147,6 +153,7 @@ public class AgentIntentsGetter {
 								hourParameter.setDefaultEntity(DefaultEntity.TIME);
 								hourParameterRef.setParameter(hourParameter);
 								phrase.getTokens().add(hourParameterRef);
+								intent.getParameters().add(hourParameter);
 								timeCount -= 1;
 							}
 						}
@@ -169,6 +176,7 @@ public class AgentIntentsGetter {
 						parameter.setDefaultEntity(DefaultEntity.TEXT);
 						parameterRef.setParameter(parameter);
 						phrase.getTokens().add(parameterRef);
+						intent.getParameters().add(parameter);
 					}
 				}
 				
@@ -186,6 +194,7 @@ public class AgentIntentsGetter {
 					dateParameter.setDefaultEntity(DefaultEntity.DATE);
 					dateParameterRef.setParameter(dateParameter);
 					phrase.getTokens().add(dateParameterRef);
+					intent.getParameters().add(dateParameter);
 					dateCount -= 1;
 				}
 			}
@@ -225,6 +234,7 @@ public class AgentIntentsGetter {
 			innerParameter.setDefaultEntity(DefaultEntity.TIME);
 			innerParameterRef.setParameter(innerParameter);
 			phrase.getTokens().add(innerParameterRef);
+			intent.getParameters().add(innerParameter);
 		}
 		
 		// Caso en que el fragmento contenga más información además de la hora
@@ -253,6 +263,7 @@ public class AgentIntentsGetter {
 						innerParameter.setDefaultEntity(DefaultEntity.TEXT);
 						innerParameterRef.setParameter(innerParameter);
 						phrase.getTokens().add(innerParameterRef);
+						intent.getParameters().add(innerParameter);
 					}
 				}
 				
@@ -270,6 +281,7 @@ public class AgentIntentsGetter {
 					hourParameter.setDefaultEntity(DefaultEntity.TIME);
 					hourParameterRef.setParameter(hourParameter);
 					phrase.getTokens().add(hourParameterRef);
+					intent.getParameters().add(hourParameter);
 					timeCount -= 1;
 				}
 			}
@@ -340,6 +352,7 @@ public class AgentIntentsGetter {
 				parameter.setDefaultEntity(DefaultEntity.TEXT);
 				parameterRef.setParameter(parameter);
 				phrase.getTokens().add(parameterRef);
+				intent.getParameters().add(parameter);
 				
 				tokenIndex += 1;
 			}
@@ -354,6 +367,98 @@ public class AgentIntentsGetter {
 	}
 	
 	//// Funciones auxiliares para realizar tareas concretas
+	// Devuelve todas las posibles respuestas de una categoría
+	// TODO: Una vez esté terminada la función, la idea es que se cree un flujo con intent el que se esté
+	// mirando en ese momento, y actions las extraidas con esta función
+	public static List<List<TextLanguageInput>> getAllIntentDirectResponses(Category category, List<Intent> intents) {
+		List<List<TextLanguageInput>> ret = new ArrayList<List<TextLanguageInput>>();
+	
+		// Caso en que el template tenga texto
+		if (category.template.text != null) {
+			List<TextLanguageInput> inputsPhrase = new ArrayList<TextLanguageInput>();
+			TextLanguageInput languageInput = GeneratorFactory.eINSTANCE.createTextLanguageInput();
+			TextInput textInput = GeneratorFactory.eINSTANCE.createTextInput();
+			Literal literal = GeneratorFactory.eINSTANCE.createLiteral();
+			
+			literal.setText(category.template.text);
+			textInput.getTokens().add(literal);
+			languageInput.getInputs().add(textInput);
+			inputsPhrase.add(languageInput);
+			ret.add(inputsPhrase);
+		}
+		
+		// Caso en que el template tenga srais
+		if (category.template.srais != null) {
+			List<TextLanguageInput> inputsPhrase = new ArrayList<TextLanguageInput>();
+			TextLanguageInput languageInput = GeneratorFactory.eINSTANCE.createTextLanguageInput();
+			TextInput textInput = GeneratorFactory.eINSTANCE.createTextInput();
+
+			for (Srai srai: category.template.srais) {
+				Literal literal = GeneratorFactory.eINSTANCE.createLiteral();
+				
+				literal.setText(srai.text);
+				textInput.getTokens().add(literal);
+
+				// Si el srai tiene referencias a argumentos del pattern, 
+				// se busca qué parámetros son en el intent que sea y se añaden
+				if (srai.stars != null) {
+					for (Intent intent: intents) {
+						var firstToken = intent.getInputs().get(0).getInputs().get(0);
+						if (firstToken instanceof Literal && ((Literal) firstToken).getText().equals(srai.text)) {
+							List<Parameter> parameters = new ArrayList<Parameter>();
+							
+							// Se recogen los parámetros del intent en cuestión
+							for (var token: intent.getInputs().get(0).getInputs()) {
+								if (token instanceof ParameterReferenceToken) {
+									parameters.add(((ParameterReferenceToken) token).getParameter());
+								}
+							}
+							
+							// Caso en que sólo haya un parámetro
+							if (srai.stars.size() == 1 && !parameters.isEmpty()) {
+								ParameterReferenceToken parameterRef = GeneratorFactory.eINSTANCE.createParameterReferenceToken();
+								
+								parameterRef.setParameter(parameters.get(0));
+								textInput.getTokens().add(parameterRef);
+								break;
+							}
+
+							// Caso en que haya más de un parámetro (fechas y horas no soportadas)
+							else {
+								// Se hace el matching de los parámetros con sus índices 
+								// o en caso de error se añade un parámetro genérico
+								for (Star star: srai.stars) {
+									ParameterReferenceToken parameterRef = GeneratorFactory.eINSTANCE.createParameterReferenceToken();
+									
+									try {
+										parameterRef.setParameter(parameters.get(star.index - 1));
+									} catch(Exception e) {
+										Parameter parameter = GeneratorFactory.eINSTANCE.createParameter();
+
+										parameter.setDefaultEntity(DefaultEntity.TEXT);
+										parameterRef.setParameter(parameter);
+										textInput.getTokens().add(parameterRef);
+									}
+									
+									textInput.getTokens().add(parameterRef);
+									break;
+								}
+							}
+						}
+					}
+				}
+			}
+			
+			languageInput.getInputs().add(textInput);
+			inputsPhrase.add(languageInput);
+			ret.add(inputsPhrase);
+		}
+		
+		// TODO: Caso en que el template tenga conditions (!!)
+		
+		return ret;
+	}
+	
 	// Dada una lista no-vacía de sets del patrón de una categoría, añade dichos sets a la frase en forma de parámetros
 	public static void intentAddSets(List<SetAttr> sets, Intent intent, List<MapFile> mapFiles, TrainingPhrase phrase) {
 		for (SetAttr set : sets) {
@@ -385,6 +490,7 @@ public class AgentIntentsGetter {
 			parameter.setDefaultEntity(DefaultEntity.TEXT);
 			parameterRef.setParameter(parameter);
 			phrase.getTokens().add(parameterRef);
+			intent.getParameters().add(parameter);
 		}
 	}
 	
@@ -403,6 +509,7 @@ public class AgentIntentsGetter {
 		return ret;
 	}
 	
+	//// Funciones necesarias pero ajenas a la tarea que se está tratando
 	// Cuenta el numero de apariciones de un substring en un string
 	// Credit: https://stackoverflow.com/questions/767759/occurrences-of-substring-in-a-string
 	public static int countOccurrences(String source, String substring) {
