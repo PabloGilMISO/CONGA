@@ -1,6 +1,55 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <aiml>
-  <!-- Entity saving -->
+  <category>
+    <pattern>I need an appointment for my * * at * on *</pattern>
+    <template>
+      <think>
+        <srai>
+          SAVEPET <star index="1"/>
+        </srai>
+        <srai>
+          SAVEPETNAME <star index="2"/>
+        </srai>
+        <srai>
+          SAVETIME <star index="3"/>
+        </srai>
+        <srai>
+          SAVEDATE <star index="4"/>
+        </srai>
+      </think>
+      <think>
+        <set name="pandoralang">en</set>
+      </think>
+      <srai>MAKEAPPOINTMENT</srai>
+    </template>
+  </category>
+  <category>
+    <pattern>MAKEAPPOINTMENT</pattern>
+    <template>
+      <condition name="pandoralang">
+        <li value="en">
+          <srai>MAKEAPPOINTMENTENMAKEAPPOINTMENTEASYRESP</srai>
+          <srai>MAKEAPPOINTMENTHTTPREQUEST</srai>
+          <srai>MAKEAPPOINTMENTHTTPRESPONSE</srai>
+        </li>
+      </condition>
+    </template>
+  </category>
+  <category>
+    <pattern>MAKEAPPOINTMENTENMAKEAPPOINTMENTEASYRESP</pattern>
+    <template>Ok, appointment done </template>
+  </category>
+  <category>
+    <pattern>I need an appointment for *</pattern>
+    <template>
+      <think>
+        <srai>
+          SAVEPETNAME <star index="1"/>
+        </srai>
+      </think>
+      Okay, what day do you want an appointment?
+    </template>
+  </category>
   <category>
     <pattern>SAVEPETNAME *</pattern>
     <template>

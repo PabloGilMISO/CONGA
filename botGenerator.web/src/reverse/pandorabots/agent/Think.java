@@ -32,10 +32,18 @@ public class Think {
 		this.srais = srais;
 	}
 
-	public Think(List<Set> sets) {
-		this.sets = sets;
-	}
+//	public Think(List<Set> sets) {
+//		this.sets = sets;
+//	}
 
+	public Think(List<?> things) {
+		System.out.println(things);
+		if (things.get(0) instanceof Set)
+			this.sets = (List<Set>) things;
+		
+		else
+			this.srais = (List<Srai>) things;
+	}
 //	public Think(List<Srai> srais) {
 //		this.srais = srais;
 //	}

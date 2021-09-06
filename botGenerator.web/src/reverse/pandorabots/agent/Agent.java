@@ -122,7 +122,7 @@ public class Agent {
 		bot.getIntents().addAll(getIntents());
 		
 		// GUARDADO DE FLUJOS EN INTENTS
-//		bot.getFlows().addAll(getFlows(null));
+		bot.getFlows().addAll(getFlows(bot.getIntents()));
 		
 //		saveAction(request, bot);
 //		saveAction(response, bot);
@@ -183,8 +183,6 @@ public class Agent {
 
 			// Caso en que contenga texto y pueda o no contener sets
 			else {
-				// TODO: Gestionar que pueda tener fechas y horas simultáneamente etc
-				
 				// Caso en que contenga fechas
 				if (category.pattern.text.contains("* slash * slash *")
 						|| category.pattern.text.contains("*slash*slash*"))
@@ -206,37 +204,11 @@ public class Agent {
 	}
 
 	// Procesa los datos de Agent para extraer los flujos de conversación
-	public List<UserInteraction> getFlows(List<Intent> botIntents) {
+	public List<UserInteraction> getFlows(List<Intent> intents) {
 		List<UserInteraction> ret = new ArrayList<UserInteraction>();
-		List<Intent> intents = botIntents == null ? getIntents() : botIntents;
-
-		for (Category category: categories) {
-			if (category.that != null) {
-				// TODO: El intent del that es el origen, no el target
-				Intent targetIntent = findIntentByThat(intents, category.that);
-				if (targetIntent != null) {
-					UserInteraction flow = GeneratorFactory.eINSTANCE.createUserInteraction();
-					Intent intent = findIntentByPattern(intents, category.pattern.text);
-					BotInteraction target = GeneratorFactory.eINSTANCE.createBotInteraction();
-					Text targetText = GeneratorFactory.eINSTANCE.createText();
-					TextLanguageInput targetLanguage = GeneratorFactory.eINSTANCE.createTextLanguageInput();
-					TextInput targetTextInput = GeneratorFactory.eINSTANCE.createTextInput();
-					Literal targetLiteral = GeneratorFactory.eINSTANCE.createLiteral();
-					
-					if (intent != null)
-						flow.setIntent(intent);
-					
-					targetLiteral.setText(getIntentsText(intents).get(targetIntent));
-					targetTextInput.getTokens().add(targetLiteral);
-					targetLanguage.setLanguage(castLanguage("en"));
-					targetLanguage.getInputs().add(targetTextInput);
-					targetText.getInputs().add(targetLanguage);
-					target.getActions().add(targetText);
-					flow.setTarget(target);
-					flow.setIntent(intent);
-					ret.add(flow);
-				}
-			}
+		
+		for (int i = 0; i < categories.size(); i++) {
+			ret.addAll(AgentIntentsGetter.getLevel1Flows(categories.get(i), intents.get(i), intents));
 		}
 
 		return ret;
