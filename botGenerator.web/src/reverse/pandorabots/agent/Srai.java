@@ -26,20 +26,13 @@ import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlText;
 
-//@XmlAccessorType(XmlAccessType.FIELD)
-
 @JacksonXmlRootElement(localName = "srai")
-//@JsonDeserialize(using = DeSerializer.class)
 public class Srai {
 	@JacksonXmlElementWrapper(useWrapping = false)
 	@JacksonXmlProperty(localName = "star")
 	public List<Star> stars;
-//	@XmlAnyElement(InnerXmlHandler.class)
 	@JacksonXmlText
 	public String text;
-//	@JacksonXmlElementWrapper(localName = "star")
-//	@JsonSetter(nulls=Nulls.AS_EMPTY)
-//	public List<Star> stars;
 	
 	public Srai() {}
 	
@@ -69,11 +62,6 @@ public class Srai {
 		this.stars = stars;
 	}
 
-//	@Override
-//	public String toString() {
-//		return "Srai [text=" + text + "]";
-//	}
-	
 	@Override
 	public String toString() {
 		return "Srai [text=" + text + ", stars=" + stars + "]";

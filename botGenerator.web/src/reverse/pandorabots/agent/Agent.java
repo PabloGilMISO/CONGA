@@ -1,30 +1,26 @@
 package reverse.pandorabots.agent;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeSet;
 
 import generator.Action;
 import generator.Bot;
-import generator.BotInteraction;
-import generator.DefaultEntity;
 import generator.Entity;
 import generator.GeneratorFactory;
+import generator.HTTPRequest;
 import generator.Intent;
-import generator.IntentLanguageInputs;
 import generator.Language;
 import generator.LanguageInput;
 import generator.Literal;
-import generator.Parameter;
 import generator.ParameterReferenceToken;
 import generator.SimpleInput;
 import generator.Text;
-import generator.TextInput;
-import generator.TextLanguageInput;
 import generator.TrainingPhrase;
 import generator.UserInteraction;
-import generator.impl.EntityImpl;
 
 public class Agent {
 	private String name;
@@ -124,6 +120,9 @@ public class Agent {
 		// GUARDADO DE FLUJOS EN INTENTS
 		bot.getFlows().addAll(getFlows(bot.getIntents()));
 		
+		// GUARDADO DE ACTIONS
+		bot.getActions().addAll(getActions(bot.getFlows()));
+		
 //		saveAction(request, bot);
 //		saveAction(response, bot);
 //
@@ -197,7 +196,7 @@ public class Agent {
 				else
 					AgentIntentsGetter.addCategoryBasic(category, intent, mapFiles);
 			}
-			
+
 			intents.add(intent);
 		}
 		return intents;
@@ -213,6 +212,41 @@ public class Agent {
 
 		return ret;
 	}
+	
+	// Extrae las actions de los flujos de conversación creados anteriormente
+	public List<Action> getActions(List<UserInteraction> flows) {
+		List<Action> actions = new ArrayList<Action>();
+		List<Action> ret = new ArrayList<Action>();
+		
+		for (UserInteraction flow: flows)
+			actions.addAll(flow.getTarget().getActions());
+		
+	    java.util.Set<Action> s = new TreeSet<Action>(new Comparator<Action>() {
+	        @Override
+	        public int compare(Action a1, Action a2) {
+	        	// Caso en que sean actions textuales
+	        	if (a1 instanceof Text && a2 instanceof Text &&
+	        		AgentIntentsGetter.equalTextInputs((Text)a1, (Text)a2))
+	        		return 0;
+	        	
+	        	// Caso en que sean actions de tipo HTTP
+	        	else if (a1 instanceof HTTPRequest && a2 instanceof HTTPRequest &&
+		        		AgentIntentsGetter.equalHTTPRequest((HTTPRequest)a1, (HTTPRequest)a2))
+	        		return 0;
+	        	
+	        	else
+	        		return 1;
+	        }
+	    });
+	    
+        s.addAll(actions);
+	    ret.addAll(s);
+		
+		return ret;
+	}
+	
+	//// Funciones anteriores a reincorporación
+	//// TODO: Limpieza de éstas
 
 	// Devuelve el intent cuyo texto coincida con el that
 	public Intent findIntentByThat(List<Intent> intents, String that) {

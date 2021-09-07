@@ -10,6 +10,7 @@ import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlText;
 @JacksonXmlRootElement(localName = "template")
 public class Template {
 //	@JacksonXmlElementWrapper(localName = "srai", useWrapping = false)
+	@JacksonXmlElementWrapper(useWrapping = false)
 	@JacksonXmlProperty(localName = "srai")
 	public List<Srai> srais;
 	@JacksonXmlText

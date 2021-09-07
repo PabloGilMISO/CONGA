@@ -8,11 +8,15 @@ import generator.BotInteraction;
 import generator.DefaultEntity;
 import generator.Entity;
 import generator.GeneratorFactory;
+import generator.HTTPRequest;
 import generator.Intent;
+import generator.IntentInput;
 import generator.IntentLanguageInputs;
+import generator.KeyValue;
 import generator.Language;
 import generator.LanguageInput;
 import generator.Literal;
+import generator.Method;
 import generator.Parameter;
 import generator.ParameterReferenceToken;
 import generator.SimpleInput;
@@ -384,6 +388,10 @@ public class AgentIntentsGetter {
 			targetText.getInputs().add(response);
 			target.getActions().add(targetText);
 		}
+		
+		// Caso en que tenga una llamada de tipo HTTP (callapi)
+		if (category.template.callapi != null)
+			addCallapi(category.template.callapi, target);
 
 		flow.setTarget(target);
 		flow.setIntent(intent);
@@ -392,10 +400,144 @@ public class AgentIntentsGetter {
 		return ret;
 	}
 	
+	// Función para añadir llamadas HTTP
+	public static void addCallapi(Callapi callapi, BotInteraction target) {
+		HTTPRequest httpRequest = GeneratorFactory.eINSTANCE.createHTTPRequest();
+		
+		if (callapi.url != null)
+			httpRequest.setURL(callapi.url);
+		
+		if (callapi.response_code_var != null)
+			httpRequest.setName(callapi.response_code_var);
+		
+		if (callapi.method != null)
+			httpRequest.setMethod(castMethod(callapi.method));
+		
+		// El método por defecto en Pandorabots si no se indica es GET
+		else
+			httpRequest.setMethod(Method.GET);
+		
+		if (callapi.queryParams != null) {
+			for (CallapiQuery param: callapi.queryParams) {
+
+				// Caso en que el parámetro tenga texto
+				if (param.text != null) {
+					KeyValue keyValue = GeneratorFactory.eINSTANCE.createKeyValue();
+					Literal literal = GeneratorFactory.eINSTANCE.createLiteral();
+					
+					literal.setText(param.text);
+
+					keyValue.setKey(param.name + "_text");
+					keyValue.setValue(literal);
+					httpRequest.getData().add(keyValue);
+				}
+				
+				// Caso en que el parámetro tenga llamadas a variables guardadas
+				if (param.gets != null) {
+					for (Get get: param.gets) {
+						KeyValue keyValue = GeneratorFactory.eINSTANCE.createKeyValue();
+						ParameterReferenceToken parameterRef = GeneratorFactory.eINSTANCE.createParameterReferenceToken();
+						Parameter parameter = GeneratorFactory.eINSTANCE.createParameter();
+						
+						parameter.setName(get.name);
+						parameter.setDefaultEntity(DefaultEntity.TEXT);
+						parameterRef.setParameter(parameter);
+						
+						keyValue.setKey(param.name + "_param_" + get.name);
+						keyValue.setValue(parameterRef);
+						httpRequest.getData().add(keyValue);
+					}
+				}
+				
+			}
+		}
+		
+		if (callapi.header != null)
+			httpRequest.setHeader("header", callapi.header.name.text);
+		
+		target.getActions().add(httpRequest);
+	}
+	
 	//// Funciones auxiliares para realizar tareas concretas
+	// Función que comprueba si un TextLanguageInput es igual a otro
+	public static boolean equalTextInputs(Text input1, Text input2) {
+		List<TextLanguageInput> internalInputs1 = input1.getInputs();
+		List<TextLanguageInput> internalInputs2 = input2.getInputs();
+		
+		if (internalInputs1.size() == internalInputs2.size()) {
+			for (int i = 0; i < internalInputs1.size(); i++) {
+				List<?> tokens1 = internalInputs1.get(i).getInputs().get(0).getTokens();
+				List<?> tokens2 = internalInputs2.get(i).getInputs().get(0).getTokens();
+				
+				if (tokens1.size() == tokens2.size()) {
+					for (int j = 0; j < tokens1.size(); j++) {
+						var token1 = tokens1.get(i);
+						var token2 = tokens2.get(i);
+						
+						// Caso en que los tokens sean literales
+						if (token1 instanceof Literal &&
+							token2 instanceof Literal) {
+							if (!((Literal) token1).getText().equals(((Literal) token2).getText()))
+								return false;
+						}
+						
+						// Caso en que los tokens sean parámetros
+						else if (tokens1.get(i) instanceof ParameterReferenceToken && 
+								 tokens2.get(i) instanceof ParameterReferenceToken) {
+							// Comprobación compleja, el sistema puede tener dificultades a la hora de
+							// guardar los nombres de variables, con lo que se hace mejor una
+							// comprobación básica
+//							String parameterName1 = ((ParameterReferenceToken) token1).getParameter().getName();
+//							String parameterName2 = ((ParameterReferenceToken) token2).getParameter().getName();
+//							
+//							if (parameterName1 == null &&
+//								parameterName2 == null)
+//								continue;
+//							
+//							else if (parameterName1.equals(parameterName2))
+//								continue;
+//							
+//							else
+//								return false;
+							continue;
+						}
+						
+						else {
+							return false;
+						}
+					}
+				}
+			}
+			
+			return true;
+		}
+		
+		else
+			return false;
+	}
+	
+	// Función que comprueba si un HTTPRequest es igual a otro
+	// TODO: Mejorar comparación si es conveniente
+	public static boolean equalHTTPRequest(HTTPRequest http1, HTTPRequest http2) {
+		if (http1.getName().equals(http2.getName()))
+			return true;
+		
+		else
+			return false;
+	}
+	
+	// Castea el String con el nombre del método de llamada HTTP a la enumeración definida
+	public static Method castMethod(String methodName) {
+		if (methodName.toUpperCase().equals("POST"))
+			return Method.POST;
+		
+		else if (methodName.toUpperCase().equals("GET"))
+			return Method.GET;
+		
+		else
+			return Method.POST;
+	}
 	// Devuelve todas las posibles respuestas de una categoría
-	// TODO: Una vez esté terminada la función, la idea es que se cree un flujo con intent el que se esté
-	// mirando en ese momento, y actions las extraidas con esta función
 	public static List<TextLanguageInput> getAllIntentDirectResponses(Category category, List<Intent> intents) {
 		List<TextLanguageInput> ret = new ArrayList<TextLanguageInput>();
 	

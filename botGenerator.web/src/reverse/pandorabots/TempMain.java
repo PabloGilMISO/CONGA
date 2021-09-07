@@ -12,7 +12,9 @@ import com.fasterxml.jackson.databind.type.CollectionType;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 
 import generator.Bot;
+import generator.TextLanguageInput;
 import reverse.pandorabots.agent.Agent;
+import reverse.pandorabots.agent.AgentIntentsGetter;
 import reverse.pandorabots.agent.Category;
 import zipUtils.Unzipper;
 

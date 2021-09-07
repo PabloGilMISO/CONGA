@@ -1,5 +1,6 @@
 package reverse.pandorabots.agent;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper;
@@ -21,12 +22,33 @@ public class Think {
 	public Think() {
 	}
 
-	public Think(List<Set> sets, List<Srai> srais, String text) {
-		this.sets = sets;
-		this.srais = srais;
+//	public Think(List<Set> sets, List<Srai> srais, String text) {
+//		this.sets = sets;
+//		this.srais = srais;
+//		this.text = text;
+//	}
+
+
+	public Think(List<?> things, String text) {
+		for (var thing: things) {
+			if (thing instanceof Set) {
+				if (sets == null)
+					sets = new ArrayList<Set>();
+				
+				sets.add((Set) thing);
+			}
+			
+			else {
+				if (srais == null)
+					srais = new ArrayList<Srai>();
+				
+				srais.add((Srai) thing);
+			}
+		}
+		
 		this.text = text;
 	}
-
+	
 	public Think(List<Set> sets, List<Srai> srais) {
 		this.sets = sets;
 		this.srais = srais;
@@ -37,12 +59,21 @@ public class Think {
 //	}
 
 	public Think(List<?> things) {
-		System.out.println(things);
-		if (things.get(0) instanceof Set)
-			this.sets = (List<Set>) things;
-		
-		else
-			this.srais = (List<Srai>) things;
+		for (var thing: things) {
+			if (thing instanceof Set) {
+				if (sets == null)
+					sets = new ArrayList<Set>();
+				
+				sets.add((Set) thing);
+			}
+			
+			else {
+				if (srais == null)
+					srais = new ArrayList<Srai>();
+				
+				srais.add((Srai) thing);
+			}
+		}
 	}
 //	public Think(List<Srai> srais) {
 //		this.srais = srais;
