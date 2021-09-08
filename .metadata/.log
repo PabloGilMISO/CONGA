@@ -920,3 +920,3292 @@ org.eclipse.jface.text.BadLocationException
 	at org.eclipse.equinox.launcher.Main.invokeFramework(Main.java:653)
 	at org.eclipse.equinox.launcher.Main.basicRun(Main.java:590)
 	at org.eclipse.equinox.launcher.Main.run(Main.java:1461)
+!SESSION 2021-09-08 08:18:16.788 -----------------------------------------------
+eclipse.buildId=4.19.0.I20210303-1800
+java.version=15.0.2
+java.vendor=Oracle Corporation
+BootLoader constants: OS=win32, ARCH=x86_64, WS=win32, NL=es_ES
+Framework arguments:  -product org.eclipse.epp.package.modeling.product
+Command-line arguments:  -os win32 -ws win32 -arch x86_64 -product org.eclipse.epp.package.modeling.product
+
+!ENTRY org.eclipse.jface 2 0 2021-09-08 08:23:57.614
+!MESSAGE Keybinding conflicts occurred.  They may interfere with normal accelerator operation.
+!SUBENTRY 1 org.eclipse.jface 2 0 2021-09-08 08:23:57.614
+!MESSAGE A conflict occurred for CTRL+SHIFT+T:
+Binding(CTRL+SHIFT+T,
+	ParameterizedCommand(Command(org.eclipse.jdt.ui.navigate.open.type,Open Type,
+		Open a type in a Java editor,
+		Category(org.eclipse.ui.category.navigate,Navigate,null,true),
+		org.eclipse.ui.internal.WorkbenchHandlerServiceHandler@5fc3b20b,
+		,,true),null),
+	org.eclipse.ui.defaultAcceleratorConfiguration,
+	org.eclipse.ui.contexts.window,,,system)
+Binding(CTRL+SHIFT+T,
+	ParameterizedCommand(Command(org.eclipse.lsp4e.symbolinworkspace,Go to Symbol in Workspace,
+		,
+		Category(org.eclipse.lsp4e.category,Language Servers,null,true),
+		org.eclipse.ui.internal.WorkbenchHandlerServiceHandler@67afba96,
+		,,true),null),
+	org.eclipse.ui.defaultAcceleratorConfiguration,
+	org.eclipse.ui.contexts.window,,,system)
+
+!ENTRY org.eclipse.update.configurator 4 0 2021-09-08 08:24:35.174
+!MESSAGE ConfigurationParser.parse() error:
+!STACK 0
+org.xml.sax.SAXException: NLS missing message: InstalledSiteParser_UnableToCreateURL in: org.eclipse.update.internal.configurator.messages
+java.net.MalformedURLException: no protocol: ../../../../Pablo Gil/.p2/pool/
+	at org.eclipse.pde.internal.core.update.configurator.ConfigurationParser.startElement(ConfigurationParser.java:133)
+	at java.xml/com.sun.org.apache.xerces.internal.parsers.AbstractSAXParser.startElement(AbstractSAXParser.java:518)
+	at java.xml/com.sun.org.apache.xerces.internal.impl.XMLNSDocumentScannerImpl.scanStartElement(XMLNSDocumentScannerImpl.java:374)
+	at java.xml/com.sun.org.apache.xerces.internal.impl.XMLDocumentFragmentScannerImpl$FragmentContentDriver.next(XMLDocumentFragmentScannerImpl.java:2725)
+	at java.xml/com.sun.org.apache.xerces.internal.impl.XMLDocumentScannerImpl.next(XMLDocumentScannerImpl.java:605)
+	at java.xml/com.sun.org.apache.xerces.internal.impl.XMLNSDocumentScannerImpl.next(XMLNSDocumentScannerImpl.java:112)
+	at java.xml/com.sun.org.apache.xerces.internal.impl.XMLDocumentFragmentScannerImpl.scanDocument(XMLDocumentFragmentScannerImpl.java:541)
+	at java.xml/com.sun.org.apache.xerces.internal.parsers.XML11Configuration.parse(XML11Configuration.java:888)
+	at java.xml/com.sun.org.apache.xerces.internal.parsers.XML11Configuration.parse(XML11Configuration.java:824)
+	at java.xml/com.sun.org.apache.xerces.internal.parsers.XMLParser.parse(XMLParser.java:141)
+	at java.xml/com.sun.org.apache.xerces.internal.parsers.AbstractSAXParser.parse(AbstractSAXParser.java:1224)
+	at java.xml/com.sun.org.apache.xerces.internal.jaxp.SAXParserImpl$JAXPSAXParser.parse(SAXParserImpl.java:635)
+	at java.xml/com.sun.org.apache.xerces.internal.jaxp.SAXParserImpl.parse(SAXParserImpl.java:324)
+	at org.eclipse.pde.internal.core.update.configurator.ConfigurationParser.parse(ConfigurationParser.java:88)
+	at org.eclipse.pde.internal.core.update.configurator.PlatformConfiguration.loadConfig(PlatformConfiguration.java:110)
+	at org.eclipse.pde.internal.core.update.configurator.PlatformConfiguration.initialize(PlatformConfiguration.java:85)
+	at org.eclipse.pde.internal.core.update.configurator.PlatformConfiguration.<init>(PlatformConfiguration.java:61)
+	at org.eclipse.pde.internal.core.PluginPathFinder.getFeaturePaths(PluginPathFinder.java:115)
+	at org.eclipse.pde.internal.core.ExternalFeatureModelManager.createFeatures(ExternalFeatureModelManager.java:174)
+	at org.eclipse.pde.internal.core.target.TargetDefinition.resolveFeatures(TargetDefinition.java:1059)
+	at org.eclipse.pde.internal.core.target.ProfileBundleContainer.resolveFeatures(ProfileBundleContainer.java:250)
+	at org.eclipse.pde.internal.core.target.AbstractBundleContainer.resolve(AbstractBundleContainer.java:97)
+	at org.eclipse.pde.internal.core.target.TargetDefinition.resolve(TargetDefinition.java:423)
+	at org.eclipse.pde.internal.core.TargetPlatformHelper.getWorkspaceTargetResolved(TargetPlatformHelper.java:635)
+	at org.eclipse.pde.internal.core.PluginModelManager.getExternalBundles(PluginModelManager.java:668)
+	at org.eclipse.pde.internal.core.PluginModelManager.initializeTable(PluginModelManager.java:591)
+	at org.eclipse.pde.internal.core.PluginModelManager.findModel(PluginModelManager.java:1053)
+	at org.eclipse.pde.internal.core.RequiredPluginsInitializer.initialize(RequiredPluginsInitializer.java:50)
+	at org.eclipse.jdt.internal.core.JavaModelManager.initializeContainer(JavaModelManager.java:3195)
+	at org.eclipse.jdt.internal.core.JavaModelManager.getClasspathContainer(JavaModelManager.java:2116)
+	at org.eclipse.jdt.core.JavaCore.getClasspathContainer(JavaCore.java:3758)
+	at org.eclipse.jdt.internal.core.JavaProject.resolveClasspath(JavaProject.java:3196)
+	at org.eclipse.jdt.internal.core.JavaProject.resolveClasspath(JavaProject.java:3360)
+	at org.eclipse.jdt.internal.core.JavaProject.getResolvedClasspath(JavaProject.java:2444)
+	at org.eclipse.jdt.internal.core.JavaProject.buildStructure(JavaProject.java:502)
+	at org.eclipse.jdt.internal.core.Openable.generateInfos(Openable.java:266)
+	at org.eclipse.jdt.internal.core.JavaElement.openWhenClosed(JavaElement.java:596)
+	at org.eclipse.jdt.internal.core.JavaElement.getElementInfo(JavaElement.java:326)
+	at org.eclipse.jdt.internal.core.JavaElement.getElementInfo(JavaElement.java:312)
+	at org.eclipse.jdt.internal.core.JavaElement.getChildren(JavaElement.java:267)
+	at org.eclipse.jdt.internal.core.JavaProject.getPackageFragmentRoots(JavaProject.java:2322)
+	at org.eclipse.xtext.ui.resource.Storage2UriMapperJavaImpl.updateCache(Storage2UriMapperJavaImpl.java:478)
+	at org.eclipse.xtext.ui.resource.Storage2UriMapperJavaImpl.access$7(Storage2UriMapperJavaImpl.java:474)
+	at org.eclipse.xtext.ui.resource.Storage2UriMapperJavaImpl$4.run(Storage2UriMapperJavaImpl.java:674)
+	at org.eclipse.core.internal.resources.Workspace.run(Workspace.java:2292)
+	at org.eclipse.core.internal.resources.Workspace.run(Workspace.java:2317)
+	at org.eclipse.xtext.ui.resource.Storage2UriMapperJavaImpl.doInitializeCache(Storage2UriMapperJavaImpl.java:686)
+	at org.eclipse.xtext.ui.resource.Storage2UriMapperJavaImpl.access$3(Storage2UriMapperJavaImpl.java:665)
+	at org.eclipse.xtext.ui.resource.Storage2UriMapperJavaImpl$3.run(Storage2UriMapperJavaImpl.java:654)
+	at java.base/java.lang.Thread.run(Thread.java:832)
+Caused by: java.net.MalformedURLException: no protocol: ../../../../Pablo Gil/.p2/pool/
+	at java.base/java.net.URL.<init>(URL.java:672)
+	at java.base/java.net.URL.<init>(URL.java:568)
+	at org.eclipse.pde.internal.core.update.configurator.ConfigurationParser.processSite(ConfigurationParser.java:160)
+	at org.eclipse.pde.internal.core.update.configurator.ConfigurationParser.startElement(ConfigurationParser.java:123)
+	... 49 more
+
+!ENTRY org.eclipse.update.configurator 4 0 2021-09-08 08:24:35.177
+!MESSAGE ConfigurationParser.parse() error:
+!STACK 0
+org.xml.sax.SAXException: NLS missing message: InstalledSiteParser_UnableToCreateURL in: org.eclipse.update.internal.configurator.messages
+java.net.MalformedURLException: no protocol: ../../../../Pablo Gil/.p2/pool/
+	at org.eclipse.pde.internal.core.update.configurator.ConfigurationParser.startElement(ConfigurationParser.java:133)
+	at java.xml/com.sun.org.apache.xerces.internal.parsers.AbstractSAXParser.startElement(AbstractSAXParser.java:518)
+	at java.xml/com.sun.org.apache.xerces.internal.impl.XMLNSDocumentScannerImpl.scanStartElement(XMLNSDocumentScannerImpl.java:374)
+	at java.xml/com.sun.org.apache.xerces.internal.impl.XMLDocumentFragmentScannerImpl$FragmentContentDriver.next(XMLDocumentFragmentScannerImpl.java:2725)
+	at java.xml/com.sun.org.apache.xerces.internal.impl.XMLDocumentScannerImpl.next(XMLDocumentScannerImpl.java:605)
+	at java.xml/com.sun.org.apache.xerces.internal.impl.XMLNSDocumentScannerImpl.next(XMLNSDocumentScannerImpl.java:112)
+	at java.xml/com.sun.org.apache.xerces.internal.impl.XMLDocumentFragmentScannerImpl.scanDocument(XMLDocumentFragmentScannerImpl.java:541)
+	at java.xml/com.sun.org.apache.xerces.internal.parsers.XML11Configuration.parse(XML11Configuration.java:888)
+	at java.xml/com.sun.org.apache.xerces.internal.parsers.XML11Configuration.parse(XML11Configuration.java:824)
+	at java.xml/com.sun.org.apache.xerces.internal.parsers.XMLParser.parse(XMLParser.java:141)
+	at java.xml/com.sun.org.apache.xerces.internal.parsers.AbstractSAXParser.parse(AbstractSAXParser.java:1224)
+	at java.xml/com.sun.org.apache.xerces.internal.jaxp.SAXParserImpl$JAXPSAXParser.parse(SAXParserImpl.java:635)
+	at java.xml/com.sun.org.apache.xerces.internal.jaxp.SAXParserImpl.parse(SAXParserImpl.java:324)
+	at org.eclipse.pde.internal.core.update.configurator.ConfigurationParser.parse(ConfigurationParser.java:88)
+	at org.eclipse.pde.internal.core.update.configurator.PlatformConfiguration.loadConfig(PlatformConfiguration.java:135)
+	at org.eclipse.pde.internal.core.update.configurator.PlatformConfiguration.initialize(PlatformConfiguration.java:85)
+	at org.eclipse.pde.internal.core.update.configurator.PlatformConfiguration.<init>(PlatformConfiguration.java:61)
+	at org.eclipse.pde.internal.core.PluginPathFinder.getFeaturePaths(PluginPathFinder.java:115)
+	at org.eclipse.pde.internal.core.ExternalFeatureModelManager.createFeatures(ExternalFeatureModelManager.java:174)
+	at org.eclipse.pde.internal.core.target.TargetDefinition.resolveFeatures(TargetDefinition.java:1059)
+	at org.eclipse.pde.internal.core.target.ProfileBundleContainer.resolveFeatures(ProfileBundleContainer.java:250)
+	at org.eclipse.pde.internal.core.target.AbstractBundleContainer.resolve(AbstractBundleContainer.java:97)
+	at org.eclipse.pde.internal.core.target.TargetDefinition.resolve(TargetDefinition.java:423)
+	at org.eclipse.pde.internal.core.TargetPlatformHelper.getWorkspaceTargetResolved(TargetPlatformHelper.java:635)
+	at org.eclipse.pde.internal.core.PluginModelManager.getExternalBundles(PluginModelManager.java:668)
+	at org.eclipse.pde.internal.core.PluginModelManager.initializeTable(PluginModelManager.java:591)
+	at org.eclipse.pde.internal.core.PluginModelManager.findModel(PluginModelManager.java:1053)
+	at org.eclipse.pde.internal.core.RequiredPluginsInitializer.initialize(RequiredPluginsInitializer.java:50)
+	at org.eclipse.jdt.internal.core.JavaModelManager.initializeContainer(JavaModelManager.java:3195)
+	at org.eclipse.jdt.internal.core.JavaModelManager.getClasspathContainer(JavaModelManager.java:2116)
+	at org.eclipse.jdt.core.JavaCore.getClasspathContainer(JavaCore.java:3758)
+	at org.eclipse.jdt.internal.core.JavaProject.resolveClasspath(JavaProject.java:3196)
+	at org.eclipse.jdt.internal.core.JavaProject.resolveClasspath(JavaProject.java:3360)
+	at org.eclipse.jdt.internal.core.JavaProject.getResolvedClasspath(JavaProject.java:2444)
+	at org.eclipse.jdt.internal.core.JavaProject.buildStructure(JavaProject.java:502)
+	at org.eclipse.jdt.internal.core.Openable.generateInfos(Openable.java:266)
+	at org.eclipse.jdt.internal.core.JavaElement.openWhenClosed(JavaElement.java:596)
+	at org.eclipse.jdt.internal.core.JavaElement.getElementInfo(JavaElement.java:326)
+	at org.eclipse.jdt.internal.core.JavaElement.getElementInfo(JavaElement.java:312)
+	at org.eclipse.jdt.internal.core.JavaElement.getChildren(JavaElement.java:267)
+	at org.eclipse.jdt.internal.core.JavaProject.getPackageFragmentRoots(JavaProject.java:2322)
+	at org.eclipse.xtext.ui.resource.Storage2UriMapperJavaImpl.updateCache(Storage2UriMapperJavaImpl.java:478)
+	at org.eclipse.xtext.ui.resource.Storage2UriMapperJavaImpl.access$7(Storage2UriMapperJavaImpl.java:474)
+	at org.eclipse.xtext.ui.resource.Storage2UriMapperJavaImpl$4.run(Storage2UriMapperJavaImpl.java:674)
+	at org.eclipse.core.internal.resources.Workspace.run(Workspace.java:2292)
+	at org.eclipse.core.internal.resources.Workspace.run(Workspace.java:2317)
+	at org.eclipse.xtext.ui.resource.Storage2UriMapperJavaImpl.doInitializeCache(Storage2UriMapperJavaImpl.java:686)
+	at org.eclipse.xtext.ui.resource.Storage2UriMapperJavaImpl.access$3(Storage2UriMapperJavaImpl.java:665)
+	at org.eclipse.xtext.ui.resource.Storage2UriMapperJavaImpl$3.run(Storage2UriMapperJavaImpl.java:654)
+	at java.base/java.lang.Thread.run(Thread.java:832)
+Caused by: java.net.MalformedURLException: no protocol: ../../../../Pablo Gil/.p2/pool/
+	at java.base/java.net.URL.<init>(URL.java:672)
+	at java.base/java.net.URL.<init>(URL.java:568)
+	at org.eclipse.pde.internal.core.update.configurator.ConfigurationParser.processSite(ConfigurationParser.java:160)
+	at org.eclipse.pde.internal.core.update.configurator.ConfigurationParser.startElement(ConfigurationParser.java:123)
+	... 49 more
+
+!ENTRY org.eclipse.pde.core 4 0 2021-09-08 08:24:35.179
+!MESSAGE NLS missing message: InstalledSiteParser_UnableToCreateURL in: org.eclipse.update.internal.configurator.messages
+!STACK 0
+org.xml.sax.SAXException: NLS missing message: InstalledSiteParser_UnableToCreateURL in: org.eclipse.update.internal.configurator.messages
+java.net.MalformedURLException: no protocol: ../../../../Pablo Gil/.p2/pool/
+	at org.eclipse.pde.internal.core.update.configurator.ConfigurationParser.startElement(ConfigurationParser.java:133)
+	at java.xml/com.sun.org.apache.xerces.internal.parsers.AbstractSAXParser.startElement(AbstractSAXParser.java:518)
+	at java.xml/com.sun.org.apache.xerces.internal.impl.XMLNSDocumentScannerImpl.scanStartElement(XMLNSDocumentScannerImpl.java:374)
+	at java.xml/com.sun.org.apache.xerces.internal.impl.XMLDocumentFragmentScannerImpl$FragmentContentDriver.next(XMLDocumentFragmentScannerImpl.java:2725)
+	at java.xml/com.sun.org.apache.xerces.internal.impl.XMLDocumentScannerImpl.next(XMLDocumentScannerImpl.java:605)
+	at java.xml/com.sun.org.apache.xerces.internal.impl.XMLNSDocumentScannerImpl.next(XMLNSDocumentScannerImpl.java:112)
+	at java.xml/com.sun.org.apache.xerces.internal.impl.XMLDocumentFragmentScannerImpl.scanDocument(XMLDocumentFragmentScannerImpl.java:541)
+	at java.xml/com.sun.org.apache.xerces.internal.parsers.XML11Configuration.parse(XML11Configuration.java:888)
+	at java.xml/com.sun.org.apache.xerces.internal.parsers.XML11Configuration.parse(XML11Configuration.java:824)
+	at java.xml/com.sun.org.apache.xerces.internal.parsers.XMLParser.parse(XMLParser.java:141)
+	at java.xml/com.sun.org.apache.xerces.internal.parsers.AbstractSAXParser.parse(AbstractSAXParser.java:1224)
+	at java.xml/com.sun.org.apache.xerces.internal.jaxp.SAXParserImpl$JAXPSAXParser.parse(SAXParserImpl.java:635)
+	at java.xml/com.sun.org.apache.xerces.internal.jaxp.SAXParserImpl.parse(SAXParserImpl.java:324)
+	at org.eclipse.pde.internal.core.update.configurator.ConfigurationParser.parse(ConfigurationParser.java:88)
+	at org.eclipse.pde.internal.core.update.configurator.PlatformConfiguration.loadConfig(PlatformConfiguration.java:135)
+	at org.eclipse.pde.internal.core.update.configurator.PlatformConfiguration.initialize(PlatformConfiguration.java:85)
+	at org.eclipse.pde.internal.core.update.configurator.PlatformConfiguration.<init>(PlatformConfiguration.java:61)
+	at org.eclipse.pde.internal.core.PluginPathFinder.getFeaturePaths(PluginPathFinder.java:115)
+	at org.eclipse.pde.internal.core.ExternalFeatureModelManager.createFeatures(ExternalFeatureModelManager.java:174)
+	at org.eclipse.pde.internal.core.target.TargetDefinition.resolveFeatures(TargetDefinition.java:1059)
+	at org.eclipse.pde.internal.core.target.ProfileBundleContainer.resolveFeatures(ProfileBundleContainer.java:250)
+	at org.eclipse.pde.internal.core.target.AbstractBundleContainer.resolve(AbstractBundleContainer.java:97)
+	at org.eclipse.pde.internal.core.target.TargetDefinition.resolve(TargetDefinition.java:423)
+	at org.eclipse.pde.internal.core.TargetPlatformHelper.getWorkspaceTargetResolved(TargetPlatformHelper.java:635)
+	at org.eclipse.pde.internal.core.PluginModelManager.getExternalBundles(PluginModelManager.java:668)
+	at org.eclipse.pde.internal.core.PluginModelManager.initializeTable(PluginModelManager.java:591)
+	at org.eclipse.pde.internal.core.PluginModelManager.findModel(PluginModelManager.java:1053)
+	at org.eclipse.pde.internal.core.RequiredPluginsInitializer.initialize(RequiredPluginsInitializer.java:50)
+	at org.eclipse.jdt.internal.core.JavaModelManager.initializeContainer(JavaModelManager.java:3195)
+	at org.eclipse.jdt.internal.core.JavaModelManager.getClasspathContainer(JavaModelManager.java:2116)
+	at org.eclipse.jdt.core.JavaCore.getClasspathContainer(JavaCore.java:3758)
+	at org.eclipse.jdt.internal.core.JavaProject.resolveClasspath(JavaProject.java:3196)
+	at org.eclipse.jdt.internal.core.JavaProject.resolveClasspath(JavaProject.java:3360)
+	at org.eclipse.jdt.internal.core.JavaProject.getResolvedClasspath(JavaProject.java:2444)
+	at org.eclipse.jdt.internal.core.JavaProject.buildStructure(JavaProject.java:502)
+	at org.eclipse.jdt.internal.core.Openable.generateInfos(Openable.java:266)
+	at org.eclipse.jdt.internal.core.JavaElement.openWhenClosed(JavaElement.java:596)
+	at org.eclipse.jdt.internal.core.JavaElement.getElementInfo(JavaElement.java:326)
+	at org.eclipse.jdt.internal.core.JavaElement.getElementInfo(JavaElement.java:312)
+	at org.eclipse.jdt.internal.core.JavaElement.getChildren(JavaElement.java:267)
+	at org.eclipse.jdt.internal.core.JavaProject.getPackageFragmentRoots(JavaProject.java:2322)
+	at org.eclipse.xtext.ui.resource.Storage2UriMapperJavaImpl.updateCache(Storage2UriMapperJavaImpl.java:478)
+	at org.eclipse.xtext.ui.resource.Storage2UriMapperJavaImpl.access$7(Storage2UriMapperJavaImpl.java:474)
+	at org.eclipse.xtext.ui.resource.Storage2UriMapperJavaImpl$4.run(Storage2UriMapperJavaImpl.java:674)
+	at org.eclipse.core.internal.resources.Workspace.run(Workspace.java:2292)
+	at org.eclipse.core.internal.resources.Workspace.run(Workspace.java:2317)
+	at org.eclipse.xtext.ui.resource.Storage2UriMapperJavaImpl.doInitializeCache(Storage2UriMapperJavaImpl.java:686)
+	at org.eclipse.xtext.ui.resource.Storage2UriMapperJavaImpl.access$3(Storage2UriMapperJavaImpl.java:665)
+	at org.eclipse.xtext.ui.resource.Storage2UriMapperJavaImpl$3.run(Storage2UriMapperJavaImpl.java:654)
+	at java.base/java.lang.Thread.run(Thread.java:832)
+Caused by: java.net.MalformedURLException: no protocol: ../../../../Pablo Gil/.p2/pool/
+	at java.base/java.net.URL.<init>(URL.java:672)
+	at java.base/java.net.URL.<init>(URL.java:568)
+	at org.eclipse.pde.internal.core.update.configurator.ConfigurationParser.processSite(ConfigurationParser.java:160)
+	at org.eclipse.pde.internal.core.update.configurator.ConfigurationParser.startElement(ConfigurationParser.java:123)
+	... 49 more
+
+!ENTRY org.eclipse.egit.ui 2 0 2021-09-08 08:24:50.228
+!MESSAGE Warning: The environment variable HOME is not set. The following directory will be used to store the Git
+user global configuration and to define the default location to store repositories: 'C:\Users\Pablo Gil'. If this is
+not correct please set the HOME environment variable and restart Eclipse. Otherwise Git for Windows and
+EGit might behave differently since they see different configuration options.
+This warning can be switched off on the Team > Git > Confirmations and Warnings preference page.
+
+!ENTRY org.eclipse.ui.ide 4 4 2021-09-08 08:24:52.920
+!MESSAGE Not properly disposed SWT resource
+!STACK 0
+java.lang.Error: SWT Resource was not properly disposed
+	at org.eclipse.swt.graphics.Resource.initNonDisposeTracking(Resource.java:172)
+	at org.eclipse.swt.graphics.Resource.<init>(Resource.java:120)
+	at org.eclipse.swt.graphics.Image.<init>(Image.java:165)
+	at org.eclipse.swt.graphics.Image.win32_new(Image.java:2163)
+	at org.eclipse.swt.widgets.TaskBar.createShellLink(TaskBar.java:168)
+	at org.eclipse.swt.widgets.TaskBar.createShellLinkArray(TaskBar.java:208)
+	at org.eclipse.swt.widgets.TaskBar.setMenu(TaskBar.java:382)
+	at org.eclipse.swt.widgets.TaskItem.setMenu(TaskItem.java:255)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:64)
+	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:564)
+	at org.eclipse.mylyn.commons.workbench.TaskBarManager$TaskBarMenuManager.setMenuOnTaskItem(TaskBarManager.java:121)
+	at org.eclipse.mylyn.commons.workbench.TaskBarManager$TaskBarMenuManager.update(TaskBarManager.java:112)
+	at org.eclipse.jface.action.MenuManager.update(MenuManager.java:673)
+	at org.eclipse.mylyn.internal.tasks.ui.TasksUiPlugin.addSystemTaskBarActions(TasksUiPlugin.java:479)
+	at org.eclipse.mylyn.internal.tasks.ui.TasksUiPlugin.access$7(TasksUiPlugin.java:458)
+	at org.eclipse.mylyn.internal.tasks.ui.TasksUiPlugin$TasksUiInitializationJob.runInUIThread(TasksUiPlugin.java:394)
+	at org.eclipse.ui.progress.UIJob.lambda$0(UIJob.java:95)
+	at org.eclipse.swt.widgets.RunnableLock.run(RunnableLock.java:40)
+	at org.eclipse.swt.widgets.Synchronizer.runAsyncMessages(Synchronizer.java:185)
+	at org.eclipse.swt.widgets.Display.runAsyncMessages(Display.java:4001)
+	at org.eclipse.swt.widgets.Display.readAndDispatch(Display.java:3629)
+	at org.eclipse.e4.ui.internal.workbench.swt.PartRenderingEngine$5.run(PartRenderingEngine.java:1157)
+	at org.eclipse.core.databinding.observable.Realm.runWithDefault(Realm.java:338)
+	at org.eclipse.e4.ui.internal.workbench.swt.PartRenderingEngine.run(PartRenderingEngine.java:1046)
+	at org.eclipse.e4.ui.internal.workbench.E4Workbench.createAndRunUI(E4Workbench.java:155)
+	at org.eclipse.ui.internal.Workbench.lambda$3(Workbench.java:644)
+	at org.eclipse.core.databinding.observable.Realm.runWithDefault(Realm.java:338)
+	at org.eclipse.ui.internal.Workbench.createAndRunWorkbench(Workbench.java:551)
+	at org.eclipse.ui.PlatformUI.createAndRunWorkbench(PlatformUI.java:156)
+	at org.eclipse.ui.internal.ide.application.IDEApplication.start(IDEApplication.java:152)
+	at org.eclipse.equinox.internal.app.EclipseAppHandle.run(EclipseAppHandle.java:203)
+	at org.eclipse.core.runtime.internal.adaptor.EclipseAppLauncher.runApplication(EclipseAppLauncher.java:134)
+	at org.eclipse.core.runtime.internal.adaptor.EclipseAppLauncher.start(EclipseAppLauncher.java:104)
+	at org.eclipse.core.runtime.adaptor.EclipseStarter.run(EclipseStarter.java:401)
+	at org.eclipse.core.runtime.adaptor.EclipseStarter.run(EclipseStarter.java:255)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:64)
+	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:564)
+	at org.eclipse.equinox.launcher.Main.invokeFramework(Main.java:653)
+	at org.eclipse.equinox.launcher.Main.basicRun(Main.java:590)
+	at org.eclipse.equinox.launcher.Main.run(Main.java:1461)
+
+!ENTRY org.eclipse.ui.ide 4 4 2021-09-08 08:24:52.921
+!MESSAGE Not properly disposed SWT resource
+!STACK 0
+java.lang.Error: SWT Resource was not properly disposed
+	at org.eclipse.swt.graphics.Resource.initNonDisposeTracking(Resource.java:172)
+	at org.eclipse.swt.graphics.Resource.<init>(Resource.java:120)
+	at org.eclipse.swt.graphics.Image.<init>(Image.java:165)
+	at org.eclipse.swt.graphics.Image.win32_new(Image.java:2163)
+	at org.eclipse.swt.widgets.TaskBar.createShellLink(TaskBar.java:168)
+	at org.eclipse.swt.widgets.TaskBar.createShellLinkArray(TaskBar.java:208)
+	at org.eclipse.swt.widgets.TaskBar.setMenu(TaskBar.java:382)
+	at org.eclipse.swt.widgets.TaskItem.setMenu(TaskItem.java:255)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:64)
+	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:564)
+	at org.eclipse.mylyn.commons.workbench.TaskBarManager$TaskBarMenuManager.setMenuOnTaskItem(TaskBarManager.java:121)
+	at org.eclipse.mylyn.commons.workbench.TaskBarManager$TaskBarMenuManager.update(TaskBarManager.java:112)
+	at org.eclipse.jface.action.MenuManager.update(MenuManager.java:673)
+	at org.eclipse.mylyn.internal.tasks.ui.TasksUiPlugin.addSystemTaskBarActions(TasksUiPlugin.java:479)
+	at org.eclipse.mylyn.internal.tasks.ui.TasksUiPlugin.access$7(TasksUiPlugin.java:458)
+	at org.eclipse.mylyn.internal.tasks.ui.TasksUiPlugin$TasksUiInitializationJob.runInUIThread(TasksUiPlugin.java:394)
+	at org.eclipse.ui.progress.UIJob.lambda$0(UIJob.java:95)
+	at org.eclipse.swt.widgets.RunnableLock.run(RunnableLock.java:40)
+	at org.eclipse.swt.widgets.Synchronizer.runAsyncMessages(Synchronizer.java:185)
+	at org.eclipse.swt.widgets.Display.runAsyncMessages(Display.java:4001)
+	at org.eclipse.swt.widgets.Display.readAndDispatch(Display.java:3629)
+	at org.eclipse.e4.ui.internal.workbench.swt.PartRenderingEngine$5.run(PartRenderingEngine.java:1157)
+	at org.eclipse.core.databinding.observable.Realm.runWithDefault(Realm.java:338)
+	at org.eclipse.e4.ui.internal.workbench.swt.PartRenderingEngine.run(PartRenderingEngine.java:1046)
+	at org.eclipse.e4.ui.internal.workbench.E4Workbench.createAndRunUI(E4Workbench.java:155)
+	at org.eclipse.ui.internal.Workbench.lambda$3(Workbench.java:644)
+	at org.eclipse.core.databinding.observable.Realm.runWithDefault(Realm.java:338)
+	at org.eclipse.ui.internal.Workbench.createAndRunWorkbench(Workbench.java:551)
+	at org.eclipse.ui.PlatformUI.createAndRunWorkbench(PlatformUI.java:156)
+	at org.eclipse.ui.internal.ide.application.IDEApplication.start(IDEApplication.java:152)
+	at org.eclipse.equinox.internal.app.EclipseAppHandle.run(EclipseAppHandle.java:203)
+	at org.eclipse.core.runtime.internal.adaptor.EclipseAppLauncher.runApplication(EclipseAppLauncher.java:134)
+	at org.eclipse.core.runtime.internal.adaptor.EclipseAppLauncher.start(EclipseAppLauncher.java:104)
+	at org.eclipse.core.runtime.adaptor.EclipseStarter.run(EclipseStarter.java:401)
+	at org.eclipse.core.runtime.adaptor.EclipseStarter.run(EclipseStarter.java:255)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:64)
+	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:564)
+	at org.eclipse.equinox.launcher.Main.invokeFramework(Main.java:653)
+	at org.eclipse.equinox.launcher.Main.basicRun(Main.java:590)
+	at org.eclipse.equinox.launcher.Main.run(Main.java:1461)
+
+!ENTRY org.eclipse.jdt.core 4 4 2021-09-08 10:40:40.485
+!MESSAGE Exception occurred during compilation unit conversion:
+----------------------------------- SOURCE BEGIN -------------------------------------
+package reverse.pandorabots.agent;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import congabase.User;
+import generator.BotInteraction;
+import generator.DefaultEntity;
+import generator.Entity;
+import generator.GeneratorFactory;
+import generator.HTTPRequest;
+import generator.Intent;
+import generator.IntentInput;
+import generator.IntentLanguageInputs;
+import generator.KeyValue;
+import generator.Language;
+import generator.LanguageInput;
+import generator.Literal;
+import generator.Method;
+import generator.Parameter;
+import generator.ParameterReferenceToken;
+import generator.SimpleInput;
+import generator.Text;
+import generator.TextInput;
+import generator.TextLanguageInput;
+import generator.TrainingPhrase;
+import generator.UserInteraction;
+
+public class AgentIntentsGetter {
+	//// Funciones para gestionar las distintas formas que pueden tomar los intents
+	// Función para gestionar los intents que únicamente contengan argumentos de tipo <set>sample</set>
+	public static void addCategoryWithOnlyPatternSets(Category category, Intent intent) {
+		if (!category.pattern.sets.isEmpty()) {
+			IntentLanguageInputs languageInput = GeneratorFactory.eINSTANCE.createIntentLanguageInputs();
+			TrainingPhrase phrase = GeneratorFactory.eINSTANCE.createTrainingPhrase();
+
+			for (SetAttr set : category.pattern.sets) {
+				ParameterReferenceToken parameterRef = GeneratorFactory.eINSTANCE.createParameterReferenceToken();
+				Parameter parameter = GeneratorFactory.eINSTANCE.createParameter();
+
+				parameter.setName(set.name);
+				parameterRef.setParameter(parameter);
+				phrase.getTokens().add(parameterRef);
+				intent.getParameters().add(parameter);
+			}
+
+			languageInput.getInputs().add(phrase);
+			intent.getInputs().add(languageInput);
+		}
+	}
+
+	// Función para gestionar los intents cuya entrada contenga fechas en el formato DD/MM/AA
+	public static void addCategoryWithDate(Category category, Intent intent, List<MapFile> mapFiles) {
+		IntentLanguageInputs languageInput = GeneratorFactory.eINSTANCE.createIntentLanguageInputs();
+		TrainingPhrase phrase = GeneratorFactory.eINSTANCE.createTrainingPhrase();
+
+		String[] tokens1 = category.pattern.text.split("\\* slash \\* slash \\*");
+		String[] tokens2 = category.pattern.text.split("\\*slash\\*slash\\*");
+		
+		List<String> tokens;
+		if (tokens1.length > tokens2.length && tokens2.length != 0 || tokens1.length == 0) {
+			tokens = List.of(tokens1);
+		}
+		
+		else if (tokens1.length == tokens2.length && tokens2.length == 1)
+			tokens = List.of(tokens1[0].length() < tokens2[0].length() ? tokens1 : tokens2);
+		
+		else
+			tokens = List.of(tokens2);
+		
+		// Caso en que el intent únicamente esté formado por la fecha
+		if (tokens.size() == 0) {
+			ParameterReferenceToken parameterRef = GeneratorFactory.eINSTANCE.createParameterReferenceToken();
+			Parameter parameter = GeneratorFactory.eINSTANCE.createParameter();
+			
+			parameter.setDefaultEntity(DefaultEntity.DATE);
+			parameterRef.setParameter(parameter);
+			phrase.getTokens().add(parameterRef);
+			intent.getParameters().add(parameter);
+		}
+		
+		// Caso en que el intent está formado por fecha y otros elementos
+		else {
+			int dateOccurrences1 = countOccurrences(category.pattern.text, "* slash * slash *");
+			int dateOccurrences2 = countOccurrences(category.pattern.text, "*slash*slash*");
+			int dateCount = dateOccurrences1 > dateOccurrences2 ? dateOccurrences1 : dateOccurrences2;
+			ParameterReferenceToken dateParameterRef = GeneratorFactory.eINSTANCE.createParameterReferenceToken();
+			Parameter dateParameter = GeneratorFactory.eINSTANCE.createParameter();
+			
+//			literal.setText(tokens.get(0));
+//			phrase.getTokens().add(literal);
+//			tokens.remove(0);
+
+			for (String token : tokens) {
+				// Caso en que haya horas en el fragmento y otros elementos o no
+				if (token.contains("* colon *") || token.contains("*colon*")) {
+					String[] innerTokens1 = token.split("\\* colon \\*");
+					String[] innerTokens2 = token.split("\\*colon\\*");
+
+					List<String> innerTokens; 
+					if (innerTokens1.length > innerTokens2.length && innerTokens2.length != 0)
+						innerTokens = List.of(innerTokens1);
+					
+					else if (innerTokens1.length == innerTokens2.length && innerTokens2.length == 1)
+						innerTokens = List.of(innerTokens1[0].length() < innerTokens2[0].length() ? innerTokens1 : innerTokens2);
+					
+					else
+						innerTokens = List.of(innerTokens2);
+					
+					// Caso en que el fragmento únicamente contenga hora
+					if (innerTokens.size() == 0) {
+						ParameterReferenceToken innerParameterRef = GeneratorFactory.eINSTANCE.createParameterReferenceToken();
+						Parameter innerParameter = GeneratorFactory.eINSTANCE.createParameter();
+						
+						innerParameter.setDefaultEntity(DefaultEntity.TIME);
+						innerParameterRef.setParameter(innerParameter);
+						phrase.getTokens().add(innerParameterRef);
+						intent.getParameters().add(innerParameter);
+					}
+					
+					// Caso en que el fragmento contenga más información además de la hora
+					else {
+						int timeOccurrences1 = countOccurrences(category.pattern.text, "* colon *");
+						int timeOccurrences2 = countOccurrences(category.pattern.text, "*colon*");
+						int timeCount = timeOccurrences1 > timeOccurrences2 ? timeOccurrences1 : timeOccurrences2;
+						
+						for (String innerToken : innerTokens) {
+							ParameterReferenceToken hourParameterRef = GeneratorFactory.eINSTANCE.createParameterReferenceToken();
+							Parameter hourParameter = GeneratorFactory.eINSTANCE.createParameter();
+							
+							// Caso en que haya otros parámetros en el fragmento
+							if (innerToken.contains("*")) {
+								String[] innerTokensStar = innerToken.split("\\*");
+								for (String innerToken2 : innerTokensStar) {
+									Literal innerLiteral = GeneratorFactory.eINSTANCE.createLiteral();
+									ParameterReferenceToken innerParameterRef = GeneratorFactory.eINSTANCE.createParameterReferenceToken();
+									Parameter innerParameter = GeneratorFactory.eINSTANCE.createParameter();
+									
+									// Guardado de texto previo al parametro
+									innerLiteral.setText(innerToken2);
+									phrase.getTokens().add(innerLiteral);
+
+									// Guardado del parámetro
+									innerParameter.setDefaultEntity(DefaultEntity.TEXT);
+									innerParameterRef.setParameter(innerParameter);
+									phrase.getTokens().add(innerParameterRef);
+									intent.getParameters().add(innerParameter);
+								}
+							}
+							
+							// Caso en que el fragmento sólo contenga texto
+							else {
+								Literal innerLiteral = GeneratorFactory.eINSTANCE.createLiteral();
+								
+								// Guardado de texto previo al parametro
+								innerLiteral.setText(innerToken);
+								phrase.getTokens().add(innerLiteral);
+							}
+							
+							// Control de adición de parámetros de tipo hora
+							if (timeCount > 0) {
+								hourParameter.setDefaultEntity(DefaultEntity.TIME);
+								hourParameterRef.setParameter(hourParameter);
+								phrase.getTokens().add(hourParameterRef);
+								intent.getParameters().add(hourParameter);
+								timeCount -= 1;
+							}
+						}
+					}
+				}
+				
+				// Caso en que haya otros parámetros en el fragmento
+				else if (token.contains("*")) {				
+					String[] innerTokens = category.pattern.text.split("\\*");
+					for (String innerToken : innerTokens) {
+						Literal innerLiteral = GeneratorFactory.eINSTANCE.createLiteral();
+						ParameterReferenceToken parameterRef = GeneratorFactory.eINSTANCE.createParameterReferenceToken();
+						Parameter parameter = GeneratorFactory.eINSTANCE.createParameter();
+						
+						// Guardado de texto previo al parametro
+						innerLiteral.setText(innerToken);
+						phrase.getTokens().add(innerLiteral);
+
+						// Guardado del parámetro
+						parameter.setDefaultEntity(DefaultEntity.TEXT);
+						parameterRef.setParameter(parameter);
+						phrase.getTokens().add(parameterRef);
+						intent.getParameters().add(parameter);
+					}
+				}
+				
+				// Caso en que el fragmento sólo contenga texto
+				else {
+					Literal innerLiteral = GeneratorFactory.eINSTANCE.createLiteral();
+					
+					// Guardado de texto previo al parametro
+					innerLiteral.setText(token);
+					phrase.getTokens().add(innerLiteral);
+				}
+				
+				// Control de adición de parámetros de tipo fecha
+				if (dateCount > 0) {
+					dateParameter.setDefaultEntity(DefaultEntity.DATE);
+					dateParameterRef.setParameter(dateParameter);
+					phrase.getTokens().add(dateParameterRef);
+					intent.getParameters().add(dateParameter);
+					dateCount -= 1;
+				}
+			}
+			
+			// Caso en que contenga sets en el pattern
+			if (category.pattern.sets != null)
+				intentAddSets(category.pattern.sets, intent, mapFiles, phrase);
+		}
+		
+		languageInput.getInputs().add(phrase);
+		intent.getInputs().add(languageInput);
+	}
+
+	// Función para gestionar los intents cuya entrada contenga horas en el formato HH:MM
+	public static void addCategoryWithHour(Category category, Intent intent, List<MapFile> mapFiles) {
+		IntentLanguageInputs languageInput = GeneratorFactory.eINSTANCE.createIntentLanguageInputs();
+		TrainingPhrase phrase = GeneratorFactory.eINSTANCE.createTrainingPhrase();
+		String[] tokens1 = category.pattern.text.split("\\* colon \\*");
+		String[] tokens2 = category.pattern.text.split("\\*colon\\*");
+
+		List<String> tokens; 
+		if (tokens1.length > tokens2.length && tokens2.length != 0 || tokens1.length == 0)
+			tokens = List.of(tokens1);
+		
+		else if (tokens1.length == tokens2.length && tokens2.length == 1)
+			tokens = List.of(tokens1[0].length() < tokens2[0].length() ? tokens1 : tokens2);
+		
+		else
+			tokens = List.of(tokens2);
+		
+		// Caso en que el fragmento únicamente contenga hora
+		if (tokens.size() == 0) {
+			ParameterReferenceToken innerParameterRef = GeneratorFactory.eINSTANCE.createParameterReferenceToken();
+			Parameter innerParameter = GeneratorFactory.eINSTANCE.createParameter();
+			
+			innerParameter.setDefaultEntity(DefaultEntity.TIME);
+			innerParameterRef.setParameter(innerParameter);
+			phrase.getTokens().add(innerParameterRef);
+			intent.getParameters().add(innerParameter);
+		}
+		
+		// Caso en que el fragmento contenga más información además de la hora
+		else {
+			int timeOccurrences1 = countOccurrences(category.pattern.text, "* colon *");
+			int timeOccurrences2 = countOccurrences(category.pattern.text, "*colon*");
+			int timeCount = timeOccurrences1 > timeOccurrences2 ? timeOccurrences1 : timeOccurrences2;
+			
+			for (String token : tokens) {
+				ParameterReferenceToken hourParameterRef = GeneratorFactory.eINSTANCE.createParameterReferenceToken();
+				Parameter hourParameter = GeneratorFactory.eINSTANCE.createParameter();
+				
+				// Caso en que haya otros parámetros en el fragmento
+				if (token.contains("*")) {
+					String[] innerTokensStar = token.split("\\*");
+					for (String innerToken2 : innerTokensStar) {
+						Literal innerLiteral = GeneratorFactory.eINSTANCE.createLiteral();
+						ParameterReferenceToken innerParameterRef = GeneratorFactory.eINSTANCE.createParameterReferenceToken();
+						Parameter innerParameter = GeneratorFactory.eINSTANCE.createParameter();
+						
+						// Guardado de texto previo al parametro
+						innerLiteral.setText(innerToken2);
+						phrase.getTokens().add(innerLiteral);
+
+						// Guardado del parámetro
+						innerParameter.setDefaultEntity(DefaultEntity.TEXT);
+						innerParameterRef.setParameter(innerParameter);
+						phrase.getTokens().add(innerParameterRef);
+						intent.getParameters().add(innerParameter);
+					}
+				}
+				
+				// Caso en que el fragmento sólo contenga texto
+				else {
+					Literal innerLiteral = GeneratorFactory.eINSTANCE.createLiteral();
+					
+					// Guardado de texto previo al parametro
+					innerLiteral.setText(token);
+					phrase.getTokens().add(innerLiteral);
+				}
+				
+				// Control de adición de parámetros de tipo hora
+				if (timeCount > 0) {
+					hourParameter.setDefaultEntity(DefaultEntity.TIME);
+					hourParameterRef.setParameter(hourParameter);
+					phrase.getTokens().add(hourParameterRef);
+					intent.getParameters().add(hourParameter);
+					timeCount -= 1;
+				}
+			}
+		}
+		
+		languageInput.getInputs().add(phrase);
+		intent.getInputs().add(languageInput);
+	}
+
+	// Función para gestionar los intents básicos, es decir, aquellos que están formados por texto y parámetros o sets
+	public static void addCategoryBasic(Category category, Intent intent, List<MapFile> mapFiles) {
+		// Caso en que el intent contenga sólo texto
+		if (!category.pattern.text.contains("*")) {
+			IntentLanguageInputs languageInput = GeneratorFactory.eINSTANCE.createIntentLanguageInputs();
+			TrainingPhrase phrase = GeneratorFactory.eINSTANCE.createTrainingPhrase();
+			Literal literal = GeneratorFactory.eINSTANCE.createLiteral();
+			
+			literal.setText(category.pattern.text);
+			phrase.getTokens().add(literal);
+
+			// Caso en que contenga sets en el pattern
+			if (category.pattern.sets != null)
+				intentAddSets(category.pattern.sets, intent, mapFiles, phrase);
+
+			languageInput.getInputs().add(phrase);
+			intent.getInputs().add(languageInput);
+		}
+		
+		// Caso en que contenga *s
+		else {
+			IntentLanguageInputs languageInput = GeneratorFactory.eINSTANCE.createIntentLanguageInputs();
+			TrainingPhrase phrase = GeneratorFactory.eINSTANCE.createTrainingPhrase();
+
+			// Sets contenidos en todo el template
+			List<Set> sets = getAllTemplateSets(category.template);
+			
+			String[] tokens = category.pattern.text.split("\\*");
+			int tokenIndex = 1;
+			for (String token : tokens) {
+				Literal literal = GeneratorFactory.eINSTANCE.createLiteral();
+				ParameterReferenceToken parameterRef = GeneratorFactory.eINSTANCE.createParameterReferenceToken();
+				Parameter parameter = GeneratorFactory.eINSTANCE.createParameter();
+				int setsFlag = 0;
+				
+				// Guardado de texto previo al parametro
+				literal.setText(token);
+				phrase.getTokens().add(literal);
+
+				// Guardado del parámetro
+				// Si el template tiene sets, entonces se busca el nombre del parámetro y se asocia a este
+				if (!sets.isEmpty()) {
+					for (Set set: sets) {
+						if (setsFlag == 0 && set.stars != null && !set.stars.isEmpty()) {
+							for (Star star: set.stars) {
+								if (star.index == tokenIndex || tokens.length == 1) {
+									parameter.setName(set.name);
+									setsFlag = 1;
+									break;
+								}
+							}
+						} else {
+							setsFlag = 0;
+							break;
+						}
+					}
+				}
+				
+				parameter.setDefaultEntity(DefaultEntity.TEXT);
+				parameterRef.setParameter(parameter);
+				phrase.getTokens().add(parameterRef);
+				intent.getParameters().add(parameter);
+				
+				tokenIndex += 1;
+			}
+			
+			// Caso en que contenga sets en el pattern
+			if (category.pattern.sets != null)
+				intentAddSets(category.pattern.sets, intent, mapFiles, phrase);
+
+			languageInput.getInputs().add(phrase);
+			intent.getInputs().add(languageInput);
+		}
+	}
+	
+	//// Funciones para gestionar los flujos de conversación
+	// Función para gestionar los flujos de conversación directos, a nivel 1
+	public static List<UserInteraction> getMainFlows(Category category, Intent intent, List<Intent> intents) {
+		List<UserInteraction> ret = new ArrayList<UserInteraction>();
+		List<TextLanguageInput> responses = getAllIntentDirectResponses(category, intents);
+		UserInteraction flow = GeneratorFactory.eINSTANCE.createUserInteraction();
+		BotInteraction target = GeneratorFactory.eINSTANCE.createBotInteraction();
+		
+		for (TextLanguageInput response: responses) {
+			Text targetText = GeneratorFactory.eINSTANCE.createText();
+			
+			targetText.getInputs().add(response);
+			target.getActions().add(targetText);
+		}
+		
+		// Caso en que tenga una llamada de tipo HTTP (callapi)
+		if (category.template.callapi != null)
+			addCallapi(category.template.callapi, target);
+
+		flow.setTarget(target);
+		flow.setIntent(intent);
+		ret.add(flow);
+		
+		return ret;
+	}
+	
+	// Función para gestionar los flujos de conversación indirectos.
+	public static void getOutcomingsFlows(List<UserInteraction> currentFlows, List<UserInteraction> flows) {
+		List<UserInteraction> futureFlows = new ArrayList<UserInteraction>();
+		
+		for (UserInteraction cFlow: currentFlows) {
+			for (UserInteraction flow: flows) {
+				for 
+				// Comparación de si el target de cFlow es equivalente al intent de flow
+				if (cFlow.getTarget().getActions instanceof Text && a2 instanceof Text &&
+		        		AgentIntentsGetter.equalTextInputs((Text)a1, (Text)a2))
+		        		return 0;
+		        	
+		        	// Caso en que sean actions de tipo HTTP
+		        	else if (a1 instanceof HTTPRequest && a2 instanceof HTTPRequest &&
+			        		AgentIntentsGetter.equalHTTPRequest((HTTPRequest)a1, (HTTPRequest)a2))
+		        		return 0;
+			}
+		}
+		
+		if (!futureFlows.isEmpty())
+			getOutcomingsFlows(futureFlows, flows);
+	}
+	
+	// Función para añadir llamadas HTTP
+	public static void addCallapi(Callapi callapi, BotInteraction target) {
+		HTTPRequest httpRequest = GeneratorFactory.eINSTANCE.createHTTPRequest();
+		
+		if (callapi.url != null)
+			httpRequest.setURL(callapi.url);
+		
+		if (callapi.response_code_var != null)
+			httpRequest.setName(callapi.response_code_var);
+		
+		if (callapi.method != null)
+			httpRequest.setMethod(castMethod(callapi.method));
+		
+		// El método por defecto en Pandorabots si no se indica es GET
+		else
+			httpRequest.setMethod(Method.GET);
+		
+		if (callapi.queryParams != null) {
+			for (CallapiQuery param: callapi.queryParams) {
+
+				// Caso en que el parámetro tenga texto
+				if (param.text != null) {
+					KeyValue keyValue = GeneratorFactory.eINSTANCE.createKeyValue();
+					Literal literal = GeneratorFactory.eINSTANCE.createLiteral();
+					
+					literal.setText(param.text);
+
+					keyValue.setKey(param.name + "_text");
+					keyValue.setValue(literal);
+					httpRequest.getData().add(keyValue);
+				}
+				
+				// Caso en que el parámetro tenga llamadas a variables guardadas
+				if (param.gets != null) {
+					for (Get get: param.gets) {
+						KeyValue keyValue = GeneratorFactory.eINSTANCE.createKeyValue();
+						ParameterReferenceToken parameterRef = GeneratorFactory.eINSTANCE.createParameterReferenceToken();
+						Parameter parameter = GeneratorFactory.eINSTANCE.createParameter();
+						
+						parameter.setName(get.name);
+						parameter.setDefaultEntity(DefaultEntity.TEXT);
+						parameterRef.setParameter(parameter);
+						
+						keyValue.setKey(param.name + "_param_" + get.name);
+						keyValue.setValue(parameterRef);
+						httpRequest.getData().add(keyValue);
+					}
+				}
+				
+			}
+		}
+		
+		if (callapi.header != null)
+			httpRequest.setHeader("header", callapi.header.name.text);
+		
+		target.getActions().add(httpRequest);
+	}
+	
+	//// Funciones auxiliares para realizar tareas concretas
+	// Función que comprueba si un TextLanguageInput es igual a otro
+	public static boolean equalTextInputs(Text input1, Text input2) {
+		List<TextLanguageInput> internalInputs1 = input1.getInputs();
+		List<TextLanguageInput> internalInputs2 = input2.getInputs();
+		
+		if (internalInputs1.size() == internalInputs2.size()) {
+			for (int i = 0; i < internalInputs1.size(); i++) {
+				List<?> tokens1 = internalInputs1.get(i).getInputs().get(0).getTokens();
+				List<?> tokens2 = internalInputs2.get(i).getInputs().get(0).getTokens();
+				
+				if (tokens1.size() == tokens2.size()) {
+					for (int j = 0; j < tokens1.size(); j++) {
+						var token1 = tokens1.get(i);
+						var token2 = tokens2.get(i);
+						
+						// Caso en que los tokens sean literales
+						if (token1 instanceof Literal &&
+							token2 instanceof Literal) {
+							if (!((Literal) token1).getText().equals(((Literal) token2).getText()))
+								return false;
+						}
+						
+						// Caso en que los tokens sean parámetros
+						else if (tokens1.get(i) instanceof ParameterReferenceToken && 
+								 tokens2.get(i) instanceof ParameterReferenceToken) {
+							// Comprobación compleja, el sistema puede tener dificultades a la hora de
+							// guardar los nombres de variables, con lo que se hace mejor una
+							// comprobación básica
+//							String parameterName1 = ((ParameterReferenceToken) token1).getParameter().getName();
+//							String parameterName2 = ((ParameterReferenceToken) token2).getParameter().getName();
+//							
+//							if (parameterName1 == null &&
+//								parameterName2 == null)
+//								continue;
+//							
+//							else if (parameterName1.equals(parameterName2))
+//								continue;
+//							
+//							else
+//								return false;
+							continue;
+						}
+						
+						else {
+							return false;
+						}
+					}
+				}
+			}
+			
+			return true;
+		}
+		
+		else
+			return false;
+	}
+	
+	// Función que comprueba si un HTTPRequest es igual a otro
+	// TODO: Mejorar comparación si es conveniente
+	public static boolean equalHTTPRequest(HTTPRequest http1, HTTPRequest http2) {
+		if (http1.getName().equals(http2.getName()))
+			return true;
+		
+		else
+			return false;
+	}
+	
+	// Castea el String con el nombre del método de llamada HTTP a la enumeración definida
+	public static Method castMethod(String methodName) {
+		if (methodName.toUpperCase().equals("POST"))
+			return Method.POST;
+		
+		else if (methodName.toUpperCase().equals("GET"))
+			return Method.GET;
+		
+		else
+			return Method.POST;
+	}
+	// Devuelve todas las posibles respuestas de una categoría
+	public static List<TextLanguageInput> getAllIntentDirectResponses(Category category, List<Intent> intents) {
+		List<TextLanguageInput> ret = new ArrayList<TextLanguageInput>();
+	
+		// Caso en que el template tenga texto
+		if (category.template.text != null) {
+			TextLanguageInput languageInput = GeneratorFactory.eINSTANCE.createTextLanguageInput();
+			TextInput textInput = GeneratorFactory.eINSTANCE.createTextInput();
+			Literal literal = GeneratorFactory.eINSTANCE.createLiteral();
+			
+			literal.setText(category.template.text);
+			textInput.getTokens().add(literal);
+			languageInput.setLanguage(Language.ENGLISH);
+			languageInput.getInputs().add(textInput);
+			ret.add(languageInput);
+		}
+		
+		// Caso en que el template tenga srais
+		if (category.template.srais != null) {
+			ret.addAll(addResponseSrais(category.template.srais, intents));
+		}
+		
+		// Caso en que el template tenga conditions
+		if (category.template.condition != null) {
+			ret.addAll(getConditionResponsesREC(category.template.condition, intents, new ArrayList<TextLanguageInput>()));
+		}
+		
+		// Caso en el que el template tenga un think con srais
+		if (category.template.think != null && category.template.think.srais != null) {
+			ret.addAll(addResponseSrais(category.template.think.srais, intents));
+		}
+		
+		return ret;
+	}
+	
+	// Añade las respuestas de un intent formadas por srais en forma de lista
+	public static List<TextLanguageInput> addResponseSrais(List<Srai> srais, List<Intent> intents) {
+		List<TextLanguageInput> ret = new ArrayList<TextLanguageInput>();
+		
+		for (Srai srai: srais) {
+			TextLanguageInput languageInput = GeneratorFactory.eINSTANCE.createTextLanguageInput();
+			TextInput textInput = GeneratorFactory.eINSTANCE.createTextInput();
+			Literal literal = GeneratorFactory.eINSTANCE.createLiteral();
+			
+			literal.setText(srai.text);
+			textInput.getTokens().add(literal);
+
+			// Si el srai tiene referencias a argumentos del pattern, 
+			// se busca qué parámetros son en el intent que sea y se añaden
+			if (srai.stars != null) {
+				int starsFound = srai.stars.size();
+				
+				for (Intent intent: intents) {
+					var firstToken = intent.getInputs().get(0).getInputs().get(0);
+					if (firstToken instanceof Literal && ((Literal) firstToken).getText().equals(srai.text)) {
+						List<Parameter> parameters = new ArrayList<Parameter>();
+						
+						// Se recogen los parámetros del intent en cuestión
+						for (var token: intent.getInputs().get(0).getInputs()) {
+							if (token instanceof ParameterReferenceToken) {
+								parameters.add(((ParameterReferenceToken) token).getParameter());
+								starsFound -= 1;
+							}
+						}
+						
+						// Caso en que sólo haya un parámetro
+						if (srai.stars.size() == 1 && !parameters.isEmpty()) {
+							ParameterReferenceToken parameterRef = GeneratorFactory.eINSTANCE.createParameterReferenceToken();
+							
+							parameterRef.setParameter(parameters.get(0));
+							textInput.getTokens().add(parameterRef);
+							starsFound -= 1;
+							break;
+						}
+
+						// Caso en que haya más de un parámetro (fechas y horas no soportadas)
+						else {
+							// Se hace el matching de los parámetros con sus índices 
+							// o en caso de error se añade un parámetro genérico
+							for (Star star: srai.stars) {
+								ParameterReferenceToken parameterRef = GeneratorFactory.eINSTANCE.createParameterReferenceToken();
+								
+								try {
+									parameterRef.setParameter(parameters.get(star.index - 1));
+								} catch(Exception e) {
+									Parameter parameter = GeneratorFactory.eINSTANCE.createParameter();
+
+									parameter.setDefaultEntity(DefaultEntity.TEXT);
+									parameterRef.setParameter(parameter);
+									textInput.getTokens().add(parameterRef);
+								}
+								
+								textInput.getTokens().add(parameterRef);
+								starsFound -= 1;
+								break;
+							}
+						}
+					}
+				}
+				
+				// En caso de no encontrar el intent al que se hace referencia en la lista de intents,
+				// se añaden las stars como parámetros
+				if (starsFound > 0) {
+					for (int i = 0; i < starsFound; i++) {
+						ParameterReferenceToken parameterRef = GeneratorFactory.eINSTANCE.createParameterReferenceToken();
+						Parameter parameter = GeneratorFactory.eINSTANCE.createParameter();
+						
+						parameter.setDefaultEntity(DefaultEntity.TEXT);
+						parameterRef.setParameter(parameter);
+						textInput.getTokens().add(parameterRef);
+					}
+				}
+			}
+
+			languageInput.setLanguage(Language.ENGLISH);
+			languageInput.getInputs().add(textInput);
+			ret.add(languageInput);
+		}
+		
+		return ret;
+	}
+	
+	// Recoge todas las posibles respuestas de un condicional y sus posibles árboles de condicionales
+	// y las devuelve en forma de lista
+	public static List<TextLanguageInput> getConditionResponsesREC(Condition condition, List<Intent> intents, List<TextLanguageInput> list) {
+		for (Option option: condition.options) {
+			// Caso en que la opción tenga texto
+			if (option.text != null) {
+				TextLanguageInput languageInput = GeneratorFactory.eINSTANCE.createTextLanguageInput();
+				TextInput textInput = GeneratorFactory.eINSTANCE.createTextInput();
+				Literal literal = GeneratorFactory.eINSTANCE.createLiteral();
+				
+				literal.setText(option.text);
+				textInput.getTokens().add(literal);
+				languageInput.setLanguage(Language.ENGLISH);
+				languageInput.getInputs().add(textInput);
+				list.add(languageInput);
+			}
+			
+			// Caso en que la opción tenga srais
+			if (option.srais != null) {
+				for (Srai srai: option.srais) {
+					TextLanguageInput languageInput = GeneratorFactory.eINSTANCE.createTextLanguageInput();
+					TextInput textInput = GeneratorFactory.eINSTANCE.createTextInput();
+					Literal literal = GeneratorFactory.eINSTANCE.createLiteral();
+					
+					literal.setText(srai.text);
+					textInput.getTokens().add(literal);
+
+					// Si el srai tiene referencias a argumentos del pattern, 
+					// se busca qué parámetros son en el intent que sea y se añaden
+					if (srai.stars != null) {
+						int starsFound = srai.stars.size();
+						
+						for (Intent intent: intents) {
+							var firstToken = intent.getInputs().get(0).getInputs().get(0);
+							if (firstToken instanceof Literal && ((Literal) firstToken).getText().equals(srai.text)) {
+								List<Parameter> parameters = new ArrayList<Parameter>();
+								
+								// Se recogen los parámetros del intent en cuestión
+								for (var token: intent.getInputs().get(0).getInputs()) {
+									if (token instanceof ParameterReferenceToken) {
+										parameters.add(((ParameterReferenceToken) token).getParameter());
+									}
+								}
+								
+								// Caso en que sólo haya un parámetro
+								if (srai.stars.size() == 1 && !parameters.isEmpty()) {
+									ParameterReferenceToken parameterRef = GeneratorFactory.eINSTANCE.createParameterReferenceToken();
+									
+									parameterRef.setParameter(parameters.get(0));
+									textInput.getTokens().add(parameterRef);
+									break;
+								}
+
+								// Caso en que haya más de un parámetro (fechas y horas no soportadas)
+								else {
+									// Se hace el matching de los parámetros con sus índices 
+									// o en caso de error se añade un parámetro genérico
+									for (Star star: srai.stars) {
+										ParameterReferenceToken parameterRef = GeneratorFactory.eINSTANCE.createParameterReferenceToken();
+										
+										try {
+											parameterRef.setParameter(parameters.get(star.index - 1));
+										} catch(Exception e) {
+											Parameter parameter = GeneratorFactory.eINSTANCE.createParameter();
+
+											parameter.setDefaultEntity(DefaultEntity.TEXT);
+											parameterRef.setParameter(parameter);
+											textInput.getTokens().add(parameterRef);
+										}
+										
+										textInput.getTokens().add(parameterRef);
+										break;
+									}
+								}
+							}
+						}
+						
+						// En caso de no encontrar el intent al que se hace referencia en la lista de intents,
+						// se añaden las stars como parámetros
+						if (starsFound > 0) {
+							for (int i = 0; i < starsFound; i++) {
+								ParameterReferenceToken parameterRef = GeneratorFactory.eINSTANCE.createParameterReferenceToken();
+								Parameter parameter = GeneratorFactory.eINSTANCE.createParameter();
+								
+								parameter.setDefaultEntity(DefaultEntity.TEXT);
+								parameterRef.setParameter(parameter);
+								textInput.getTokens().add(parameterRef);
+							}
+						}
+					}
+
+					languageInput.setLanguage(Language.ENGLISH);
+					languageInput.getInputs().add(textInput);
+					list.add(languageInput);
+				}
+			}
+			
+			// Caso en el que la opción tenga un think con srais
+			if (option.think != null && option.think.srais != null) {
+				list.addAll(addResponseSrais(option.think.srais, intents));
+			}
+			
+			// Caso en que la opción contenga a su vez otro condicional
+			if (option.condition != null) {
+				list.addAll(getConditionResponsesREC(option.condition, intents, list));
+			}
+		}
+		
+		return list;
+	}
+	
+	// Dada una lista no-vacía de sets del patrón de una categoría, añade dichos sets a la frase en forma de parámetros
+	public static void intentAddSets(List<SetAttr> sets, Intent intent, List<MapFile> mapFiles, TrainingPhrase phrase) {
+		for (SetAttr set : sets) {
+			ParameterReferenceToken parameterRef = GeneratorFactory.eINSTANCE.createParameterReferenceToken();
+			Parameter parameter = GeneratorFactory.eINSTANCE.createParameter();
+			Entity entity = GeneratorFactory.eINSTANCE.createEntity();
+
+			if (mapFiles != null) {
+				for (MapFile mapFile : mapFiles) {
+					if (mapFile.name.equals(set.name)) {
+						LanguageInput entityLanguageInput = GeneratorFactory.eINSTANCE.createLanguageInput();
+						
+						for (String key : mapFile.content.keySet()) {
+							SimpleInput attrVal = GeneratorFactory.eINSTANCE.createSimpleInput();
+
+							attrVal.setName(key);
+							attrVal.getValues().addAll(mapFile.content.get(key));
+							entityLanguageInput.getInputs().add(attrVal);
+						}
+
+						entity.getInputs().add(entityLanguageInput);
+					}
+				}
+			}
+
+			parameter.setEntity(entity);
+			entity.setName(set.name);
+			parameter.setName(set.name);
+			parameter.setDefaultEntity(DefaultEntity.TEXT);
+			parameterRef.setParameter(parameter);
+			phrase.getTokens().add(parameterRef);
+			intent.getParameters().add(parameter);
+		}
+	}
+	
+	// Devuelve todos los sets que hay en el template a las distintas profundidades posibles
+	public static List<Set> getAllTemplateSets(Template template) {
+		List<Set> ret = new ArrayList<Set>();
+		
+		if (template.think != null && template.think.sets != null)
+			ret.addAll(template.think.sets);
+		
+		if (template.condition != null)
+			for (Option li: template.condition.options)
+				if (li.think != null && !li.think.sets.isEmpty())
+					ret.addAll(li.think.sets);
+			
+		return ret;
+	}
+	
+	//// Funciones necesarias pero ajenas a la tarea que se está tratando
+	// Cuenta el numero de apariciones de un substring en un string
+	// Credit: https://stackoverflow.com/questions/767759/occurrences-of-substring-in-a-string
+	public static int countOccurrences(String source, String substring) {
+		int lastIndex = 0;
+		int count = 0;
+
+		while(lastIndex != -1){
+		    lastIndex = source.indexOf(substring, lastIndex);
+
+		    if(lastIndex != -1) {
+		        count ++;
+		        lastIndex += substring.length();
+		    }
+		}
+		
+		return count;
+	}
+}
+
+----------------------------------- SOURCE END -------------------------------------
+!STACK 0
+java.lang.IllegalArgumentException
+	at org.eclipse.jdt.core.dom.InfixExpression.setOperator(InfixExpression.java:383)
+	at org.eclipse.jdt.core.dom.ASTConverter.convert(ASTConverter.java:880)
+	at org.eclipse.jdt.core.dom.ASTConverter.convert(ASTConverter.java:2011)
+	at org.eclipse.jdt.core.dom.ASTConverter.convertToParenthesizedExpression(ASTConverter.java:3764)
+	at org.eclipse.jdt.core.dom.ASTConverter.convert(ASTConverter.java:1932)
+	at org.eclipse.jdt.core.dom.ASTConverter.convert(ASTConverter.java:1204)
+	at org.eclipse.jdt.core.dom.ASTConverter.convert(ASTConverter.java:1963)
+	at org.eclipse.jdt.core.dom.ASTConverter.convertToExpression(ASTConverter.java:3616)
+	at org.eclipse.jdt.core.dom.ASTConverter.convert(ASTConverter.java:2174)
+	at org.eclipse.jdt.core.dom.ASTConverter.convert(ASTConverter.java:2965)
+	at org.eclipse.jdt.core.dom.ASTConverter.convert(ASTConverter.java:1372)
+	at org.eclipse.jdt.core.dom.ASTConverter.convert(ASTConverter.java:2944)
+	at org.eclipse.jdt.core.dom.ASTConverter.convert(ASTConverter.java:2141)
+	at org.eclipse.jdt.core.dom.ASTConverter.convert(ASTConverter.java:2934)
+	at org.eclipse.jdt.core.dom.ASTConverter.convert(ASTConverter.java:1372)
+	at org.eclipse.jdt.core.dom.ASTConverter.convert(ASTConverter.java:2944)
+	at org.eclipse.jdt.core.dom.ASTConverter.convert(ASTConverter.java:2141)
+	at org.eclipse.jdt.core.dom.ASTConverter.convert(ASTConverter.java:2934)
+	at org.eclipse.jdt.core.dom.ASTConverter.convert(ASTConverter.java:751)
+	at org.eclipse.jdt.core.dom.ASTConverter.buildBodyDeclarations(ASTConverter.java:208)
+	at org.eclipse.jdt.core.dom.ASTConverter.convert(ASTConverter.java:3316)
+	at org.eclipse.jdt.core.dom.ASTConverter.convert(ASTConverter.java:1513)
+	at org.eclipse.jdt.core.dom.CompilationUnitResolver.convert(CompilationUnitResolver.java:323)
+	at org.eclipse.jdt.core.dom.ASTParser.internalCreateAST(ASTParser.java:1231)
+	at org.eclipse.jdt.core.dom.ASTParser.createAST(ASTParser.java:820)
+	at org.eclipse.jdt.core.manipulation.CoreASTProvider$1.run(CoreASTProvider.java:272)
+	at org.eclipse.core.runtime.SafeRunner.run(SafeRunner.java:45)
+	at org.eclipse.jdt.core.manipulation.CoreASTProvider.createAST(CoreASTProvider.java:264)
+	at org.eclipse.jdt.core.manipulation.CoreASTProvider.getAST(CoreASTProvider.java:197)
+	at org.eclipse.jdt.core.manipulation.SharedASTProviderCore.getAST(SharedASTProviderCore.java:138)
+	at org.eclipse.jdt.internal.ui.viewsupport.SelectionListenerWithASTManager$PartListenerGroup.calculateASTandInform(SelectionListenerWithASTManager.java:166)
+	at org.eclipse.jdt.internal.ui.viewsupport.SelectionListenerWithASTManager$PartListenerGroup$1.run(SelectionListenerWithASTManager.java:151)
+	at org.eclipse.core.internal.jobs.Worker.run(Worker.java:63)
+
+!ENTRY org.eclipse.jdt.core.manipulation 4 2 2021-09-08 10:40:40.486
+!MESSAGE Problems occurred when invoking code from plug-in: "org.eclipse.jdt.core.manipulation".
+!STACK 0
+java.lang.IllegalArgumentException
+	at org.eclipse.jdt.core.dom.InfixExpression.setOperator(InfixExpression.java:383)
+	at org.eclipse.jdt.core.dom.ASTConverter.convert(ASTConverter.java:880)
+	at org.eclipse.jdt.core.dom.ASTConverter.convert(ASTConverter.java:2011)
+	at org.eclipse.jdt.core.dom.ASTConverter.convertToParenthesizedExpression(ASTConverter.java:3764)
+	at org.eclipse.jdt.core.dom.ASTConverter.convert(ASTConverter.java:1932)
+	at org.eclipse.jdt.core.dom.ASTConverter.convert(ASTConverter.java:1204)
+	at org.eclipse.jdt.core.dom.ASTConverter.convert(ASTConverter.java:1963)
+	at org.eclipse.jdt.core.dom.ASTConverter.convertToExpression(ASTConverter.java:3616)
+	at org.eclipse.jdt.core.dom.ASTConverter.convert(ASTConverter.java:2174)
+	at org.eclipse.jdt.core.dom.ASTConverter.convert(ASTConverter.java:2965)
+	at org.eclipse.jdt.core.dom.ASTConverter.convert(ASTConverter.java:1372)
+	at org.eclipse.jdt.core.dom.ASTConverter.convert(ASTConverter.java:2944)
+	at org.eclipse.jdt.core.dom.ASTConverter.convert(ASTConverter.java:2141)
+	at org.eclipse.jdt.core.dom.ASTConverter.convert(ASTConverter.java:2934)
+	at org.eclipse.jdt.core.dom.ASTConverter.convert(ASTConverter.java:1372)
+	at org.eclipse.jdt.core.dom.ASTConverter.convert(ASTConverter.java:2944)
+	at org.eclipse.jdt.core.dom.ASTConverter.convert(ASTConverter.java:2141)
+	at org.eclipse.jdt.core.dom.ASTConverter.convert(ASTConverter.java:2934)
+	at org.eclipse.jdt.core.dom.ASTConverter.convert(ASTConverter.java:751)
+	at org.eclipse.jdt.core.dom.ASTConverter.buildBodyDeclarations(ASTConverter.java:208)
+	at org.eclipse.jdt.core.dom.ASTConverter.convert(ASTConverter.java:3316)
+	at org.eclipse.jdt.core.dom.ASTConverter.convert(ASTConverter.java:1513)
+	at org.eclipse.jdt.core.dom.CompilationUnitResolver.convert(CompilationUnitResolver.java:323)
+	at org.eclipse.jdt.core.dom.ASTParser.internalCreateAST(ASTParser.java:1231)
+	at org.eclipse.jdt.core.dom.ASTParser.createAST(ASTParser.java:820)
+	at org.eclipse.jdt.core.manipulation.CoreASTProvider$1.run(CoreASTProvider.java:272)
+	at org.eclipse.core.runtime.SafeRunner.run(SafeRunner.java:45)
+	at org.eclipse.jdt.core.manipulation.CoreASTProvider.createAST(CoreASTProvider.java:264)
+	at org.eclipse.jdt.core.manipulation.CoreASTProvider.getAST(CoreASTProvider.java:197)
+	at org.eclipse.jdt.core.manipulation.SharedASTProviderCore.getAST(SharedASTProviderCore.java:138)
+	at org.eclipse.jdt.internal.ui.viewsupport.SelectionListenerWithASTManager$PartListenerGroup.calculateASTandInform(SelectionListenerWithASTManager.java:166)
+	at org.eclipse.jdt.internal.ui.viewsupport.SelectionListenerWithASTManager$PartListenerGroup$1.run(SelectionListenerWithASTManager.java:151)
+	at org.eclipse.core.internal.jobs.Worker.run(Worker.java:63)
+
+!ENTRY org.eclipse.jdt.core.manipulation 4 0 2021-09-08 10:40:40.487
+!MESSAGE Error in JDT Core during AST creation
+!STACK 0
+java.lang.IllegalArgumentException
+	at org.eclipse.jdt.core.dom.InfixExpression.setOperator(InfixExpression.java:383)
+	at org.eclipse.jdt.core.dom.ASTConverter.convert(ASTConverter.java:880)
+	at org.eclipse.jdt.core.dom.ASTConverter.convert(ASTConverter.java:2011)
+	at org.eclipse.jdt.core.dom.ASTConverter.convertToParenthesizedExpression(ASTConverter.java:3764)
+	at org.eclipse.jdt.core.dom.ASTConverter.convert(ASTConverter.java:1932)
+	at org.eclipse.jdt.core.dom.ASTConverter.convert(ASTConverter.java:1204)
+	at org.eclipse.jdt.core.dom.ASTConverter.convert(ASTConverter.java:1963)
+	at org.eclipse.jdt.core.dom.ASTConverter.convertToExpression(ASTConverter.java:3616)
+	at org.eclipse.jdt.core.dom.ASTConverter.convert(ASTConverter.java:2174)
+	at org.eclipse.jdt.core.dom.ASTConverter.convert(ASTConverter.java:2965)
+	at org.eclipse.jdt.core.dom.ASTConverter.convert(ASTConverter.java:1372)
+	at org.eclipse.jdt.core.dom.ASTConverter.convert(ASTConverter.java:2944)
+	at org.eclipse.jdt.core.dom.ASTConverter.convert(ASTConverter.java:2141)
+	at org.eclipse.jdt.core.dom.ASTConverter.convert(ASTConverter.java:2934)
+	at org.eclipse.jdt.core.dom.ASTConverter.convert(ASTConverter.java:1372)
+	at org.eclipse.jdt.core.dom.ASTConverter.convert(ASTConverter.java:2944)
+	at org.eclipse.jdt.core.dom.ASTConverter.convert(ASTConverter.java:2141)
+	at org.eclipse.jdt.core.dom.ASTConverter.convert(ASTConverter.java:2934)
+	at org.eclipse.jdt.core.dom.ASTConverter.convert(ASTConverter.java:751)
+	at org.eclipse.jdt.core.dom.ASTConverter.buildBodyDeclarations(ASTConverter.java:208)
+	at org.eclipse.jdt.core.dom.ASTConverter.convert(ASTConverter.java:3316)
+	at org.eclipse.jdt.core.dom.ASTConverter.convert(ASTConverter.java:1513)
+	at org.eclipse.jdt.core.dom.CompilationUnitResolver.convert(CompilationUnitResolver.java:323)
+	at org.eclipse.jdt.core.dom.ASTParser.internalCreateAST(ASTParser.java:1231)
+	at org.eclipse.jdt.core.dom.ASTParser.createAST(ASTParser.java:820)
+	at org.eclipse.jdt.core.manipulation.CoreASTProvider$1.run(CoreASTProvider.java:272)
+	at org.eclipse.core.runtime.SafeRunner.run(SafeRunner.java:45)
+	at org.eclipse.jdt.core.manipulation.CoreASTProvider.createAST(CoreASTProvider.java:264)
+	at org.eclipse.jdt.core.manipulation.CoreASTProvider.getAST(CoreASTProvider.java:197)
+	at org.eclipse.jdt.core.manipulation.SharedASTProviderCore.getAST(SharedASTProviderCore.java:138)
+	at org.eclipse.jdt.internal.ui.viewsupport.SelectionListenerWithASTManager$PartListenerGroup.calculateASTandInform(SelectionListenerWithASTManager.java:166)
+	at org.eclipse.jdt.internal.ui.viewsupport.SelectionListenerWithASTManager$PartListenerGroup$1.run(SelectionListenerWithASTManager.java:151)
+	at org.eclipse.core.internal.jobs.Worker.run(Worker.java:63)
+
+!ENTRY org.eclipse.jdt.core 4 4 2021-09-08 10:40:41.177
+!MESSAGE Exception occurred during compilation unit conversion:
+----------------------------------- SOURCE BEGIN -------------------------------------
+package reverse.pandorabots.agent;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import congabase.User;
+import generator.BotInteraction;
+import generator.DefaultEntity;
+import generator.Entity;
+import generator.GeneratorFactory;
+import generator.HTTPRequest;
+import generator.Intent;
+import generator.IntentInput;
+import generator.IntentLanguageInputs;
+import generator.KeyValue;
+import generator.Language;
+import generator.LanguageInput;
+import generator.Literal;
+import generator.Method;
+import generator.Parameter;
+import generator.ParameterReferenceToken;
+import generator.SimpleInput;
+import generator.Text;
+import generator.TextInput;
+import generator.TextLanguageInput;
+import generator.TrainingPhrase;
+import generator.UserInteraction;
+
+public class AgentIntentsGetter {
+	//// Funciones para gestionar las distintas formas que pueden tomar los intents
+	// Función para gestionar los intents que únicamente contengan argumentos de tipo <set>sample</set>
+	public static void addCategoryWithOnlyPatternSets(Category category, Intent intent) {
+		if (!category.pattern.sets.isEmpty()) {
+			IntentLanguageInputs languageInput = GeneratorFactory.eINSTANCE.createIntentLanguageInputs();
+			TrainingPhrase phrase = GeneratorFactory.eINSTANCE.createTrainingPhrase();
+
+			for (SetAttr set : category.pattern.sets) {
+				ParameterReferenceToken parameterRef = GeneratorFactory.eINSTANCE.createParameterReferenceToken();
+				Parameter parameter = GeneratorFactory.eINSTANCE.createParameter();
+
+				parameter.setName(set.name);
+				parameterRef.setParameter(parameter);
+				phrase.getTokens().add(parameterRef);
+				intent.getParameters().add(parameter);
+			}
+
+			languageInput.getInputs().add(phrase);
+			intent.getInputs().add(languageInput);
+		}
+	}
+
+	// Función para gestionar los intents cuya entrada contenga fechas en el formato DD/MM/AA
+	public static void addCategoryWithDate(Category category, Intent intent, List<MapFile> mapFiles) {
+		IntentLanguageInputs languageInput = GeneratorFactory.eINSTANCE.createIntentLanguageInputs();
+		TrainingPhrase phrase = GeneratorFactory.eINSTANCE.createTrainingPhrase();
+
+		String[] tokens1 = category.pattern.text.split("\\* slash \\* slash \\*");
+		String[] tokens2 = category.pattern.text.split("\\*slash\\*slash\\*");
+		
+		List<String> tokens;
+		if (tokens1.length > tokens2.length && tokens2.length != 0 || tokens1.length == 0) {
+			tokens = List.of(tokens1);
+		}
+		
+		else if (tokens1.length == tokens2.length && tokens2.length == 1)
+			tokens = List.of(tokens1[0].length() < tokens2[0].length() ? tokens1 : tokens2);
+		
+		else
+			tokens = List.of(tokens2);
+		
+		// Caso en que el intent únicamente esté formado por la fecha
+		if (tokens.size() == 0) {
+			ParameterReferenceToken parameterRef = GeneratorFactory.eINSTANCE.createParameterReferenceToken();
+			Parameter parameter = GeneratorFactory.eINSTANCE.createParameter();
+			
+			parameter.setDefaultEntity(DefaultEntity.DATE);
+			parameterRef.setParameter(parameter);
+			phrase.getTokens().add(parameterRef);
+			intent.getParameters().add(parameter);
+		}
+		
+		// Caso en que el intent está formado por fecha y otros elementos
+		else {
+			int dateOccurrences1 = countOccurrences(category.pattern.text, "* slash * slash *");
+			int dateOccurrences2 = countOccurrences(category.pattern.text, "*slash*slash*");
+			int dateCount = dateOccurrences1 > dateOccurrences2 ? dateOccurrences1 : dateOccurrences2;
+			ParameterReferenceToken dateParameterRef = GeneratorFactory.eINSTANCE.createParameterReferenceToken();
+			Parameter dateParameter = GeneratorFactory.eINSTANCE.createParameter();
+			
+//			literal.setText(tokens.get(0));
+//			phrase.getTokens().add(literal);
+//			tokens.remove(0);
+
+			for (String token : tokens) {
+				// Caso en que haya horas en el fragmento y otros elementos o no
+				if (token.contains("* colon *") || token.contains("*colon*")) {
+					String[] innerTokens1 = token.split("\\* colon \\*");
+					String[] innerTokens2 = token.split("\\*colon\\*");
+
+					List<String> innerTokens; 
+					if (innerTokens1.length > innerTokens2.length && innerTokens2.length != 0)
+						innerTokens = List.of(innerTokens1);
+					
+					else if (innerTokens1.length == innerTokens2.length && innerTokens2.length == 1)
+						innerTokens = List.of(innerTokens1[0].length() < innerTokens2[0].length() ? innerTokens1 : innerTokens2);
+					
+					else
+						innerTokens = List.of(innerTokens2);
+					
+					// Caso en que el fragmento únicamente contenga hora
+					if (innerTokens.size() == 0) {
+						ParameterReferenceToken innerParameterRef = GeneratorFactory.eINSTANCE.createParameterReferenceToken();
+						Parameter innerParameter = GeneratorFactory.eINSTANCE.createParameter();
+						
+						innerParameter.setDefaultEntity(DefaultEntity.TIME);
+						innerParameterRef.setParameter(innerParameter);
+						phrase.getTokens().add(innerParameterRef);
+						intent.getParameters().add(innerParameter);
+					}
+					
+					// Caso en que el fragmento contenga más información además de la hora
+					else {
+						int timeOccurrences1 = countOccurrences(category.pattern.text, "* colon *");
+						int timeOccurrences2 = countOccurrences(category.pattern.text, "*colon*");
+						int timeCount = timeOccurrences1 > timeOccurrences2 ? timeOccurrences1 : timeOccurrences2;
+						
+						for (String innerToken : innerTokens) {
+							ParameterReferenceToken hourParameterRef = GeneratorFactory.eINSTANCE.createParameterReferenceToken();
+							Parameter hourParameter = GeneratorFactory.eINSTANCE.createParameter();
+							
+							// Caso en que haya otros parámetros en el fragmento
+							if (innerToken.contains("*")) {
+								String[] innerTokensStar = innerToken.split("\\*");
+								for (String innerToken2 : innerTokensStar) {
+									Literal innerLiteral = GeneratorFactory.eINSTANCE.createLiteral();
+									ParameterReferenceToken innerParameterRef = GeneratorFactory.eINSTANCE.createParameterReferenceToken();
+									Parameter innerParameter = GeneratorFactory.eINSTANCE.createParameter();
+									
+									// Guardado de texto previo al parametro
+									innerLiteral.setText(innerToken2);
+									phrase.getTokens().add(innerLiteral);
+
+									// Guardado del parámetro
+									innerParameter.setDefaultEntity(DefaultEntity.TEXT);
+									innerParameterRef.setParameter(innerParameter);
+									phrase.getTokens().add(innerParameterRef);
+									intent.getParameters().add(innerParameter);
+								}
+							}
+							
+							// Caso en que el fragmento sólo contenga texto
+							else {
+								Literal innerLiteral = GeneratorFactory.eINSTANCE.createLiteral();
+								
+								// Guardado de texto previo al parametro
+								innerLiteral.setText(innerToken);
+								phrase.getTokens().add(innerLiteral);
+							}
+							
+							// Control de adición de parámetros de tipo hora
+							if (timeCount > 0) {
+								hourParameter.setDefaultEntity(DefaultEntity.TIME);
+								hourParameterRef.setParameter(hourParameter);
+								phrase.getTokens().add(hourParameterRef);
+								intent.getParameters().add(hourParameter);
+								timeCount -= 1;
+							}
+						}
+					}
+				}
+				
+				// Caso en que haya otros parámetros en el fragmento
+				else if (token.contains("*")) {				
+					String[] innerTokens = category.pattern.text.split("\\*");
+					for (String innerToken : innerTokens) {
+						Literal innerLiteral = GeneratorFactory.eINSTANCE.createLiteral();
+						ParameterReferenceToken parameterRef = GeneratorFactory.eINSTANCE.createParameterReferenceToken();
+						Parameter parameter = GeneratorFactory.eINSTANCE.createParameter();
+						
+						// Guardado de texto previo al parametro
+						innerLiteral.setText(innerToken);
+						phrase.getTokens().add(innerLiteral);
+
+						// Guardado del parámetro
+						parameter.setDefaultEntity(DefaultEntity.TEXT);
+						parameterRef.setParameter(parameter);
+						phrase.getTokens().add(parameterRef);
+						intent.getParameters().add(parameter);
+					}
+				}
+				
+				// Caso en que el fragmento sólo contenga texto
+				else {
+					Literal innerLiteral = GeneratorFactory.eINSTANCE.createLiteral();
+					
+					// Guardado de texto previo al parametro
+					innerLiteral.setText(token);
+					phrase.getTokens().add(innerLiteral);
+				}
+				
+				// Control de adición de parámetros de tipo fecha
+				if (dateCount > 0) {
+					dateParameter.setDefaultEntity(DefaultEntity.DATE);
+					dateParameterRef.setParameter(dateParameter);
+					phrase.getTokens().add(dateParameterRef);
+					intent.getParameters().add(dateParameter);
+					dateCount -= 1;
+				}
+			}
+			
+			// Caso en que contenga sets en el pattern
+			if (category.pattern.sets != null)
+				intentAddSets(category.pattern.sets, intent, mapFiles, phrase);
+		}
+		
+		languageInput.getInputs().add(phrase);
+		intent.getInputs().add(languageInput);
+	}
+
+	// Función para gestionar los intents cuya entrada contenga horas en el formato HH:MM
+	public static void addCategoryWithHour(Category category, Intent intent, List<MapFile> mapFiles) {
+		IntentLanguageInputs languageInput = GeneratorFactory.eINSTANCE.createIntentLanguageInputs();
+		TrainingPhrase phrase = GeneratorFactory.eINSTANCE.createTrainingPhrase();
+		String[] tokens1 = category.pattern.text.split("\\* colon \\*");
+		String[] tokens2 = category.pattern.text.split("\\*colon\\*");
+
+		List<String> tokens; 
+		if (tokens1.length > tokens2.length && tokens2.length != 0 || tokens1.length == 0)
+			tokens = List.of(tokens1);
+		
+		else if (tokens1.length == tokens2.length && tokens2.length == 1)
+			tokens = List.of(tokens1[0].length() < tokens2[0].length() ? tokens1 : tokens2);
+		
+		else
+			tokens = List.of(tokens2);
+		
+		// Caso en que el fragmento únicamente contenga hora
+		if (tokens.size() == 0) {
+			ParameterReferenceToken innerParameterRef = GeneratorFactory.eINSTANCE.createParameterReferenceToken();
+			Parameter innerParameter = GeneratorFactory.eINSTANCE.createParameter();
+			
+			innerParameter.setDefaultEntity(DefaultEntity.TIME);
+			innerParameterRef.setParameter(innerParameter);
+			phrase.getTokens().add(innerParameterRef);
+			intent.getParameters().add(innerParameter);
+		}
+		
+		// Caso en que el fragmento contenga más información además de la hora
+		else {
+			int timeOccurrences1 = countOccurrences(category.pattern.text, "* colon *");
+			int timeOccurrences2 = countOccurrences(category.pattern.text, "*colon*");
+			int timeCount = timeOccurrences1 > timeOccurrences2 ? timeOccurrences1 : timeOccurrences2;
+			
+			for (String token : tokens) {
+				ParameterReferenceToken hourParameterRef = GeneratorFactory.eINSTANCE.createParameterReferenceToken();
+				Parameter hourParameter = GeneratorFactory.eINSTANCE.createParameter();
+				
+				// Caso en que haya otros parámetros en el fragmento
+				if (token.contains("*")) {
+					String[] innerTokensStar = token.split("\\*");
+					for (String innerToken2 : innerTokensStar) {
+						Literal innerLiteral = GeneratorFactory.eINSTANCE.createLiteral();
+						ParameterReferenceToken innerParameterRef = GeneratorFactory.eINSTANCE.createParameterReferenceToken();
+						Parameter innerParameter = GeneratorFactory.eINSTANCE.createParameter();
+						
+						// Guardado de texto previo al parametro
+						innerLiteral.setText(innerToken2);
+						phrase.getTokens().add(innerLiteral);
+
+						// Guardado del parámetro
+						innerParameter.setDefaultEntity(DefaultEntity.TEXT);
+						innerParameterRef.setParameter(innerParameter);
+						phrase.getTokens().add(innerParameterRef);
+						intent.getParameters().add(innerParameter);
+					}
+				}
+				
+				// Caso en que el fragmento sólo contenga texto
+				else {
+					Literal innerLiteral = GeneratorFactory.eINSTANCE.createLiteral();
+					
+					// Guardado de texto previo al parametro
+					innerLiteral.setText(token);
+					phrase.getTokens().add(innerLiteral);
+				}
+				
+				// Control de adición de parámetros de tipo hora
+				if (timeCount > 0) {
+					hourParameter.setDefaultEntity(DefaultEntity.TIME);
+					hourParameterRef.setParameter(hourParameter);
+					phrase.getTokens().add(hourParameterRef);
+					intent.getParameters().add(hourParameter);
+					timeCount -= 1;
+				}
+			}
+		}
+		
+		languageInput.getInputs().add(phrase);
+		intent.getInputs().add(languageInput);
+	}
+
+	// Función para gestionar los intents básicos, es decir, aquellos que están formados por texto y parámetros o sets
+	public static void addCategoryBasic(Category category, Intent intent, List<MapFile> mapFiles) {
+		// Caso en que el intent contenga sólo texto
+		if (!category.pattern.text.contains("*")) {
+			IntentLanguageInputs languageInput = GeneratorFactory.eINSTANCE.createIntentLanguageInputs();
+			TrainingPhrase phrase = GeneratorFactory.eINSTANCE.createTrainingPhrase();
+			Literal literal = GeneratorFactory.eINSTANCE.createLiteral();
+			
+			literal.setText(category.pattern.text);
+			phrase.getTokens().add(literal);
+
+			// Caso en que contenga sets en el pattern
+			if (category.pattern.sets != null)
+				intentAddSets(category.pattern.sets, intent, mapFiles, phrase);
+
+			languageInput.getInputs().add(phrase);
+			intent.getInputs().add(languageInput);
+		}
+		
+		// Caso en que contenga *s
+		else {
+			IntentLanguageInputs languageInput = GeneratorFactory.eINSTANCE.createIntentLanguageInputs();
+			TrainingPhrase phrase = GeneratorFactory.eINSTANCE.createTrainingPhrase();
+
+			// Sets contenidos en todo el template
+			List<Set> sets = getAllTemplateSets(category.template);
+			
+			String[] tokens = category.pattern.text.split("\\*");
+			int tokenIndex = 1;
+			for (String token : tokens) {
+				Literal literal = GeneratorFactory.eINSTANCE.createLiteral();
+				ParameterReferenceToken parameterRef = GeneratorFactory.eINSTANCE.createParameterReferenceToken();
+				Parameter parameter = GeneratorFactory.eINSTANCE.createParameter();
+				int setsFlag = 0;
+				
+				// Guardado de texto previo al parametro
+				literal.setText(token);
+				phrase.getTokens().add(literal);
+
+				// Guardado del parámetro
+				// Si el template tiene sets, entonces se busca el nombre del parámetro y se asocia a este
+				if (!sets.isEmpty()) {
+					for (Set set: sets) {
+						if (setsFlag == 0 && set.stars != null && !set.stars.isEmpty()) {
+							for (Star star: set.stars) {
+								if (star.index == tokenIndex || tokens.length == 1) {
+									parameter.setName(set.name);
+									setsFlag = 1;
+									break;
+								}
+							}
+						} else {
+							setsFlag = 0;
+							break;
+						}
+					}
+				}
+				
+				parameter.setDefaultEntity(DefaultEntity.TEXT);
+				parameterRef.setParameter(parameter);
+				phrase.getTokens().add(parameterRef);
+				intent.getParameters().add(parameter);
+				
+				tokenIndex += 1;
+			}
+			
+			// Caso en que contenga sets en el pattern
+			if (category.pattern.sets != null)
+				intentAddSets(category.pattern.sets, intent, mapFiles, phrase);
+
+			languageInput.getInputs().add(phrase);
+			intent.getInputs().add(languageInput);
+		}
+	}
+	
+	//// Funciones para gestionar los flujos de conversación
+	// Función para gestionar los flujos de conversación directos, a nivel 1
+	public static List<UserInteraction> getMainFlows(Category category, Intent intent, List<Intent> intents) {
+		List<UserInteraction> ret = new ArrayList<UserInteraction>();
+		List<TextLanguageInput> responses = getAllIntentDirectResponses(category, intents);
+		UserInteraction flow = GeneratorFactory.eINSTANCE.createUserInteraction();
+		BotInteraction target = GeneratorFactory.eINSTANCE.createBotInteraction();
+		
+		for (TextLanguageInput response: responses) {
+			Text targetText = GeneratorFactory.eINSTANCE.createText();
+			
+			targetText.getInputs().add(response);
+			target.getActions().add(targetText);
+		}
+		
+		// Caso en que tenga una llamada de tipo HTTP (callapi)
+		if (category.template.callapi != null)
+			addCallapi(category.template.callapi, target);
+
+		flow.setTarget(target);
+		flow.setIntent(intent);
+		ret.add(flow);
+		
+		return ret;
+	}
+	
+	// Función para gestionar los flujos de conversación indirectos.
+	public static void getOutcomingsFlows(List<UserInteraction> currentFlows, List<UserInteraction> flows) {
+		List<UserInteraction> futureFlows = new ArrayList<UserInteraction>();
+		
+		for (UserInteraction cFlow: currentFlows) {
+			for (UserInteraction flow: flows) {
+				for ()
+				// Comparación de si el target de cFlow es equivalente al intent de flow
+				if (cFlow.getTarget().getActions instanceof Text && a2 instanceof Text &&
+		        		AgentIntentsGetter.equalTextInputs((Text)a1, (Text)a2))
+		        		return 0;
+		        	
+		        	// Caso en que sean actions de tipo HTTP
+		        	else if (a1 instanceof HTTPRequest && a2 instanceof HTTPRequest &&
+			        		AgentIntentsGetter.equalHTTPRequest((HTTPRequest)a1, (HTTPRequest)a2))
+		        		return 0;
+			}
+		}
+		
+		if (!futureFlows.isEmpty())
+			getOutcomingsFlows(futureFlows, flows);
+	}
+	
+	// Función para añadir llamadas HTTP
+	public static void addCallapi(Callapi callapi, BotInteraction target) {
+		HTTPRequest httpRequest = GeneratorFactory.eINSTANCE.createHTTPRequest();
+		
+		if (callapi.url != null)
+			httpRequest.setURL(callapi.url);
+		
+		if (callapi.response_code_var != null)
+			httpRequest.setName(callapi.response_code_var);
+		
+		if (callapi.method != null)
+			httpRequest.setMethod(castMethod(callapi.method));
+		
+		// El método por defecto en Pandorabots si no se indica es GET
+		else
+			httpRequest.setMethod(Method.GET);
+		
+		if (callapi.queryParams != null) {
+			for (CallapiQuery param: callapi.queryParams) {
+
+				// Caso en que el parámetro tenga texto
+				if (param.text != null) {
+					KeyValue keyValue = GeneratorFactory.eINSTANCE.createKeyValue();
+					Literal literal = GeneratorFactory.eINSTANCE.createLiteral();
+					
+					literal.setText(param.text);
+
+					keyValue.setKey(param.name + "_text");
+					keyValue.setValue(literal);
+					httpRequest.getData().add(keyValue);
+				}
+				
+				// Caso en que el parámetro tenga llamadas a variables guardadas
+				if (param.gets != null) {
+					for (Get get: param.gets) {
+						KeyValue keyValue = GeneratorFactory.eINSTANCE.createKeyValue();
+						ParameterReferenceToken parameterRef = GeneratorFactory.eINSTANCE.createParameterReferenceToken();
+						Parameter parameter = GeneratorFactory.eINSTANCE.createParameter();
+						
+						parameter.setName(get.name);
+						parameter.setDefaultEntity(DefaultEntity.TEXT);
+						parameterRef.setParameter(parameter);
+						
+						keyValue.setKey(param.name + "_param_" + get.name);
+						keyValue.setValue(parameterRef);
+						httpRequest.getData().add(keyValue);
+					}
+				}
+				
+			}
+		}
+		
+		if (callapi.header != null)
+			httpRequest.setHeader("header", callapi.header.name.text);
+		
+		target.getActions().add(httpRequest);
+	}
+	
+	//// Funciones auxiliares para realizar tareas concretas
+	// Función que comprueba si un TextLanguageInput es igual a otro
+	public static boolean equalTextInputs(Text input1, Text input2) {
+		List<TextLanguageInput> internalInputs1 = input1.getInputs();
+		List<TextLanguageInput> internalInputs2 = input2.getInputs();
+		
+		if (internalInputs1.size() == internalInputs2.size()) {
+			for (int i = 0; i < internalInputs1.size(); i++) {
+				List<?> tokens1 = internalInputs1.get(i).getInputs().get(0).getTokens();
+				List<?> tokens2 = internalInputs2.get(i).getInputs().get(0).getTokens();
+				
+				if (tokens1.size() == tokens2.size()) {
+					for (int j = 0; j < tokens1.size(); j++) {
+						var token1 = tokens1.get(i);
+						var token2 = tokens2.get(i);
+						
+						// Caso en que los tokens sean literales
+						if (token1 instanceof Literal &&
+							token2 instanceof Literal) {
+							if (!((Literal) token1).getText().equals(((Literal) token2).getText()))
+								return false;
+						}
+						
+						// Caso en que los tokens sean parámetros
+						else if (tokens1.get(i) instanceof ParameterReferenceToken && 
+								 tokens2.get(i) instanceof ParameterReferenceToken) {
+							// Comprobación compleja, el sistema puede tener dificultades a la hora de
+							// guardar los nombres de variables, con lo que se hace mejor una
+							// comprobación básica
+//							String parameterName1 = ((ParameterReferenceToken) token1).getParameter().getName();
+//							String parameterName2 = ((ParameterReferenceToken) token2).getParameter().getName();
+//							
+//							if (parameterName1 == null &&
+//								parameterName2 == null)
+//								continue;
+//							
+//							else if (parameterName1.equals(parameterName2))
+//								continue;
+//							
+//							else
+//								return false;
+							continue;
+						}
+						
+						else {
+							return false;
+						}
+					}
+				}
+			}
+			
+			return true;
+		}
+		
+		else
+			return false;
+	}
+	
+	// Función que comprueba si un HTTPRequest es igual a otro
+	// TODO: Mejorar comparación si es conveniente
+	public static boolean equalHTTPRequest(HTTPRequest http1, HTTPRequest http2) {
+		if (http1.getName().equals(http2.getName()))
+			return true;
+		
+		else
+			return false;
+	}
+	
+	// Castea el String con el nombre del método de llamada HTTP a la enumeración definida
+	public static Method castMethod(String methodName) {
+		if (methodName.toUpperCase().equals("POST"))
+			return Method.POST;
+		
+		else if (methodName.toUpperCase().equals("GET"))
+			return Method.GET;
+		
+		else
+			return Method.POST;
+	}
+	// Devuelve todas las posibles respuestas de una categoría
+	public static List<TextLanguageInput> getAllIntentDirectResponses(Category category, List<Intent> intents) {
+		List<TextLanguageInput> ret = new ArrayList<TextLanguageInput>();
+	
+		// Caso en que el template tenga texto
+		if (category.template.text != null) {
+			TextLanguageInput languageInput = GeneratorFactory.eINSTANCE.createTextLanguageInput();
+			TextInput textInput = GeneratorFactory.eINSTANCE.createTextInput();
+			Literal literal = GeneratorFactory.eINSTANCE.createLiteral();
+			
+			literal.setText(category.template.text);
+			textInput.getTokens().add(literal);
+			languageInput.setLanguage(Language.ENGLISH);
+			languageInput.getInputs().add(textInput);
+			ret.add(languageInput);
+		}
+		
+		// Caso en que el template tenga srais
+		if (category.template.srais != null) {
+			ret.addAll(addResponseSrais(category.template.srais, intents));
+		}
+		
+		// Caso en que el template tenga conditions
+		if (category.template.condition != null) {
+			ret.addAll(getConditionResponsesREC(category.template.condition, intents, new ArrayList<TextLanguageInput>()));
+		}
+		
+		// Caso en el que el template tenga un think con srais
+		if (category.template.think != null && category.template.think.srais != null) {
+			ret.addAll(addResponseSrais(category.template.think.srais, intents));
+		}
+		
+		return ret;
+	}
+	
+	// Añade las respuestas de un intent formadas por srais en forma de lista
+	public static List<TextLanguageInput> addResponseSrais(List<Srai> srais, List<Intent> intents) {
+		List<TextLanguageInput> ret = new ArrayList<TextLanguageInput>();
+		
+		for (Srai srai: srais) {
+			TextLanguageInput languageInput = GeneratorFactory.eINSTANCE.createTextLanguageInput();
+			TextInput textInput = GeneratorFactory.eINSTANCE.createTextInput();
+			Literal literal = GeneratorFactory.eINSTANCE.createLiteral();
+			
+			literal.setText(srai.text);
+			textInput.getTokens().add(literal);
+
+			// Si el srai tiene referencias a argumentos del pattern, 
+			// se busca qué parámetros son en el intent que sea y se añaden
+			if (srai.stars != null) {
+				int starsFound = srai.stars.size();
+				
+				for (Intent intent: intents) {
+					var firstToken = intent.getInputs().get(0).getInputs().get(0);
+					if (firstToken instanceof Literal && ((Literal) firstToken).getText().equals(srai.text)) {
+						List<Parameter> parameters = new ArrayList<Parameter>();
+						
+						// Se recogen los parámetros del intent en cuestión
+						for (var token: intent.getInputs().get(0).getInputs()) {
+							if (token instanceof ParameterReferenceToken) {
+								parameters.add(((ParameterReferenceToken) token).getParameter());
+								starsFound -= 1;
+							}
+						}
+						
+						// Caso en que sólo haya un parámetro
+						if (srai.stars.size() == 1 && !parameters.isEmpty()) {
+							ParameterReferenceToken parameterRef = GeneratorFactory.eINSTANCE.createParameterReferenceToken();
+							
+							parameterRef.setParameter(parameters.get(0));
+							textInput.getTokens().add(parameterRef);
+							starsFound -= 1;
+							break;
+						}
+
+						// Caso en que haya más de un parámetro (fechas y horas no soportadas)
+						else {
+							// Se hace el matching de los parámetros con sus índices 
+							// o en caso de error se añade un parámetro genérico
+							for (Star star: srai.stars) {
+								ParameterReferenceToken parameterRef = GeneratorFactory.eINSTANCE.createParameterReferenceToken();
+								
+								try {
+									parameterRef.setParameter(parameters.get(star.index - 1));
+								} catch(Exception e) {
+									Parameter parameter = GeneratorFactory.eINSTANCE.createParameter();
+
+									parameter.setDefaultEntity(DefaultEntity.TEXT);
+									parameterRef.setParameter(parameter);
+									textInput.getTokens().add(parameterRef);
+								}
+								
+								textInput.getTokens().add(parameterRef);
+								starsFound -= 1;
+								break;
+							}
+						}
+					}
+				}
+				
+				// En caso de no encontrar el intent al que se hace referencia en la lista de intents,
+				// se añaden las stars como parámetros
+				if (starsFound > 0) {
+					for (int i = 0; i < starsFound; i++) {
+						ParameterReferenceToken parameterRef = GeneratorFactory.eINSTANCE.createParameterReferenceToken();
+						Parameter parameter = GeneratorFactory.eINSTANCE.createParameter();
+						
+						parameter.setDefaultEntity(DefaultEntity.TEXT);
+						parameterRef.setParameter(parameter);
+						textInput.getTokens().add(parameterRef);
+					}
+				}
+			}
+
+			languageInput.setLanguage(Language.ENGLISH);
+			languageInput.getInputs().add(textInput);
+			ret.add(languageInput);
+		}
+		
+		return ret;
+	}
+	
+	// Recoge todas las posibles respuestas de un condicional y sus posibles árboles de condicionales
+	// y las devuelve en forma de lista
+	public static List<TextLanguageInput> getConditionResponsesREC(Condition condition, List<Intent> intents, List<TextLanguageInput> list) {
+		for (Option option: condition.options) {
+			// Caso en que la opción tenga texto
+			if (option.text != null) {
+				TextLanguageInput languageInput = GeneratorFactory.eINSTANCE.createTextLanguageInput();
+				TextInput textInput = GeneratorFactory.eINSTANCE.createTextInput();
+				Literal literal = GeneratorFactory.eINSTANCE.createLiteral();
+				
+				literal.setText(option.text);
+				textInput.getTokens().add(literal);
+				languageInput.setLanguage(Language.ENGLISH);
+				languageInput.getInputs().add(textInput);
+				list.add(languageInput);
+			}
+			
+			// Caso en que la opción tenga srais
+			if (option.srais != null) {
+				for (Srai srai: option.srais) {
+					TextLanguageInput languageInput = GeneratorFactory.eINSTANCE.createTextLanguageInput();
+					TextInput textInput = GeneratorFactory.eINSTANCE.createTextInput();
+					Literal literal = GeneratorFactory.eINSTANCE.createLiteral();
+					
+					literal.setText(srai.text);
+					textInput.getTokens().add(literal);
+
+					// Si el srai tiene referencias a argumentos del pattern, 
+					// se busca qué parámetros son en el intent que sea y se añaden
+					if (srai.stars != null) {
+						int starsFound = srai.stars.size();
+						
+						for (Intent intent: intents) {
+							var firstToken = intent.getInputs().get(0).getInputs().get(0);
+							if (firstToken instanceof Literal && ((Literal) firstToken).getText().equals(srai.text)) {
+								List<Parameter> parameters = new ArrayList<Parameter>();
+								
+								// Se recogen los parámetros del intent en cuestión
+								for (var token: intent.getInputs().get(0).getInputs()) {
+									if (token instanceof ParameterReferenceToken) {
+										parameters.add(((ParameterReferenceToken) token).getParameter());
+									}
+								}
+								
+								// Caso en que sólo haya un parámetro
+								if (srai.stars.size() == 1 && !parameters.isEmpty()) {
+									ParameterReferenceToken parameterRef = GeneratorFactory.eINSTANCE.createParameterReferenceToken();
+									
+									parameterRef.setParameter(parameters.get(0));
+									textInput.getTokens().add(parameterRef);
+									break;
+								}
+
+								// Caso en que haya más de un parámetro (fechas y horas no soportadas)
+								else {
+									// Se hace el matching de los parámetros con sus índices 
+									// o en caso de error se añade un parámetro genérico
+									for (Star star: srai.stars) {
+										ParameterReferenceToken parameterRef = GeneratorFactory.eINSTANCE.createParameterReferenceToken();
+										
+										try {
+											parameterRef.setParameter(parameters.get(star.index - 1));
+										} catch(Exception e) {
+											Parameter parameter = GeneratorFactory.eINSTANCE.createParameter();
+
+											parameter.setDefaultEntity(DefaultEntity.TEXT);
+											parameterRef.setParameter(parameter);
+											textInput.getTokens().add(parameterRef);
+										}
+										
+										textInput.getTokens().add(parameterRef);
+										break;
+									}
+								}
+							}
+						}
+						
+						// En caso de no encontrar el intent al que se hace referencia en la lista de intents,
+						// se añaden las stars como parámetros
+						if (starsFound > 0) {
+							for (int i = 0; i < starsFound; i++) {
+								ParameterReferenceToken parameterRef = GeneratorFactory.eINSTANCE.createParameterReferenceToken();
+								Parameter parameter = GeneratorFactory.eINSTANCE.createParameter();
+								
+								parameter.setDefaultEntity(DefaultEntity.TEXT);
+								parameterRef.setParameter(parameter);
+								textInput.getTokens().add(parameterRef);
+							}
+						}
+					}
+
+					languageInput.setLanguage(Language.ENGLISH);
+					languageInput.getInputs().add(textInput);
+					list.add(languageInput);
+				}
+			}
+			
+			// Caso en el que la opción tenga un think con srais
+			if (option.think != null && option.think.srais != null) {
+				list.addAll(addResponseSrais(option.think.srais, intents));
+			}
+			
+			// Caso en que la opción contenga a su vez otro condicional
+			if (option.condition != null) {
+				list.addAll(getConditionResponsesREC(option.condition, intents, list));
+			}
+		}
+		
+		return list;
+	}
+	
+	// Dada una lista no-vacía de sets del patrón de una categoría, añade dichos sets a la frase en forma de parámetros
+	public static void intentAddSets(List<SetAttr> sets, Intent intent, List<MapFile> mapFiles, TrainingPhrase phrase) {
+		for (SetAttr set : sets) {
+			ParameterReferenceToken parameterRef = GeneratorFactory.eINSTANCE.createParameterReferenceToken();
+			Parameter parameter = GeneratorFactory.eINSTANCE.createParameter();
+			Entity entity = GeneratorFactory.eINSTANCE.createEntity();
+
+			if (mapFiles != null) {
+				for (MapFile mapFile : mapFiles) {
+					if (mapFile.name.equals(set.name)) {
+						LanguageInput entityLanguageInput = GeneratorFactory.eINSTANCE.createLanguageInput();
+						
+						for (String key : mapFile.content.keySet()) {
+							SimpleInput attrVal = GeneratorFactory.eINSTANCE.createSimpleInput();
+
+							attrVal.setName(key);
+							attrVal.getValues().addAll(mapFile.content.get(key));
+							entityLanguageInput.getInputs().add(attrVal);
+						}
+
+						entity.getInputs().add(entityLanguageInput);
+					}
+				}
+			}
+
+			parameter.setEntity(entity);
+			entity.setName(set.name);
+			parameter.setName(set.name);
+			parameter.setDefaultEntity(DefaultEntity.TEXT);
+			parameterRef.setParameter(parameter);
+			phrase.getTokens().add(parameterRef);
+			intent.getParameters().add(parameter);
+		}
+	}
+	
+	// Devuelve todos los sets que hay en el template a las distintas profundidades posibles
+	public static List<Set> getAllTemplateSets(Template template) {
+		List<Set> ret = new ArrayList<Set>();
+		
+		if (template.think != null && template.think.sets != null)
+			ret.addAll(template.think.sets);
+		
+		if (template.condition != null)
+			for (Option li: template.condition.options)
+				if (li.think != null && !li.think.sets.isEmpty())
+					ret.addAll(li.think.sets);
+			
+		return ret;
+	}
+	
+	//// Funciones necesarias pero ajenas a la tarea que se está tratando
+	// Cuenta el numero de apariciones de un substring en un string
+	// Credit: https://stackoverflow.com/questions/767759/occurrences-of-substring-in-a-string
+	public static int countOccurrences(String source, String substring) {
+		int lastIndex = 0;
+		int count = 0;
+
+		while(lastIndex != -1){
+		    lastIndex = source.indexOf(substring, lastIndex);
+
+		    if(lastIndex != -1) {
+		        count ++;
+		        lastIndex += substring.length();
+		    }
+		}
+		
+		return count;
+	}
+}
+
+----------------------------------- SOURCE END -------------------------------------
+!STACK 0
+java.lang.IllegalArgumentException
+	at org.eclipse.jdt.core.dom.InfixExpression.setOperator(InfixExpression.java:383)
+	at org.eclipse.jdt.core.dom.ASTConverter.convert(ASTConverter.java:880)
+	at org.eclipse.jdt.core.dom.ASTConverter.convert(ASTConverter.java:2011)
+	at org.eclipse.jdt.core.dom.ASTConverter.convertToParenthesizedExpression(ASTConverter.java:3764)
+	at org.eclipse.jdt.core.dom.ASTConverter.convert(ASTConverter.java:1932)
+	at org.eclipse.jdt.core.dom.ASTConverter.convert(ASTConverter.java:1204)
+	at org.eclipse.jdt.core.dom.ASTConverter.convert(ASTConverter.java:1963)
+	at org.eclipse.jdt.core.dom.ASTConverter.convertToExpression(ASTConverter.java:3616)
+	at org.eclipse.jdt.core.dom.ASTConverter.convert(ASTConverter.java:2174)
+	at org.eclipse.jdt.core.dom.ASTConverter.convert(ASTConverter.java:2965)
+	at org.eclipse.jdt.core.dom.ASTConverter.convert(ASTConverter.java:1372)
+	at org.eclipse.jdt.core.dom.ASTConverter.convert(ASTConverter.java:2944)
+	at org.eclipse.jdt.core.dom.ASTConverter.convert(ASTConverter.java:2141)
+	at org.eclipse.jdt.core.dom.ASTConverter.convert(ASTConverter.java:2934)
+	at org.eclipse.jdt.core.dom.ASTConverter.convert(ASTConverter.java:1372)
+	at org.eclipse.jdt.core.dom.ASTConverter.convert(ASTConverter.java:2944)
+	at org.eclipse.jdt.core.dom.ASTConverter.convert(ASTConverter.java:2141)
+	at org.eclipse.jdt.core.dom.ASTConverter.convert(ASTConverter.java:2934)
+	at org.eclipse.jdt.core.dom.ASTConverter.convert(ASTConverter.java:751)
+	at org.eclipse.jdt.core.dom.ASTConverter.buildBodyDeclarations(ASTConverter.java:208)
+	at org.eclipse.jdt.core.dom.ASTConverter.convert(ASTConverter.java:3316)
+	at org.eclipse.jdt.core.dom.ASTConverter.convert(ASTConverter.java:1513)
+	at org.eclipse.jdt.core.dom.CompilationUnitResolver.convert(CompilationUnitResolver.java:323)
+	at org.eclipse.jdt.core.dom.ASTParser.internalCreateAST(ASTParser.java:1231)
+	at org.eclipse.jdt.core.dom.ASTParser.createAST(ASTParser.java:820)
+	at org.eclipse.jdt.core.manipulation.CoreASTProvider$1.run(CoreASTProvider.java:272)
+	at org.eclipse.core.runtime.SafeRunner.run(SafeRunner.java:45)
+	at org.eclipse.jdt.core.manipulation.CoreASTProvider.createAST(CoreASTProvider.java:264)
+	at org.eclipse.jdt.core.manipulation.CoreASTProvider.getAST(CoreASTProvider.java:197)
+	at org.eclipse.jdt.core.manipulation.SharedASTProviderCore.getAST(SharedASTProviderCore.java:138)
+	at org.eclipse.jdt.internal.ui.viewsupport.SelectionListenerWithASTManager$PartListenerGroup.calculateASTandInform(SelectionListenerWithASTManager.java:166)
+	at org.eclipse.jdt.internal.ui.viewsupport.SelectionListenerWithASTManager$PartListenerGroup$1.run(SelectionListenerWithASTManager.java:151)
+	at org.eclipse.core.internal.jobs.Worker.run(Worker.java:63)
+
+!ENTRY org.eclipse.jdt.core.manipulation 4 2 2021-09-08 10:40:41.178
+!MESSAGE Problems occurred when invoking code from plug-in: "org.eclipse.jdt.core.manipulation".
+!STACK 0
+java.lang.IllegalArgumentException
+	at org.eclipse.jdt.core.dom.InfixExpression.setOperator(InfixExpression.java:383)
+	at org.eclipse.jdt.core.dom.ASTConverter.convert(ASTConverter.java:880)
+	at org.eclipse.jdt.core.dom.ASTConverter.convert(ASTConverter.java:2011)
+	at org.eclipse.jdt.core.dom.ASTConverter.convertToParenthesizedExpression(ASTConverter.java:3764)
+	at org.eclipse.jdt.core.dom.ASTConverter.convert(ASTConverter.java:1932)
+	at org.eclipse.jdt.core.dom.ASTConverter.convert(ASTConverter.java:1204)
+	at org.eclipse.jdt.core.dom.ASTConverter.convert(ASTConverter.java:1963)
+	at org.eclipse.jdt.core.dom.ASTConverter.convertToExpression(ASTConverter.java:3616)
+	at org.eclipse.jdt.core.dom.ASTConverter.convert(ASTConverter.java:2174)
+	at org.eclipse.jdt.core.dom.ASTConverter.convert(ASTConverter.java:2965)
+	at org.eclipse.jdt.core.dom.ASTConverter.convert(ASTConverter.java:1372)
+	at org.eclipse.jdt.core.dom.ASTConverter.convert(ASTConverter.java:2944)
+	at org.eclipse.jdt.core.dom.ASTConverter.convert(ASTConverter.java:2141)
+	at org.eclipse.jdt.core.dom.ASTConverter.convert(ASTConverter.java:2934)
+	at org.eclipse.jdt.core.dom.ASTConverter.convert(ASTConverter.java:1372)
+	at org.eclipse.jdt.core.dom.ASTConverter.convert(ASTConverter.java:2944)
+	at org.eclipse.jdt.core.dom.ASTConverter.convert(ASTConverter.java:2141)
+	at org.eclipse.jdt.core.dom.ASTConverter.convert(ASTConverter.java:2934)
+	at org.eclipse.jdt.core.dom.ASTConverter.convert(ASTConverter.java:751)
+	at org.eclipse.jdt.core.dom.ASTConverter.buildBodyDeclarations(ASTConverter.java:208)
+	at org.eclipse.jdt.core.dom.ASTConverter.convert(ASTConverter.java:3316)
+	at org.eclipse.jdt.core.dom.ASTConverter.convert(ASTConverter.java:1513)
+	at org.eclipse.jdt.core.dom.CompilationUnitResolver.convert(CompilationUnitResolver.java:323)
+	at org.eclipse.jdt.core.dom.ASTParser.internalCreateAST(ASTParser.java:1231)
+	at org.eclipse.jdt.core.dom.ASTParser.createAST(ASTParser.java:820)
+	at org.eclipse.jdt.core.manipulation.CoreASTProvider$1.run(CoreASTProvider.java:272)
+	at org.eclipse.core.runtime.SafeRunner.run(SafeRunner.java:45)
+	at org.eclipse.jdt.core.manipulation.CoreASTProvider.createAST(CoreASTProvider.java:264)
+	at org.eclipse.jdt.core.manipulation.CoreASTProvider.getAST(CoreASTProvider.java:197)
+	at org.eclipse.jdt.core.manipulation.SharedASTProviderCore.getAST(SharedASTProviderCore.java:138)
+	at org.eclipse.jdt.internal.ui.viewsupport.SelectionListenerWithASTManager$PartListenerGroup.calculateASTandInform(SelectionListenerWithASTManager.java:166)
+	at org.eclipse.jdt.internal.ui.viewsupport.SelectionListenerWithASTManager$PartListenerGroup$1.run(SelectionListenerWithASTManager.java:151)
+	at org.eclipse.core.internal.jobs.Worker.run(Worker.java:63)
+
+!ENTRY org.eclipse.jdt.core.manipulation 4 0 2021-09-08 10:40:41.179
+!MESSAGE Error in JDT Core during AST creation
+!STACK 0
+java.lang.IllegalArgumentException
+	at org.eclipse.jdt.core.dom.InfixExpression.setOperator(InfixExpression.java:383)
+	at org.eclipse.jdt.core.dom.ASTConverter.convert(ASTConverter.java:880)
+	at org.eclipse.jdt.core.dom.ASTConverter.convert(ASTConverter.java:2011)
+	at org.eclipse.jdt.core.dom.ASTConverter.convertToParenthesizedExpression(ASTConverter.java:3764)
+	at org.eclipse.jdt.core.dom.ASTConverter.convert(ASTConverter.java:1932)
+	at org.eclipse.jdt.core.dom.ASTConverter.convert(ASTConverter.java:1204)
+	at org.eclipse.jdt.core.dom.ASTConverter.convert(ASTConverter.java:1963)
+	at org.eclipse.jdt.core.dom.ASTConverter.convertToExpression(ASTConverter.java:3616)
+	at org.eclipse.jdt.core.dom.ASTConverter.convert(ASTConverter.java:2174)
+	at org.eclipse.jdt.core.dom.ASTConverter.convert(ASTConverter.java:2965)
+	at org.eclipse.jdt.core.dom.ASTConverter.convert(ASTConverter.java:1372)
+	at org.eclipse.jdt.core.dom.ASTConverter.convert(ASTConverter.java:2944)
+	at org.eclipse.jdt.core.dom.ASTConverter.convert(ASTConverter.java:2141)
+	at org.eclipse.jdt.core.dom.ASTConverter.convert(ASTConverter.java:2934)
+	at org.eclipse.jdt.core.dom.ASTConverter.convert(ASTConverter.java:1372)
+	at org.eclipse.jdt.core.dom.ASTConverter.convert(ASTConverter.java:2944)
+	at org.eclipse.jdt.core.dom.ASTConverter.convert(ASTConverter.java:2141)
+	at org.eclipse.jdt.core.dom.ASTConverter.convert(ASTConverter.java:2934)
+	at org.eclipse.jdt.core.dom.ASTConverter.convert(ASTConverter.java:751)
+	at org.eclipse.jdt.core.dom.ASTConverter.buildBodyDeclarations(ASTConverter.java:208)
+	at org.eclipse.jdt.core.dom.ASTConverter.convert(ASTConverter.java:3316)
+	at org.eclipse.jdt.core.dom.ASTConverter.convert(ASTConverter.java:1513)
+	at org.eclipse.jdt.core.dom.CompilationUnitResolver.convert(CompilationUnitResolver.java:323)
+	at org.eclipse.jdt.core.dom.ASTParser.internalCreateAST(ASTParser.java:1231)
+	at org.eclipse.jdt.core.dom.ASTParser.createAST(ASTParser.java:820)
+	at org.eclipse.jdt.core.manipulation.CoreASTProvider$1.run(CoreASTProvider.java:272)
+	at org.eclipse.core.runtime.SafeRunner.run(SafeRunner.java:45)
+	at org.eclipse.jdt.core.manipulation.CoreASTProvider.createAST(CoreASTProvider.java:264)
+	at org.eclipse.jdt.core.manipulation.CoreASTProvider.getAST(CoreASTProvider.java:197)
+	at org.eclipse.jdt.core.manipulation.SharedASTProviderCore.getAST(SharedASTProviderCore.java:138)
+	at org.eclipse.jdt.internal.ui.viewsupport.SelectionListenerWithASTManager$PartListenerGroup.calculateASTandInform(SelectionListenerWithASTManager.java:166)
+	at org.eclipse.jdt.internal.ui.viewsupport.SelectionListenerWithASTManager$PartListenerGroup$1.run(SelectionListenerWithASTManager.java:151)
+	at org.eclipse.core.internal.jobs.Worker.run(Worker.java:63)
+
+!ENTRY org.eclipse.jdt.core 4 4 2021-09-08 10:40:41.339
+!MESSAGE Exception occurred during compilation unit conversion:
+----------------------------------- SOURCE BEGIN -------------------------------------
+package reverse.pandorabots.agent;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import congabase.User;
+import generator.BotInteraction;
+import generator.DefaultEntity;
+import generator.Entity;
+import generator.GeneratorFactory;
+import generator.HTTPRequest;
+import generator.Intent;
+import generator.IntentInput;
+import generator.IntentLanguageInputs;
+import generator.KeyValue;
+import generator.Language;
+import generator.LanguageInput;
+import generator.Literal;
+import generator.Method;
+import generator.Parameter;
+import generator.ParameterReferenceToken;
+import generator.SimpleInput;
+import generator.Text;
+import generator.TextInput;
+import generator.TextLanguageInput;
+import generator.TrainingPhrase;
+import generator.UserInteraction;
+
+public class AgentIntentsGetter {
+	//// Funciones para gestionar las distintas formas que pueden tomar los intents
+	// Función para gestionar los intents que únicamente contengan argumentos de tipo <set>sample</set>
+	public static void addCategoryWithOnlyPatternSets(Category category, Intent intent) {
+		if (!category.pattern.sets.isEmpty()) {
+			IntentLanguageInputs languageInput = GeneratorFactory.eINSTANCE.createIntentLanguageInputs();
+			TrainingPhrase phrase = GeneratorFactory.eINSTANCE.createTrainingPhrase();
+
+			for (SetAttr set : category.pattern.sets) {
+				ParameterReferenceToken parameterRef = GeneratorFactory.eINSTANCE.createParameterReferenceToken();
+				Parameter parameter = GeneratorFactory.eINSTANCE.createParameter();
+
+				parameter.setName(set.name);
+				parameterRef.setParameter(parameter);
+				phrase.getTokens().add(parameterRef);
+				intent.getParameters().add(parameter);
+			}
+
+			languageInput.getInputs().add(phrase);
+			intent.getInputs().add(languageInput);
+		}
+	}
+
+	// Función para gestionar los intents cuya entrada contenga fechas en el formato DD/MM/AA
+	public static void addCategoryWithDate(Category category, Intent intent, List<MapFile> mapFiles) {
+		IntentLanguageInputs languageInput = GeneratorFactory.eINSTANCE.createIntentLanguageInputs();
+		TrainingPhrase phrase = GeneratorFactory.eINSTANCE.createTrainingPhrase();
+
+		String[] tokens1 = category.pattern.text.split("\\* slash \\* slash \\*");
+		String[] tokens2 = category.pattern.text.split("\\*slash\\*slash\\*");
+		
+		List<String> tokens;
+		if (tokens1.length > tokens2.length && tokens2.length != 0 || tokens1.length == 0) {
+			tokens = List.of(tokens1);
+		}
+		
+		else if (tokens1.length == tokens2.length && tokens2.length == 1)
+			tokens = List.of(tokens1[0].length() < tokens2[0].length() ? tokens1 : tokens2);
+		
+		else
+			tokens = List.of(tokens2);
+		
+		// Caso en que el intent únicamente esté formado por la fecha
+		if (tokens.size() == 0) {
+			ParameterReferenceToken parameterRef = GeneratorFactory.eINSTANCE.createParameterReferenceToken();
+			Parameter parameter = GeneratorFactory.eINSTANCE.createParameter();
+			
+			parameter.setDefaultEntity(DefaultEntity.DATE);
+			parameterRef.setParameter(parameter);
+			phrase.getTokens().add(parameterRef);
+			intent.getParameters().add(parameter);
+		}
+		
+		// Caso en que el intent está formado por fecha y otros elementos
+		else {
+			int dateOccurrences1 = countOccurrences(category.pattern.text, "* slash * slash *");
+			int dateOccurrences2 = countOccurrences(category.pattern.text, "*slash*slash*");
+			int dateCount = dateOccurrences1 > dateOccurrences2 ? dateOccurrences1 : dateOccurrences2;
+			ParameterReferenceToken dateParameterRef = GeneratorFactory.eINSTANCE.createParameterReferenceToken();
+			Parameter dateParameter = GeneratorFactory.eINSTANCE.createParameter();
+			
+//			literal.setText(tokens.get(0));
+//			phrase.getTokens().add(literal);
+//			tokens.remove(0);
+
+			for (String token : tokens) {
+				// Caso en que haya horas en el fragmento y otros elementos o no
+				if (token.contains("* colon *") || token.contains("*colon*")) {
+					String[] innerTokens1 = token.split("\\* colon \\*");
+					String[] innerTokens2 = token.split("\\*colon\\*");
+
+					List<String> innerTokens; 
+					if (innerTokens1.length > innerTokens2.length && innerTokens2.length != 0)
+						innerTokens = List.of(innerTokens1);
+					
+					else if (innerTokens1.length == innerTokens2.length && innerTokens2.length == 1)
+						innerTokens = List.of(innerTokens1[0].length() < innerTokens2[0].length() ? innerTokens1 : innerTokens2);
+					
+					else
+						innerTokens = List.of(innerTokens2);
+					
+					// Caso en que el fragmento únicamente contenga hora
+					if (innerTokens.size() == 0) {
+						ParameterReferenceToken innerParameterRef = GeneratorFactory.eINSTANCE.createParameterReferenceToken();
+						Parameter innerParameter = GeneratorFactory.eINSTANCE.createParameter();
+						
+						innerParameter.setDefaultEntity(DefaultEntity.TIME);
+						innerParameterRef.setParameter(innerParameter);
+						phrase.getTokens().add(innerParameterRef);
+						intent.getParameters().add(innerParameter);
+					}
+					
+					// Caso en que el fragmento contenga más información además de la hora
+					else {
+						int timeOccurrences1 = countOccurrences(category.pattern.text, "* colon *");
+						int timeOccurrences2 = countOccurrences(category.pattern.text, "*colon*");
+						int timeCount = timeOccurrences1 > timeOccurrences2 ? timeOccurrences1 : timeOccurrences2;
+						
+						for (String innerToken : innerTokens) {
+							ParameterReferenceToken hourParameterRef = GeneratorFactory.eINSTANCE.createParameterReferenceToken();
+							Parameter hourParameter = GeneratorFactory.eINSTANCE.createParameter();
+							
+							// Caso en que haya otros parámetros en el fragmento
+							if (innerToken.contains("*")) {
+								String[] innerTokensStar = innerToken.split("\\*");
+								for (String innerToken2 : innerTokensStar) {
+									Literal innerLiteral = GeneratorFactory.eINSTANCE.createLiteral();
+									ParameterReferenceToken innerParameterRef = GeneratorFactory.eINSTANCE.createParameterReferenceToken();
+									Parameter innerParameter = GeneratorFactory.eINSTANCE.createParameter();
+									
+									// Guardado de texto previo al parametro
+									innerLiteral.setText(innerToken2);
+									phrase.getTokens().add(innerLiteral);
+
+									// Guardado del parámetro
+									innerParameter.setDefaultEntity(DefaultEntity.TEXT);
+									innerParameterRef.setParameter(innerParameter);
+									phrase.getTokens().add(innerParameterRef);
+									intent.getParameters().add(innerParameter);
+								}
+							}
+							
+							// Caso en que el fragmento sólo contenga texto
+							else {
+								Literal innerLiteral = GeneratorFactory.eINSTANCE.createLiteral();
+								
+								// Guardado de texto previo al parametro
+								innerLiteral.setText(innerToken);
+								phrase.getTokens().add(innerLiteral);
+							}
+							
+							// Control de adición de parámetros de tipo hora
+							if (timeCount > 0) {
+								hourParameter.setDefaultEntity(DefaultEntity.TIME);
+								hourParameterRef.setParameter(hourParameter);
+								phrase.getTokens().add(hourParameterRef);
+								intent.getParameters().add(hourParameter);
+								timeCount -= 1;
+							}
+						}
+					}
+				}
+				
+				// Caso en que haya otros parámetros en el fragmento
+				else if (token.contains("*")) {				
+					String[] innerTokens = category.pattern.text.split("\\*");
+					for (String innerToken : innerTokens) {
+						Literal innerLiteral = GeneratorFactory.eINSTANCE.createLiteral();
+						ParameterReferenceToken parameterRef = GeneratorFactory.eINSTANCE.createParameterReferenceToken();
+						Parameter parameter = GeneratorFactory.eINSTANCE.createParameter();
+						
+						// Guardado de texto previo al parametro
+						innerLiteral.setText(innerToken);
+						phrase.getTokens().add(innerLiteral);
+
+						// Guardado del parámetro
+						parameter.setDefaultEntity(DefaultEntity.TEXT);
+						parameterRef.setParameter(parameter);
+						phrase.getTokens().add(parameterRef);
+						intent.getParameters().add(parameter);
+					}
+				}
+				
+				// Caso en que el fragmento sólo contenga texto
+				else {
+					Literal innerLiteral = GeneratorFactory.eINSTANCE.createLiteral();
+					
+					// Guardado de texto previo al parametro
+					innerLiteral.setText(token);
+					phrase.getTokens().add(innerLiteral);
+				}
+				
+				// Control de adición de parámetros de tipo fecha
+				if (dateCount > 0) {
+					dateParameter.setDefaultEntity(DefaultEntity.DATE);
+					dateParameterRef.setParameter(dateParameter);
+					phrase.getTokens().add(dateParameterRef);
+					intent.getParameters().add(dateParameter);
+					dateCount -= 1;
+				}
+			}
+			
+			// Caso en que contenga sets en el pattern
+			if (category.pattern.sets != null)
+				intentAddSets(category.pattern.sets, intent, mapFiles, phrase);
+		}
+		
+		languageInput.getInputs().add(phrase);
+		intent.getInputs().add(languageInput);
+	}
+
+	// Función para gestionar los intents cuya entrada contenga horas en el formato HH:MM
+	public static void addCategoryWithHour(Category category, Intent intent, List<MapFile> mapFiles) {
+		IntentLanguageInputs languageInput = GeneratorFactory.eINSTANCE.createIntentLanguageInputs();
+		TrainingPhrase phrase = GeneratorFactory.eINSTANCE.createTrainingPhrase();
+		String[] tokens1 = category.pattern.text.split("\\* colon \\*");
+		String[] tokens2 = category.pattern.text.split("\\*colon\\*");
+
+		List<String> tokens; 
+		if (tokens1.length > tokens2.length && tokens2.length != 0 || tokens1.length == 0)
+			tokens = List.of(tokens1);
+		
+		else if (tokens1.length == tokens2.length && tokens2.length == 1)
+			tokens = List.of(tokens1[0].length() < tokens2[0].length() ? tokens1 : tokens2);
+		
+		else
+			tokens = List.of(tokens2);
+		
+		// Caso en que el fragmento únicamente contenga hora
+		if (tokens.size() == 0) {
+			ParameterReferenceToken innerParameterRef = GeneratorFactory.eINSTANCE.createParameterReferenceToken();
+			Parameter innerParameter = GeneratorFactory.eINSTANCE.createParameter();
+			
+			innerParameter.setDefaultEntity(DefaultEntity.TIME);
+			innerParameterRef.setParameter(innerParameter);
+			phrase.getTokens().add(innerParameterRef);
+			intent.getParameters().add(innerParameter);
+		}
+		
+		// Caso en que el fragmento contenga más información además de la hora
+		else {
+			int timeOccurrences1 = countOccurrences(category.pattern.text, "* colon *");
+			int timeOccurrences2 = countOccurrences(category.pattern.text, "*colon*");
+			int timeCount = timeOccurrences1 > timeOccurrences2 ? timeOccurrences1 : timeOccurrences2;
+			
+			for (String token : tokens) {
+				ParameterReferenceToken hourParameterRef = GeneratorFactory.eINSTANCE.createParameterReferenceToken();
+				Parameter hourParameter = GeneratorFactory.eINSTANCE.createParameter();
+				
+				// Caso en que haya otros parámetros en el fragmento
+				if (token.contains("*")) {
+					String[] innerTokensStar = token.split("\\*");
+					for (String innerToken2 : innerTokensStar) {
+						Literal innerLiteral = GeneratorFactory.eINSTANCE.createLiteral();
+						ParameterReferenceToken innerParameterRef = GeneratorFactory.eINSTANCE.createParameterReferenceToken();
+						Parameter innerParameter = GeneratorFactory.eINSTANCE.createParameter();
+						
+						// Guardado de texto previo al parametro
+						innerLiteral.setText(innerToken2);
+						phrase.getTokens().add(innerLiteral);
+
+						// Guardado del parámetro
+						innerParameter.setDefaultEntity(DefaultEntity.TEXT);
+						innerParameterRef.setParameter(innerParameter);
+						phrase.getTokens().add(innerParameterRef);
+						intent.getParameters().add(innerParameter);
+					}
+				}
+				
+				// Caso en que el fragmento sólo contenga texto
+				else {
+					Literal innerLiteral = GeneratorFactory.eINSTANCE.createLiteral();
+					
+					// Guardado de texto previo al parametro
+					innerLiteral.setText(token);
+					phrase.getTokens().add(innerLiteral);
+				}
+				
+				// Control de adición de parámetros de tipo hora
+				if (timeCount > 0) {
+					hourParameter.setDefaultEntity(DefaultEntity.TIME);
+					hourParameterRef.setParameter(hourParameter);
+					phrase.getTokens().add(hourParameterRef);
+					intent.getParameters().add(hourParameter);
+					timeCount -= 1;
+				}
+			}
+		}
+		
+		languageInput.getInputs().add(phrase);
+		intent.getInputs().add(languageInput);
+	}
+
+	// Función para gestionar los intents básicos, es decir, aquellos que están formados por texto y parámetros o sets
+	public static void addCategoryBasic(Category category, Intent intent, List<MapFile> mapFiles) {
+		// Caso en que el intent contenga sólo texto
+		if (!category.pattern.text.contains("*")) {
+			IntentLanguageInputs languageInput = GeneratorFactory.eINSTANCE.createIntentLanguageInputs();
+			TrainingPhrase phrase = GeneratorFactory.eINSTANCE.createTrainingPhrase();
+			Literal literal = GeneratorFactory.eINSTANCE.createLiteral();
+			
+			literal.setText(category.pattern.text);
+			phrase.getTokens().add(literal);
+
+			// Caso en que contenga sets en el pattern
+			if (category.pattern.sets != null)
+				intentAddSets(category.pattern.sets, intent, mapFiles, phrase);
+
+			languageInput.getInputs().add(phrase);
+			intent.getInputs().add(languageInput);
+		}
+		
+		// Caso en que contenga *s
+		else {
+			IntentLanguageInputs languageInput = GeneratorFactory.eINSTANCE.createIntentLanguageInputs();
+			TrainingPhrase phrase = GeneratorFactory.eINSTANCE.createTrainingPhrase();
+
+			// Sets contenidos en todo el template
+			List<Set> sets = getAllTemplateSets(category.template);
+			
+			String[] tokens = category.pattern.text.split("\\*");
+			int tokenIndex = 1;
+			for (String token : tokens) {
+				Literal literal = GeneratorFactory.eINSTANCE.createLiteral();
+				ParameterReferenceToken parameterRef = GeneratorFactory.eINSTANCE.createParameterReferenceToken();
+				Parameter parameter = GeneratorFactory.eINSTANCE.createParameter();
+				int setsFlag = 0;
+				
+				// Guardado de texto previo al parametro
+				literal.setText(token);
+				phrase.getTokens().add(literal);
+
+				// Guardado del parámetro
+				// Si el template tiene sets, entonces se busca el nombre del parámetro y se asocia a este
+				if (!sets.isEmpty()) {
+					for (Set set: sets) {
+						if (setsFlag == 0 && set.stars != null && !set.stars.isEmpty()) {
+							for (Star star: set.stars) {
+								if (star.index == tokenIndex || tokens.length == 1) {
+									parameter.setName(set.name);
+									setsFlag = 1;
+									break;
+								}
+							}
+						} else {
+							setsFlag = 0;
+							break;
+						}
+					}
+				}
+				
+				parameter.setDefaultEntity(DefaultEntity.TEXT);
+				parameterRef.setParameter(parameter);
+				phrase.getTokens().add(parameterRef);
+				intent.getParameters().add(parameter);
+				
+				tokenIndex += 1;
+			}
+			
+			// Caso en que contenga sets en el pattern
+			if (category.pattern.sets != null)
+				intentAddSets(category.pattern.sets, intent, mapFiles, phrase);
+
+			languageInput.getInputs().add(phrase);
+			intent.getInputs().add(languageInput);
+		}
+	}
+	
+	//// Funciones para gestionar los flujos de conversación
+	// Función para gestionar los flujos de conversación directos, a nivel 1
+	public static List<UserInteraction> getMainFlows(Category category, Intent intent, List<Intent> intents) {
+		List<UserInteraction> ret = new ArrayList<UserInteraction>();
+		List<TextLanguageInput> responses = getAllIntentDirectResponses(category, intents);
+		UserInteraction flow = GeneratorFactory.eINSTANCE.createUserInteraction();
+		BotInteraction target = GeneratorFactory.eINSTANCE.createBotInteraction();
+		
+		for (TextLanguageInput response: responses) {
+			Text targetText = GeneratorFactory.eINSTANCE.createText();
+			
+			targetText.getInputs().add(response);
+			target.getActions().add(targetText);
+		}
+		
+		// Caso en que tenga una llamada de tipo HTTP (callapi)
+		if (category.template.callapi != null)
+			addCallapi(category.template.callapi, target);
+
+		flow.setTarget(target);
+		flow.setIntent(intent);
+		ret.add(flow);
+		
+		return ret;
+	}
+	
+	// Función para gestionar los flujos de conversación indirectos.
+	public static void getOutcomingsFlows(List<UserInteraction> currentFlows, List<UserInteraction> flows) {
+		List<UserInteraction> futureFlows = new ArrayList<UserInteraction>();
+		
+		for (UserInteraction cFlow: currentFlows) {
+			for (UserInteraction flow: flows) {
+				for ()
+				// Comparación de si el target de cFlow es equivalente al intent de flow
+				if (cFlow.getTarget().getActions instanceof Text && a2 instanceof Text &&
+		        		AgentIntentsGetter.equalTextInputs((Text)a1, (Text)a2))
+		        		return 0;
+		        	
+		        	// Caso en que sean actions de tipo HTTP
+		        	else if (a1 instanceof HTTPRequest && a2 instanceof HTTPRequest &&
+			        		AgentIntentsGetter.equalHTTPRequest((HTTPRequest)a1, (HTTPRequest)a2))
+		        		return 0;
+			}
+		}
+		
+		if (!futureFlows.isEmpty())
+			getOutcomingsFlows(futureFlows, flows);
+	}
+	
+	// Función para añadir llamadas HTTP
+	public static void addCallapi(Callapi callapi, BotInteraction target) {
+		HTTPRequest httpRequest = GeneratorFactory.eINSTANCE.createHTTPRequest();
+		
+		if (callapi.url != null)
+			httpRequest.setURL(callapi.url);
+		
+		if (callapi.response_code_var != null)
+			httpRequest.setName(callapi.response_code_var);
+		
+		if (callapi.method != null)
+			httpRequest.setMethod(castMethod(callapi.method));
+		
+		// El método por defecto en Pandorabots si no se indica es GET
+		else
+			httpRequest.setMethod(Method.GET);
+		
+		if (callapi.queryParams != null) {
+			for (CallapiQuery param: callapi.queryParams) {
+
+				// Caso en que el parámetro tenga texto
+				if (param.text != null) {
+					KeyValue keyValue = GeneratorFactory.eINSTANCE.createKeyValue();
+					Literal literal = GeneratorFactory.eINSTANCE.createLiteral();
+					
+					literal.setText(param.text);
+
+					keyValue.setKey(param.name + "_text");
+					keyValue.setValue(literal);
+					httpRequest.getData().add(keyValue);
+				}
+				
+				// Caso en que el parámetro tenga llamadas a variables guardadas
+				if (param.gets != null) {
+					for (Get get: param.gets) {
+						KeyValue keyValue = GeneratorFactory.eINSTANCE.createKeyValue();
+						ParameterReferenceToken parameterRef = GeneratorFactory.eINSTANCE.createParameterReferenceToken();
+						Parameter parameter = GeneratorFactory.eINSTANCE.createParameter();
+						
+						parameter.setName(get.name);
+						parameter.setDefaultEntity(DefaultEntity.TEXT);
+						parameterRef.setParameter(parameter);
+						
+						keyValue.setKey(param.name + "_param_" + get.name);
+						keyValue.setValue(parameterRef);
+						httpRequest.getData().add(keyValue);
+					}
+				}
+				
+			}
+		}
+		
+		if (callapi.header != null)
+			httpRequest.setHeader("header", callapi.header.name.text);
+		
+		target.getActions().add(httpRequest);
+	}
+	
+	//// Funciones auxiliares para realizar tareas concretas
+	// Función que comprueba si un TextLanguageInput es igual a otro
+	public static boolean equalTextInputs(Text input1, Text input2) {
+		List<TextLanguageInput> internalInputs1 = input1.getInputs();
+		List<TextLanguageInput> internalInputs2 = input2.getInputs();
+		
+		if (internalInputs1.size() == internalInputs2.size()) {
+			for (int i = 0; i < internalInputs1.size(); i++) {
+				List<?> tokens1 = internalInputs1.get(i).getInputs().get(0).getTokens();
+				List<?> tokens2 = internalInputs2.get(i).getInputs().get(0).getTokens();
+				
+				if (tokens1.size() == tokens2.size()) {
+					for (int j = 0; j < tokens1.size(); j++) {
+						var token1 = tokens1.get(i);
+						var token2 = tokens2.get(i);
+						
+						// Caso en que los tokens sean literales
+						if (token1 instanceof Literal &&
+							token2 instanceof Literal) {
+							if (!((Literal) token1).getText().equals(((Literal) token2).getText()))
+								return false;
+						}
+						
+						// Caso en que los tokens sean parámetros
+						else if (tokens1.get(i) instanceof ParameterReferenceToken && 
+								 tokens2.get(i) instanceof ParameterReferenceToken) {
+							// Comprobación compleja, el sistema puede tener dificultades a la hora de
+							// guardar los nombres de variables, con lo que se hace mejor una
+							// comprobación básica
+//							String parameterName1 = ((ParameterReferenceToken) token1).getParameter().getName();
+//							String parameterName2 = ((ParameterReferenceToken) token2).getParameter().getName();
+//							
+//							if (parameterName1 == null &&
+//								parameterName2 == null)
+//								continue;
+//							
+//							else if (parameterName1.equals(parameterName2))
+//								continue;
+//							
+//							else
+//								return false;
+							continue;
+						}
+						
+						else {
+							return false;
+						}
+					}
+				}
+			}
+			
+			return true;
+		}
+		
+		else
+			return false;
+	}
+	
+	// Función que comprueba si un HTTPRequest es igual a otro
+	// TODO: Mejorar comparación si es conveniente
+	public static boolean equalHTTPRequest(HTTPRequest http1, HTTPRequest http2) {
+		if (http1.getName().equals(http2.getName()))
+			return true;
+		
+		else
+			return false;
+	}
+	
+	// Castea el String con el nombre del método de llamada HTTP a la enumeración definida
+	public static Method castMethod(String methodName) {
+		if (methodName.toUpperCase().equals("POST"))
+			return Method.POST;
+		
+		else if (methodName.toUpperCase().equals("GET"))
+			return Method.GET;
+		
+		else
+			return Method.POST;
+	}
+	// Devuelve todas las posibles respuestas de una categoría
+	public static List<TextLanguageInput> getAllIntentDirectResponses(Category category, List<Intent> intents) {
+		List<TextLanguageInput> ret = new ArrayList<TextLanguageInput>();
+	
+		// Caso en que el template tenga texto
+		if (category.template.text != null) {
+			TextLanguageInput languageInput = GeneratorFactory.eINSTANCE.createTextLanguageInput();
+			TextInput textInput = GeneratorFactory.eINSTANCE.createTextInput();
+			Literal literal = GeneratorFactory.eINSTANCE.createLiteral();
+			
+			literal.setText(category.template.text);
+			textInput.getTokens().add(literal);
+			languageInput.setLanguage(Language.ENGLISH);
+			languageInput.getInputs().add(textInput);
+			ret.add(languageInput);
+		}
+		
+		// Caso en que el template tenga srais
+		if (category.template.srais != null) {
+			ret.addAll(addResponseSrais(category.template.srais, intents));
+		}
+		
+		// Caso en que el template tenga conditions
+		if (category.template.condition != null) {
+			ret.addAll(getConditionResponsesREC(category.template.condition, intents, new ArrayList<TextLanguageInput>()));
+		}
+		
+		// Caso en el que el template tenga un think con srais
+		if (category.template.think != null && category.template.think.srais != null) {
+			ret.addAll(addResponseSrais(category.template.think.srais, intents));
+		}
+		
+		return ret;
+	}
+	
+	// Añade las respuestas de un intent formadas por srais en forma de lista
+	public static List<TextLanguageInput> addResponseSrais(List<Srai> srais, List<Intent> intents) {
+		List<TextLanguageInput> ret = new ArrayList<TextLanguageInput>();
+		
+		for (Srai srai: srais) {
+			TextLanguageInput languageInput = GeneratorFactory.eINSTANCE.createTextLanguageInput();
+			TextInput textInput = GeneratorFactory.eINSTANCE.createTextInput();
+			Literal literal = GeneratorFactory.eINSTANCE.createLiteral();
+			
+			literal.setText(srai.text);
+			textInput.getTokens().add(literal);
+
+			// Si el srai tiene referencias a argumentos del pattern, 
+			// se busca qué parámetros son en el intent que sea y se añaden
+			if (srai.stars != null) {
+				int starsFound = srai.stars.size();
+				
+				for (Intent intent: intents) {
+					var firstToken = intent.getInputs().get(0).getInputs().get(0);
+					if (firstToken instanceof Literal && ((Literal) firstToken).getText().equals(srai.text)) {
+						List<Parameter> parameters = new ArrayList<Parameter>();
+						
+						// Se recogen los parámetros del intent en cuestión
+						for (var token: intent.getInputs().get(0).getInputs()) {
+							if (token instanceof ParameterReferenceToken) {
+								parameters.add(((ParameterReferenceToken) token).getParameter());
+								starsFound -= 1;
+							}
+						}
+						
+						// Caso en que sólo haya un parámetro
+						if (srai.stars.size() == 1 && !parameters.isEmpty()) {
+							ParameterReferenceToken parameterRef = GeneratorFactory.eINSTANCE.createParameterReferenceToken();
+							
+							parameterRef.setParameter(parameters.get(0));
+							textInput.getTokens().add(parameterRef);
+							starsFound -= 1;
+							break;
+						}
+
+						// Caso en que haya más de un parámetro (fechas y horas no soportadas)
+						else {
+							// Se hace el matching de los parámetros con sus índices 
+							// o en caso de error se añade un parámetro genérico
+							for (Star star: srai.stars) {
+								ParameterReferenceToken parameterRef = GeneratorFactory.eINSTANCE.createParameterReferenceToken();
+								
+								try {
+									parameterRef.setParameter(parameters.get(star.index - 1));
+								} catch(Exception e) {
+									Parameter parameter = GeneratorFactory.eINSTANCE.createParameter();
+
+									parameter.setDefaultEntity(DefaultEntity.TEXT);
+									parameterRef.setParameter(parameter);
+									textInput.getTokens().add(parameterRef);
+								}
+								
+								textInput.getTokens().add(parameterRef);
+								starsFound -= 1;
+								break;
+							}
+						}
+					}
+				}
+				
+				// En caso de no encontrar el intent al que se hace referencia en la lista de intents,
+				// se añaden las stars como parámetros
+				if (starsFound > 0) {
+					for (int i = 0; i < starsFound; i++) {
+						ParameterReferenceToken parameterRef = GeneratorFactory.eINSTANCE.createParameterReferenceToken();
+						Parameter parameter = GeneratorFactory.eINSTANCE.createParameter();
+						
+						parameter.setDefaultEntity(DefaultEntity.TEXT);
+						parameterRef.setParameter(parameter);
+						textInput.getTokens().add(parameterRef);
+					}
+				}
+			}
+
+			languageInput.setLanguage(Language.ENGLISH);
+			languageInput.getInputs().add(textInput);
+			ret.add(languageInput);
+		}
+		
+		return ret;
+	}
+	
+	// Recoge todas las posibles respuestas de un condicional y sus posibles árboles de condicionales
+	// y las devuelve en forma de lista
+	public static List<TextLanguageInput> getConditionResponsesREC(Condition condition, List<Intent> intents, List<TextLanguageInput> list) {
+		for (Option option: condition.options) {
+			// Caso en que la opción tenga texto
+			if (option.text != null) {
+				TextLanguageInput languageInput = GeneratorFactory.eINSTANCE.createTextLanguageInput();
+				TextInput textInput = GeneratorFactory.eINSTANCE.createTextInput();
+				Literal literal = GeneratorFactory.eINSTANCE.createLiteral();
+				
+				literal.setText(option.text);
+				textInput.getTokens().add(literal);
+				languageInput.setLanguage(Language.ENGLISH);
+				languageInput.getInputs().add(textInput);
+				list.add(languageInput);
+			}
+			
+			// Caso en que la opción tenga srais
+			if (option.srais != null) {
+				for (Srai srai: option.srais) {
+					TextLanguageInput languageInput = GeneratorFactory.eINSTANCE.createTextLanguageInput();
+					TextInput textInput = GeneratorFactory.eINSTANCE.createTextInput();
+					Literal literal = GeneratorFactory.eINSTANCE.createLiteral();
+					
+					literal.setText(srai.text);
+					textInput.getTokens().add(literal);
+
+					// Si el srai tiene referencias a argumentos del pattern, 
+					// se busca qué parámetros son en el intent que sea y se añaden
+					if (srai.stars != null) {
+						int starsFound = srai.stars.size();
+						
+						for (Intent intent: intents) {
+							var firstToken = intent.getInputs().get(0).getInputs().get(0);
+							if (firstToken instanceof Literal && ((Literal) firstToken).getText().equals(srai.text)) {
+								List<Parameter> parameters = new ArrayList<Parameter>();
+								
+								// Se recogen los parámetros del intent en cuestión
+								for (var token: intent.getInputs().get(0).getInputs()) {
+									if (token instanceof ParameterReferenceToken) {
+										parameters.add(((ParameterReferenceToken) token).getParameter());
+									}
+								}
+								
+								// Caso en que sólo haya un parámetro
+								if (srai.stars.size() == 1 && !parameters.isEmpty()) {
+									ParameterReferenceToken parameterRef = GeneratorFactory.eINSTANCE.createParameterReferenceToken();
+									
+									parameterRef.setParameter(parameters.get(0));
+									textInput.getTokens().add(parameterRef);
+									break;
+								}
+
+								// Caso en que haya más de un parámetro (fechas y horas no soportadas)
+								else {
+									// Se hace el matching de los parámetros con sus índices 
+									// o en caso de error se añade un parámetro genérico
+									for (Star star: srai.stars) {
+										ParameterReferenceToken parameterRef = GeneratorFactory.eINSTANCE.createParameterReferenceToken();
+										
+										try {
+											parameterRef.setParameter(parameters.get(star.index - 1));
+										} catch(Exception e) {
+											Parameter parameter = GeneratorFactory.eINSTANCE.createParameter();
+
+											parameter.setDefaultEntity(DefaultEntity.TEXT);
+											parameterRef.setParameter(parameter);
+											textInput.getTokens().add(parameterRef);
+										}
+										
+										textInput.getTokens().add(parameterRef);
+										break;
+									}
+								}
+							}
+						}
+						
+						// En caso de no encontrar el intent al que se hace referencia en la lista de intents,
+						// se añaden las stars como parámetros
+						if (starsFound > 0) {
+							for (int i = 0; i < starsFound; i++) {
+								ParameterReferenceToken parameterRef = GeneratorFactory.eINSTANCE.createParameterReferenceToken();
+								Parameter parameter = GeneratorFactory.eINSTANCE.createParameter();
+								
+								parameter.setDefaultEntity(DefaultEntity.TEXT);
+								parameterRef.setParameter(parameter);
+								textInput.getTokens().add(parameterRef);
+							}
+						}
+					}
+
+					languageInput.setLanguage(Language.ENGLISH);
+					languageInput.getInputs().add(textInput);
+					list.add(languageInput);
+				}
+			}
+			
+			// Caso en el que la opción tenga un think con srais
+			if (option.think != null && option.think.srais != null) {
+				list.addAll(addResponseSrais(option.think.srais, intents));
+			}
+			
+			// Caso en que la opción contenga a su vez otro condicional
+			if (option.condition != null) {
+				list.addAll(getConditionResponsesREC(option.condition, intents, list));
+			}
+		}
+		
+		return list;
+	}
+	
+	// Dada una lista no-vacía de sets del patrón de una categoría, añade dichos sets a la frase en forma de parámetros
+	public static void intentAddSets(List<SetAttr> sets, Intent intent, List<MapFile> mapFiles, TrainingPhrase phrase) {
+		for (SetAttr set : sets) {
+			ParameterReferenceToken parameterRef = GeneratorFactory.eINSTANCE.createParameterReferenceToken();
+			Parameter parameter = GeneratorFactory.eINSTANCE.createParameter();
+			Entity entity = GeneratorFactory.eINSTANCE.createEntity();
+
+			if (mapFiles != null) {
+				for (MapFile mapFile : mapFiles) {
+					if (mapFile.name.equals(set.name)) {
+						LanguageInput entityLanguageInput = GeneratorFactory.eINSTANCE.createLanguageInput();
+						
+						for (String key : mapFile.content.keySet()) {
+							SimpleInput attrVal = GeneratorFactory.eINSTANCE.createSimpleInput();
+
+							attrVal.setName(key);
+							attrVal.getValues().addAll(mapFile.content.get(key));
+							entityLanguageInput.getInputs().add(attrVal);
+						}
+
+						entity.getInputs().add(entityLanguageInput);
+					}
+				}
+			}
+
+			parameter.setEntity(entity);
+			entity.setName(set.name);
+			parameter.setName(set.name);
+			parameter.setDefaultEntity(DefaultEntity.TEXT);
+			parameterRef.setParameter(parameter);
+			phrase.getTokens().add(parameterRef);
+			intent.getParameters().add(parameter);
+		}
+	}
+	
+	// Devuelve todos los sets que hay en el template a las distintas profundidades posibles
+	public static List<Set> getAllTemplateSets(Template template) {
+		List<Set> ret = new ArrayList<Set>();
+		
+		if (template.think != null && template.think.sets != null)
+			ret.addAll(template.think.sets);
+		
+		if (template.condition != null)
+			for (Option li: template.condition.options)
+				if (li.think != null && !li.think.sets.isEmpty())
+					ret.addAll(li.think.sets);
+			
+		return ret;
+	}
+	
+	//// Funciones necesarias pero ajenas a la tarea que se está tratando
+	// Cuenta el numero de apariciones de un substring en un string
+	// Credit: https://stackoverflow.com/questions/767759/occurrences-of-substring-in-a-string
+	public static int countOccurrences(String source, String substring) {
+		int lastIndex = 0;
+		int count = 0;
+
+		while(lastIndex != -1){
+		    lastIndex = source.indexOf(substring, lastIndex);
+
+		    if(lastIndex != -1) {
+		        count ++;
+		        lastIndex += substring.length();
+		    }
+		}
+		
+		return count;
+	}
+}
+
+----------------------------------- SOURCE END -------------------------------------
+!STACK 0
+java.lang.IllegalArgumentException
+	at org.eclipse.jdt.core.dom.InfixExpression.setOperator(InfixExpression.java:383)
+	at org.eclipse.jdt.core.dom.ASTConverter.convert(ASTConverter.java:880)
+	at org.eclipse.jdt.core.dom.ASTConverter.convert(ASTConverter.java:2011)
+	at org.eclipse.jdt.core.dom.ASTConverter.convertToParenthesizedExpression(ASTConverter.java:3764)
+	at org.eclipse.jdt.core.dom.ASTConverter.convert(ASTConverter.java:1932)
+	at org.eclipse.jdt.core.dom.ASTConverter.convert(ASTConverter.java:1204)
+	at org.eclipse.jdt.core.dom.ASTConverter.convert(ASTConverter.java:1963)
+	at org.eclipse.jdt.core.dom.ASTConverter.convertToExpression(ASTConverter.java:3616)
+	at org.eclipse.jdt.core.dom.ASTConverter.convert(ASTConverter.java:2174)
+	at org.eclipse.jdt.core.dom.ASTConverter.convert(ASTConverter.java:2965)
+	at org.eclipse.jdt.core.dom.ASTConverter.convert(ASTConverter.java:1372)
+	at org.eclipse.jdt.core.dom.ASTConverter.convert(ASTConverter.java:2944)
+	at org.eclipse.jdt.core.dom.ASTConverter.convert(ASTConverter.java:2141)
+	at org.eclipse.jdt.core.dom.ASTConverter.convert(ASTConverter.java:2934)
+	at org.eclipse.jdt.core.dom.ASTConverter.convert(ASTConverter.java:1372)
+	at org.eclipse.jdt.core.dom.ASTConverter.convert(ASTConverter.java:2944)
+	at org.eclipse.jdt.core.dom.ASTConverter.convert(ASTConverter.java:2141)
+	at org.eclipse.jdt.core.dom.ASTConverter.convert(ASTConverter.java:2934)
+	at org.eclipse.jdt.core.dom.ASTConverter.convert(ASTConverter.java:751)
+	at org.eclipse.jdt.core.dom.ASTConverter.buildBodyDeclarations(ASTConverter.java:208)
+	at org.eclipse.jdt.core.dom.ASTConverter.convert(ASTConverter.java:3316)
+	at org.eclipse.jdt.core.dom.ASTConverter.convert(ASTConverter.java:1513)
+	at org.eclipse.jdt.core.dom.AST.convertCompilationUnit(AST.java:474)
+	at org.eclipse.jdt.internal.core.CompilationUnit.buildStructure(CompilationUnit.java:201)
+	at org.eclipse.jdt.internal.core.Openable.generateInfos(Openable.java:266)
+	at org.eclipse.jdt.internal.core.JavaElement.openWhenClosed(JavaElement.java:596)
+	at org.eclipse.jdt.internal.core.CompilationUnit.makeConsistent(CompilationUnit.java:1142)
+	at org.eclipse.jdt.internal.core.ReconcileWorkingCopyOperation.makeConsistent(ReconcileWorkingCopyOperation.java:173)
+	at org.eclipse.jdt.internal.core.ReconcileWorkingCopyOperation.executeOperation(ReconcileWorkingCopyOperation.java:94)
+	at org.eclipse.jdt.internal.core.JavaModelOperation.run(JavaModelOperation.java:740)
+	at org.eclipse.jdt.internal.core.JavaModelOperation.runOperation(JavaModelOperation.java:806)
+	at org.eclipse.jdt.internal.core.CompilationUnit.reconcile(CompilationUnit.java:1319)
+	at org.eclipse.jdt.internal.ui.text.java.JavaReconcilingStrategy.reconcile(JavaReconcilingStrategy.java:131)
+	at org.eclipse.jdt.internal.ui.text.java.JavaReconcilingStrategy.access$0(JavaReconcilingStrategy.java:113)
+	at org.eclipse.jdt.internal.ui.text.java.JavaReconcilingStrategy$1.run(JavaReconcilingStrategy.java:93)
+	at org.eclipse.core.runtime.SafeRunner.run(SafeRunner.java:45)
+	at org.eclipse.jdt.internal.ui.text.java.JavaReconcilingStrategy.reconcile(JavaReconcilingStrategy.java:90)
+	at org.eclipse.jdt.internal.ui.text.java.JavaReconcilingStrategy.reconcile(JavaReconcilingStrategy.java:157)
+	at org.eclipse.jdt.internal.ui.text.CompositeReconcilingStrategy.reconcile(CompositeReconcilingStrategy.java:94)
+	at org.eclipse.jdt.internal.ui.text.JavaCompositeReconcilingStrategy.reconcile(JavaCompositeReconcilingStrategy.java:107)
+	at org.eclipse.jface.text.reconciler.MonoReconciler.process(MonoReconciler.java:76)
+	at org.eclipse.jface.text.reconciler.AbstractReconciler$BackgroundThread.run(AbstractReconciler.java:210)
+
+!ENTRY org.eclipse.jdt.ui 4 2 2021-09-08 10:40:41.341
+!MESSAGE Problems occurred when invoking code from plug-in: "org.eclipse.jdt.ui".
+!STACK 0
+java.lang.IllegalArgumentException
+	at org.eclipse.jdt.core.dom.InfixExpression.setOperator(InfixExpression.java:383)
+	at org.eclipse.jdt.core.dom.ASTConverter.convert(ASTConverter.java:880)
+	at org.eclipse.jdt.core.dom.ASTConverter.convert(ASTConverter.java:2011)
+	at org.eclipse.jdt.core.dom.ASTConverter.convertToParenthesizedExpression(ASTConverter.java:3764)
+	at org.eclipse.jdt.core.dom.ASTConverter.convert(ASTConverter.java:1932)
+	at org.eclipse.jdt.core.dom.ASTConverter.convert(ASTConverter.java:1204)
+	at org.eclipse.jdt.core.dom.ASTConverter.convert(ASTConverter.java:1963)
+	at org.eclipse.jdt.core.dom.ASTConverter.convertToExpression(ASTConverter.java:3616)
+	at org.eclipse.jdt.core.dom.ASTConverter.convert(ASTConverter.java:2174)
+	at org.eclipse.jdt.core.dom.ASTConverter.convert(ASTConverter.java:2965)
+	at org.eclipse.jdt.core.dom.ASTConverter.convert(ASTConverter.java:1372)
+	at org.eclipse.jdt.core.dom.ASTConverter.convert(ASTConverter.java:2944)
+	at org.eclipse.jdt.core.dom.ASTConverter.convert(ASTConverter.java:2141)
+	at org.eclipse.jdt.core.dom.ASTConverter.convert(ASTConverter.java:2934)
+	at org.eclipse.jdt.core.dom.ASTConverter.convert(ASTConverter.java:1372)
+	at org.eclipse.jdt.core.dom.ASTConverter.convert(ASTConverter.java:2944)
+	at org.eclipse.jdt.core.dom.ASTConverter.convert(ASTConverter.java:2141)
+	at org.eclipse.jdt.core.dom.ASTConverter.convert(ASTConverter.java:2934)
+	at org.eclipse.jdt.core.dom.ASTConverter.convert(ASTConverter.java:751)
+	at org.eclipse.jdt.core.dom.ASTConverter.buildBodyDeclarations(ASTConverter.java:208)
+	at org.eclipse.jdt.core.dom.ASTConverter.convert(ASTConverter.java:3316)
+	at org.eclipse.jdt.core.dom.ASTConverter.convert(ASTConverter.java:1513)
+	at org.eclipse.jdt.core.dom.AST.convertCompilationUnit(AST.java:474)
+	at org.eclipse.jdt.internal.core.CompilationUnit.buildStructure(CompilationUnit.java:201)
+	at org.eclipse.jdt.internal.core.Openable.generateInfos(Openable.java:266)
+	at org.eclipse.jdt.internal.core.JavaElement.openWhenClosed(JavaElement.java:596)
+	at org.eclipse.jdt.internal.core.CompilationUnit.makeConsistent(CompilationUnit.java:1142)
+	at org.eclipse.jdt.internal.core.ReconcileWorkingCopyOperation.makeConsistent(ReconcileWorkingCopyOperation.java:173)
+	at org.eclipse.jdt.internal.core.ReconcileWorkingCopyOperation.executeOperation(ReconcileWorkingCopyOperation.java:94)
+	at org.eclipse.jdt.internal.core.JavaModelOperation.run(JavaModelOperation.java:740)
+	at org.eclipse.jdt.internal.core.JavaModelOperation.runOperation(JavaModelOperation.java:806)
+	at org.eclipse.jdt.internal.core.CompilationUnit.reconcile(CompilationUnit.java:1319)
+	at org.eclipse.jdt.internal.ui.text.java.JavaReconcilingStrategy.reconcile(JavaReconcilingStrategy.java:131)
+	at org.eclipse.jdt.internal.ui.text.java.JavaReconcilingStrategy.access$0(JavaReconcilingStrategy.java:113)
+	at org.eclipse.jdt.internal.ui.text.java.JavaReconcilingStrategy$1.run(JavaReconcilingStrategy.java:93)
+	at org.eclipse.core.runtime.SafeRunner.run(SafeRunner.java:45)
+	at org.eclipse.jdt.internal.ui.text.java.JavaReconcilingStrategy.reconcile(JavaReconcilingStrategy.java:90)
+	at org.eclipse.jdt.internal.ui.text.java.JavaReconcilingStrategy.reconcile(JavaReconcilingStrategy.java:157)
+	at org.eclipse.jdt.internal.ui.text.CompositeReconcilingStrategy.reconcile(CompositeReconcilingStrategy.java:94)
+	at org.eclipse.jdt.internal.ui.text.JavaCompositeReconcilingStrategy.reconcile(JavaCompositeReconcilingStrategy.java:107)
+	at org.eclipse.jface.text.reconciler.MonoReconciler.process(MonoReconciler.java:76)
+	at org.eclipse.jface.text.reconciler.AbstractReconciler$BackgroundThread.run(AbstractReconciler.java:210)
+
+!ENTRY org.eclipse.jdt.ui 4 0 2021-09-08 10:40:41.341
+!MESSAGE Error in JDT Core during reconcile
+!STACK 0
+java.lang.IllegalArgumentException
+	at org.eclipse.jdt.core.dom.InfixExpression.setOperator(InfixExpression.java:383)
+	at org.eclipse.jdt.core.dom.ASTConverter.convert(ASTConverter.java:880)
+	at org.eclipse.jdt.core.dom.ASTConverter.convert(ASTConverter.java:2011)
+	at org.eclipse.jdt.core.dom.ASTConverter.convertToParenthesizedExpression(ASTConverter.java:3764)
+	at org.eclipse.jdt.core.dom.ASTConverter.convert(ASTConverter.java:1932)
+	at org.eclipse.jdt.core.dom.ASTConverter.convert(ASTConverter.java:1204)
+	at org.eclipse.jdt.core.dom.ASTConverter.convert(ASTConverter.java:1963)
+	at org.eclipse.jdt.core.dom.ASTConverter.convertToExpression(ASTConverter.java:3616)
+	at org.eclipse.jdt.core.dom.ASTConverter.convert(ASTConverter.java:2174)
+	at org.eclipse.jdt.core.dom.ASTConverter.convert(ASTConverter.java:2965)
+	at org.eclipse.jdt.core.dom.ASTConverter.convert(ASTConverter.java:1372)
+	at org.eclipse.jdt.core.dom.ASTConverter.convert(ASTConverter.java:2944)
+	at org.eclipse.jdt.core.dom.ASTConverter.convert(ASTConverter.java:2141)
+	at org.eclipse.jdt.core.dom.ASTConverter.convert(ASTConverter.java:2934)
+	at org.eclipse.jdt.core.dom.ASTConverter.convert(ASTConverter.java:1372)
+	at org.eclipse.jdt.core.dom.ASTConverter.convert(ASTConverter.java:2944)
+	at org.eclipse.jdt.core.dom.ASTConverter.convert(ASTConverter.java:2141)
+	at org.eclipse.jdt.core.dom.ASTConverter.convert(ASTConverter.java:2934)
+	at org.eclipse.jdt.core.dom.ASTConverter.convert(ASTConverter.java:751)
+	at org.eclipse.jdt.core.dom.ASTConverter.buildBodyDeclarations(ASTConverter.java:208)
+	at org.eclipse.jdt.core.dom.ASTConverter.convert(ASTConverter.java:3316)
+	at org.eclipse.jdt.core.dom.ASTConverter.convert(ASTConverter.java:1513)
+	at org.eclipse.jdt.core.dom.AST.convertCompilationUnit(AST.java:474)
+	at org.eclipse.jdt.internal.core.CompilationUnit.buildStructure(CompilationUnit.java:201)
+	at org.eclipse.jdt.internal.core.Openable.generateInfos(Openable.java:266)
+	at org.eclipse.jdt.internal.core.JavaElement.openWhenClosed(JavaElement.java:596)
+	at org.eclipse.jdt.internal.core.CompilationUnit.makeConsistent(CompilationUnit.java:1142)
+	at org.eclipse.jdt.internal.core.ReconcileWorkingCopyOperation.makeConsistent(ReconcileWorkingCopyOperation.java:173)
+	at org.eclipse.jdt.internal.core.ReconcileWorkingCopyOperation.executeOperation(ReconcileWorkingCopyOperation.java:94)
+	at org.eclipse.jdt.internal.core.JavaModelOperation.run(JavaModelOperation.java:740)
+	at org.eclipse.jdt.internal.core.JavaModelOperation.runOperation(JavaModelOperation.java:806)
+	at org.eclipse.jdt.internal.core.CompilationUnit.reconcile(CompilationUnit.java:1319)
+	at org.eclipse.jdt.internal.ui.text.java.JavaReconcilingStrategy.reconcile(JavaReconcilingStrategy.java:131)
+	at org.eclipse.jdt.internal.ui.text.java.JavaReconcilingStrategy.access$0(JavaReconcilingStrategy.java:113)
+	at org.eclipse.jdt.internal.ui.text.java.JavaReconcilingStrategy$1.run(JavaReconcilingStrategy.java:93)
+	at org.eclipse.core.runtime.SafeRunner.run(SafeRunner.java:45)
+	at org.eclipse.jdt.internal.ui.text.java.JavaReconcilingStrategy.reconcile(JavaReconcilingStrategy.java:90)
+	at org.eclipse.jdt.internal.ui.text.java.JavaReconcilingStrategy.reconcile(JavaReconcilingStrategy.java:157)
+	at org.eclipse.jdt.internal.ui.text.CompositeReconcilingStrategy.reconcile(CompositeReconcilingStrategy.java:94)
+	at org.eclipse.jdt.internal.ui.text.JavaCompositeReconcilingStrategy.reconcile(JavaCompositeReconcilingStrategy.java:107)
+	at org.eclipse.jface.text.reconciler.MonoReconciler.process(MonoReconciler.java:76)
+	at org.eclipse.jface.text.reconciler.AbstractReconciler$BackgroundThread.run(AbstractReconciler.java:210)

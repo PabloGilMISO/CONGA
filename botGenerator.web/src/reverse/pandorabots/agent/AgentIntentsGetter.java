@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import congabase.User;
+import generator.Action;
 import generator.BotInteraction;
 import generator.DefaultEntity;
 import generator.Entity;
@@ -376,7 +377,7 @@ public class AgentIntentsGetter {
 	
 	//// Funciones para gestionar los flujos de conversación
 	// Función para gestionar los flujos de conversación directos, a nivel 1
-	public static List<UserInteraction> getLevel1Flows(Category category, Intent intent, List<Intent> intents) {
+	public static List<UserInteraction> getMainFlows(Category category, Intent intent, List<Intent> intents) {
 		List<UserInteraction> ret = new ArrayList<UserInteraction>();
 		List<TextLanguageInput> responses = getAllIntentDirectResponses(category, intents);
 		UserInteraction flow = GeneratorFactory.eINSTANCE.createUserInteraction();
@@ -398,6 +399,31 @@ public class AgentIntentsGetter {
 		ret.add(flow);
 		
 		return ret;
+	}
+	
+	// Función para gestionar los flujos de conversación indirectos.
+	public static void getOutcomingsFlows(List<UserInteraction> currentFlows, List<UserInteraction> flows) {
+//		List<UserInteraction> futureFlows = new ArrayList<UserInteraction>();
+//		
+//		for (UserInteraction cFlow: currentFlows) {
+//			for (UserInteraction flow: flows) {
+//				var intent = ((TrainingPhrase)flow.getIntent().getInputs().get(0).getInputs().get(0)).getTokens();
+//				for (Action a: cFlow.getTarget().getActions()) {
+//					if (a instanceof Text &&  instanceof Text &&
+//							AgentIntentsGetter.equalTextInputs((Text)a1, (Text)a2))
+//						return 0;
+//					
+//					// Caso en que sean actions de tipo HTTP
+//					else if (a1 instanceof HTTPRequest && a2 instanceof HTTPRequest &&
+//							AgentIntentsGetter.equalHTTPRequest((HTTPRequest)a1, (HTTPRequest)a2))
+//						return 0;
+//					
+//				}
+//			}
+//		}
+//		
+//		if (!futureFlows.isEmpty())
+//			getOutcomingsFlows(futureFlows, flows);
 	}
 	
 	// Función para añadir llamadas HTTP
