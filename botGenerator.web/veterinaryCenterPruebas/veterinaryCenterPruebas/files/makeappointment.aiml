@@ -1,26 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <aiml>
   <category>
-    <pattern>Patron 1</pattern>
-    <template>Contestacion igual</template>
+    <pattern>A</pattern>
+    <template>B</template>
   </category>
   <category>
-    <pattern>Patron 2</pattern>
-    <template>Contestacion igual</template>
+    <pattern>B</pattern>
+    <template>C</template>
   </category>
   <category>
-    <pattern>MAKEAPPOINTMENTHTTPREQUEST</pattern>
-    <template>
-      <callapi response_code_var="response_HttpRequest">
-        <url>https://dimo1.ii.uam.es:8443/VeterinarioApi/dialogflow</url>
-        <method>POST</method>
-        <header><name></name></header>
-        <query name="pet"><get name="pet"/></query>
-        <query name="petName"><get name="petName"/></query>
-        <query name="time"><get name="time"/></query>
-        <query name="date"><get name="date"/></query>
-      </callapi>
-    </template>
+    <pattern>C</pattern>
+    <template>D</template>
+  </category>
+  <category>
+    <pattern>D</pattern>
+    <template>E</template>
   </category>
   <category>
     <pattern>I need an appointment for my * * at * on *</pattern>
@@ -38,8 +32,11 @@
         <srai>
           SAVEDATE <star index="4"/>
         </srai>
+      </think>
+      <think>
         <set name="pandoralang">en</set>
       </think>
+      <srai>MAKEAPPOINTMENT</srai>
     </template>
   </category>
   <category>

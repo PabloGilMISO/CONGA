@@ -207,8 +207,12 @@ public class Agent {
 		List<UserInteraction> ret = new ArrayList<UserInteraction>();
 		
 		for (int i = 0; i < categories.size(); i++) {
-			ret.addAll(AgentIntentsGetter.getMainFlows(categories.get(i), intents.get(i), intents));
+			List<UserInteraction> categoryFlows = AgentIntentsGetter.getMainFlows(categories.get(i), intents.get(i), intents);
+			if (categoryFlows != null)
+				ret.addAll(categoryFlows);
 		}
+		
+		AgentIntentsGetter.getOutcomingsFlows(ret, ret);
 
 		return ret;
 	}

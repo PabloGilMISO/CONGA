@@ -383,6 +383,10 @@ public class AgentIntentsGetter {
 		UserInteraction flow = GeneratorFactory.eINSTANCE.createUserInteraction();
 		BotInteraction target = GeneratorFactory.eINSTANCE.createBotInteraction();
 		
+		// Caso en que el target no tenga responses
+		if (responses.isEmpty())
+			return null;
+		
 		for (TextLanguageInput response: responses) {
 			Text targetText = GeneratorFactory.eINSTANCE.createText();
 			
@@ -403,27 +407,31 @@ public class AgentIntentsGetter {
 	
 	// Función para gestionar los flujos de conversación indirectos.
 	public static void getOutcomingsFlows(List<UserInteraction> currentFlows, List<UserInteraction> flows) {
-//		List<UserInteraction> futureFlows = new ArrayList<UserInteraction>();
-//		
-//		for (UserInteraction cFlow: currentFlows) {
-//			for (UserInteraction flow: flows) {
-//				var intent = ((TrainingPhrase)flow.getIntent().getInputs().get(0).getInputs().get(0)).getTokens();
-//				for (Action a: cFlow.getTarget().getActions()) {
-//					if (a instanceof Text &&  instanceof Text &&
-//							AgentIntentsGetter.equalTextInputs((Text)a1, (Text)a2))
-//						return 0;
-//					
-//					// Caso en que sean actions de tipo HTTP
-//					else if (a1 instanceof HTTPRequest && a2 instanceof HTTPRequest &&
-//							AgentIntentsGetter.equalHTTPRequest((HTTPRequest)a1, (HTTPRequest)a2))
-//						return 0;
-//					
-//				}
-//			}
-//		}
-//		
-//		if (!futureFlows.isEmpty())
-//			getOutcomingsFlows(futureFlows, flows);
+		List<UserInteraction> futureFlows = new ArrayList<UserInteraction>();
+		
+		// DEBUG
+		List<List<?>> debug = new ArrayList<List<?>>();
+		
+		for (UserInteraction cFlow: currentFlows) {
+			// Comparación de intents y targets
+			for (UserInteraction flow: flows) {
+				List<?> tokens1 = ((Text) cFlow.getTarget().getActions().get(0)).getInputs().get(0).getInputs().get(0).getTokens();
+				List<?> tokens2 = ((TrainingPhrase) flow.getIntent().getInputs().get(0).getInputs().get(0)).getTokens();
+				
+				if (equalTokens(tokens1, tokens2)) {
+					cFlow.getTarget().getOutcoming().add(flow);
+					futureFlows.add(flow);
+					
+					// DEBUG
+					debug.add(tokens2);
+					
+					break;
+				}
+			}
+		}
+		
+		if (!futureFlows.isEmpty())
+			getOutcomingsFlows(futureFlows, flows);
 	}
 	
 	// Función para añadir llamadas HTTP
@@ -495,44 +503,7 @@ public class AgentIntentsGetter {
 				List<?> tokens1 = internalInputs1.get(i).getInputs().get(0).getTokens();
 				List<?> tokens2 = internalInputs2.get(i).getInputs().get(0).getTokens();
 				
-				if (tokens1.size() == tokens2.size()) {
-					for (int j = 0; j < tokens1.size(); j++) {
-						var token1 = tokens1.get(i);
-						var token2 = tokens2.get(i);
-						
-						// Caso en que los tokens sean literales
-						if (token1 instanceof Literal &&
-							token2 instanceof Literal) {
-							if (!((Literal) token1).getText().equals(((Literal) token2).getText()))
-								return false;
-						}
-						
-						// Caso en que los tokens sean parámetros
-						else if (tokens1.get(i) instanceof ParameterReferenceToken && 
-								 tokens2.get(i) instanceof ParameterReferenceToken) {
-							// Comprobación compleja, el sistema puede tener dificultades a la hora de
-							// guardar los nombres de variables, con lo que se hace mejor una
-							// comprobación básica
-//							String parameterName1 = ((ParameterReferenceToken) token1).getParameter().getName();
-//							String parameterName2 = ((ParameterReferenceToken) token2).getParameter().getName();
-//							
-//							if (parameterName1 == null &&
-//								parameterName2 == null)
-//								continue;
-//							
-//							else if (parameterName1.equals(parameterName2))
-//								continue;
-//							
-//							else
-//								return false;
-							continue;
-						}
-						
-						else {
-							return false;
-						}
-					}
-				}
+				return equalTokens(tokens1, tokens2);
 			}
 			
 			return true;
@@ -542,6 +513,37 @@ public class AgentIntentsGetter {
 			return false;
 	}
 	
+	// Función para comprobar que dos listas de tokens son iguales
+	public static boolean equalTokens(List<?> tokens1, List<?> tokens2) {
+		if (tokens1.size() == tokens2.size()) {
+			for (int j = 0; j < tokens1.size(); j++) {
+				var token1 = tokens1.get(j);
+				var token2 = tokens2.get(j);
+				
+				// Caso en que los tokens sean literales
+				if (token1 instanceof Literal &&
+					token2 instanceof Literal) {
+					if (!((Literal) token1).getText().equals(((Literal) token2).getText()))
+						return false;
+				}
+				
+				// Caso en que los tokens sean parámetros
+				else if (token1 instanceof ParameterReferenceToken && 
+						 token2 instanceof ParameterReferenceToken) {
+					continue;
+				}
+				
+				else {
+					return false;
+				}
+			}
+			
+			return true;
+		}
+		
+		return false;
+	}
+		
 	// Función que comprueba si un HTTPRequest es igual a otro
 	// TODO: Mejorar comparación si es conveniente
 	public static boolean equalHTTPRequest(HTTPRequest http1, HTTPRequest http2) {
@@ -568,7 +570,7 @@ public class AgentIntentsGetter {
 		List<TextLanguageInput> ret = new ArrayList<TextLanguageInput>();
 	
 		// Caso en que el template tenga texto
-		if (category.template.text != null) {
+		if (category.template.text != null && !category.template.text.isBlank()) {
 			TextLanguageInput languageInput = GeneratorFactory.eINSTANCE.createTextLanguageInput();
 			TextInput textInput = GeneratorFactory.eINSTANCE.createTextInput();
 			Literal literal = GeneratorFactory.eINSTANCE.createLiteral();
