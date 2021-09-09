@@ -2,21 +2,9 @@ package reverse.pandorabots;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-
-import com.fasterxml.jackson.core.JsonParseException;
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.type.CollectionType;
-import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 
 import generator.Bot;
-import generator.TextLanguageInput;
 import reverse.pandorabots.agent.Agent;
-import reverse.pandorabots.agent.AgentIntentsGetter;
-import reverse.pandorabots.agent.Category;
-import zipUtils.Unzipper;
 
 public class TempMain {
 

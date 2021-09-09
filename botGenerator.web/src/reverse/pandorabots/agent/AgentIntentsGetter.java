@@ -328,6 +328,14 @@ public class AgentIntentsGetter {
 			List<Set> sets = getAllTemplateSets(category.template);
 			
 			String[] tokens = category.pattern.text.split("\\*");
+			
+			if (tokens.length == 0) {
+				Literal literal = GeneratorFactory.eINSTANCE.createLiteral();
+				literal.setText("*");
+				phrase.getTokens().add(literal);
+				intent.setFallbackIntent(true);
+			}
+			
 			int tokenIndex = 1;
 			for (String token : tokens) {
 				Literal literal = GeneratorFactory.eINSTANCE.createLiteral();

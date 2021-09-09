@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <aiml>
   <category>
+    <pattern>*</pattern>
+    <template>fallback</template>
+  </category>
+  <category>
     <pattern>A</pattern>
     <template>B</template>
   </category>
@@ -19,6 +23,7 @@
   <category>
     <pattern>I need an appointment for my * * at * on *</pattern>
     <template>
+      <!-- Esto no funciona en la lectura de XMLMapper -->
       <think>
         <srai>
           SAVEPET <star index="1"/>
@@ -33,6 +38,7 @@
           SAVEDATE <star index="4"/>
         </srai>
       </think>
+      <!---->
       <think>
         <set name="pandoralang">en</set>
       </think>
