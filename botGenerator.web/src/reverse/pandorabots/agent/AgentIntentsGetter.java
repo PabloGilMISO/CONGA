@@ -3,15 +3,12 @@ package reverse.pandorabots.agent;
 import java.util.ArrayList;
 import java.util.List;
 
-import congabase.User;
-import generator.Action;
 import generator.BotInteraction;
 import generator.DefaultEntity;
 import generator.Entity;
 import generator.GeneratorFactory;
 import generator.HTTPRequest;
 import generator.Intent;
-import generator.IntentInput;
 import generator.IntentLanguageInputs;
 import generator.KeyValue;
 import generator.Language;
@@ -418,7 +415,7 @@ public class AgentIntentsGetter {
 		List<UserInteraction> futureFlows = new ArrayList<UserInteraction>();
 		
 		// DEBUG
-		List<List<?>> debug = new ArrayList<List<?>>();
+//		List<List<?>> debug = new ArrayList<List<?>>();
 		
 		for (UserInteraction cFlow: currentFlows) {
 			// Comparación de intents y targets
@@ -431,7 +428,7 @@ public class AgentIntentsGetter {
 					futureFlows.add(flow);
 					
 					// DEBUG
-					debug.add(tokens2);
+//					debug.add(tokens2);
 					
 					break;
 				}

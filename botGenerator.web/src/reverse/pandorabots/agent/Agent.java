@@ -109,8 +109,10 @@ public class Agent {
 	public Bot getBot() {
 		Bot bot = GeneratorFactory.eINSTANCE.createBot();
 
+		clearTexts();
+		
 		bot.setName(name);
-
+		
 		// GUARDADO DE ENTITIES
 		bot.getEntities().addAll(getEntities());
 
@@ -118,7 +120,9 @@ public class Agent {
 		bot.getIntents().addAll(getIntents());
 		
 		// GUARDADO DE FLUJOS EN INTENTS
-		bot.getFlows().addAll(getFlows(bot.getIntents()));
+		List<UserInteraction> flows = getFlows(bot.getIntents());
+		bot.getFlows().addAll(flows);
+		getOutcomingsInFlows(flows);
 		
 		// GUARDADO DE ACTIONS
 		bot.getActions().addAll(getActions(bot.getFlows()));
@@ -143,6 +147,74 @@ public class Agent {
 		return bot;
 	}
 
+	// Limpia las entradas y salidas de tipo texto que hay en los patterns y contestaciones
+	// de cada category quitando espacios en blanco y saltos de línea
+	public void clearTexts() {
+		for (Category category: this.categories) {
+			if (category.pattern.text != null)
+				category.pattern.text = category.pattern.text.trim();
+			
+			if (category.template.text != null)
+				category.template.text = category.template.text.trim();
+			
+			if (category.template.srais != null) {
+				for (Srai srai: category.template.srais) {
+					if (srai.text != null) {
+						srai.text = srai.text.trim();
+						
+						if (srai.stars != null)
+							srai.text += " ";
+					}
+				}
+			}
+			
+			if (category.template.think != null) {
+				if (category.template.think.text != null)
+					category.template.think.text = category.template.think.text.trim();
+				
+				if (category.template.think.srais != null) {
+					for (Srai srai: category.template.think.srais) {
+						if (srai.text != null) {
+							srai.text = srai.text.trim();
+							
+							if (srai.stars != null)
+								srai.text += " ";
+						}
+					}
+				}
+			}
+			
+			if (category.template.condition != null)
+				clearOptionsRC(category.template.condition);
+		}
+	}
+	
+	// Limpia las salidas 
+	public void clearOptionsRC(Condition condition) {
+		for (Option option: condition.options) {
+			if (option.srais != null) {
+				for (Srai srai: option.srais) {
+					if (srai.text != null)
+						srai.text = srai.text.trim();
+				}
+			}
+			
+			if (option.think != null && option.think.srais != null) {
+				for (Srai srai: option.think.srais) {
+					if (srai.text != null) {
+						srai.text = srai.text.trim();
+						
+						if (srai.stars != null)
+							srai.text += " ";
+					}
+				}
+			}
+			
+			if (option.condition != null)
+				clearOptionsRC(option.condition);
+		}
+	}
+	
 	// Recoge las entities siempre y cuando se utilicen los maps de Pandorabots como
 	// entities
 	public List<generator.Entity> getEntities() {
@@ -212,9 +284,14 @@ public class Agent {
 				ret.addAll(categoryFlows);
 		}
 		
-		AgentIntentsGetter.getOutcomingsFlows(ret, ret);
+//		AgentIntentsGetter.getOutcomingsFlows(ret, ret);
 
 		return ret;
+	}
+	
+	// Recorre los flujos de conversación añadiendo las conexiones a profundidades superiores a 1 (outcomings)
+	public void getOutcomingsInFlows(List<UserInteraction> flows) {
+		AgentIntentsGetter.getOutcomingsFlows(new ArrayList<UserInteraction>(flows), flows);
 	}
 	
 	// Extrae las actions de los flujos de conversación creados anteriormente

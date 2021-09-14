@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <qualifiedTypeNameHistroy>
-    <fullyQualifiedTypeName name="javax.xml.transform.stream.StreamSource"/>
     <fullyQualifiedTypeName name="javax.xml.bind.annotation.XmlAccessorType"/>
     <fullyQualifiedTypeName name="javax.xml.bind.annotation.XmlAccessType"/>
     <fullyQualifiedTypeName name="javax.xml.bind.annotation.XmlAnyElement"/>
@@ -49,7 +48,6 @@
     <fullyQualifiedTypeName name="generator.Text"/>
     <fullyQualifiedTypeName name="generator.GeneratorFactory"/>
     <fullyQualifiedTypeName name="java.util.ArrayList"/>
-    <fullyQualifiedTypeName name="reverse.pandorabots.agent.AgentIntentsGetter"/>
     <fullyQualifiedTypeName name="generator.Method"/>
     <fullyQualifiedTypeName name="generator.KeyValue"/>
     <fullyQualifiedTypeName name="generator.Language"/>
@@ -60,4 +58,6 @@
     <fullyQualifiedTypeName name="java.util.Comparator"/>
     <fullyQualifiedTypeName name="generator.HTTPRequest"/>
     <fullyQualifiedTypeName name="java.util.Arrays"/>
+    <fullyQualifiedTypeName name="generator.Action"/>
+    <fullyQualifiedTypeName name="reverse.pandorabots.agent.AgentIntentsGetter"/>
 </qualifiedTypeNameHistroy>
