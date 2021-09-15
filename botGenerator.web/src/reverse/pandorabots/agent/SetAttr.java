@@ -1,7 +1,9 @@
 package reverse.pandorabots.agent;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlText;
 
+@JsonIgnoreProperties(ignoreUnknown=true)
 public class SetAttr {
 	@JacksonXmlText
 	public String name;

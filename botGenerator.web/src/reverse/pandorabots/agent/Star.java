@@ -2,11 +2,13 @@ package reverse.pandorabots.agent;
 
 import java.util.UUID;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlText;
 
 @JacksonXmlRootElement(localName = "star")
+@JsonIgnoreProperties(ignoreUnknown=true)
 public class Star {
 //	private String id;
 	@JacksonXmlProperty(isAttribute = true)

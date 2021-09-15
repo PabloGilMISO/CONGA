@@ -28,7 +28,7 @@ public class AgentIntentsGetter {
 	//// Funciones para gestionar las distintas formas que pueden tomar los intents
 	// Función para gestionar los intents que únicamente contengan argumentos de tipo <set>sample</set>
 	public static void addCategoryWithOnlyPatternSets(Category category, Intent intent) {
-		if (!category.pattern.sets.isEmpty()) {
+		if (category.pattern.sets != null && !category.pattern.sets.isEmpty()) {
 			IntentLanguageInputs languageInput = GeneratorFactory.eINSTANCE.createIntentLanguageInputs();
 			TrainingPhrase phrase = GeneratorFactory.eINSTANCE.createTrainingPhrase();
 
@@ -84,10 +84,6 @@ public class AgentIntentsGetter {
 			int dateCount = dateOccurrences1 > dateOccurrences2 ? dateOccurrences1 : dateOccurrences2;
 			ParameterReferenceToken dateParameterRef = GeneratorFactory.eINSTANCE.createParameterReferenceToken();
 			Parameter dateParameter = GeneratorFactory.eINSTANCE.createParameter();
-			
-//			literal.setText(tokens.get(0));
-//			phrase.getTokens().add(literal);
-//			tokens.remove(0);
 
 			for (String token : tokens) {
 				// Caso en que haya horas en el fragmento y otros elementos o no
@@ -420,17 +416,21 @@ public class AgentIntentsGetter {
 		for (UserInteraction cFlow: currentFlows) {
 			// Comparación de intents y targets
 			for (UserInteraction flow: flows) {
-				List<?> tokens1 = ((Text) cFlow.getTarget().getActions().get(0)).getInputs().get(0).getInputs().get(0).getTokens();
-				List<?> tokens2 = ((TrainingPhrase) flow.getIntent().getInputs().get(0).getInputs().get(0)).getTokens();
-				
-				if (equalTokens(tokens1, tokens2)) {
-					cFlow.getTarget().getOutcoming().add(flow);
-					futureFlows.add(flow);
+				try {
+					List<?> tokens1 = ((Text) cFlow.getTarget().getActions().get(0)).getInputs().get(0).getInputs().get(0).getTokens();
+					List<?> tokens2 = ((TrainingPhrase) flow.getIntent().getInputs().get(0).getInputs().get(0)).getTokens();
 					
-					// DEBUG
-//					debug.add(tokens2);
-					
-					break;
+					if (equalTokens(tokens1, tokens2)) {
+						cFlow.getTarget().getOutcoming().add(flow);
+						futureFlows.add(flow);
+						
+						// DEBUG
+	//					debug.add(tokens2);
+						
+						break;
+					}
+				} catch (Exception e) {
+					// TODO: handle exception
 				}
 			}
 		}
@@ -505,10 +505,14 @@ public class AgentIntentsGetter {
 		
 		if (internalInputs1.size() == internalInputs2.size()) {
 			for (int i = 0; i < internalInputs1.size(); i++) {
-				List<?> tokens1 = internalInputs1.get(i).getInputs().get(0).getTokens();
-				List<?> tokens2 = internalInputs2.get(i).getInputs().get(0).getTokens();
-				
-				return equalTokens(tokens1, tokens2);
+				try {
+					List<?> tokens1 = internalInputs1.get(i).getInputs().get(0).getTokens();
+					List<?> tokens2 = internalInputs2.get(i).getInputs().get(0).getTokens();
+					
+					return equalTokens(tokens1, tokens2);
+				} catch (Exception e) {
+					// TODO: handle exception
+				}
 			}
 			
 			return true;
@@ -574,32 +578,34 @@ public class AgentIntentsGetter {
 	public static List<TextLanguageInput> getAllIntentDirectResponses(Category category, List<Intent> intents) {
 		List<TextLanguageInput> ret = new ArrayList<TextLanguageInput>();
 	
-		// Caso en que el template tenga texto
-		if (category.template.text != null && !category.template.text.isBlank()) {
-			TextLanguageInput languageInput = GeneratorFactory.eINSTANCE.createTextLanguageInput();
-			TextInput textInput = GeneratorFactory.eINSTANCE.createTextInput();
-			Literal literal = GeneratorFactory.eINSTANCE.createLiteral();
+		if (category.template != null) {
+			// Caso en que el template tenga texto
+			if (category.template.text != null && !category.template.text.isBlank()) {
+				TextLanguageInput languageInput = GeneratorFactory.eINSTANCE.createTextLanguageInput();
+				TextInput textInput = GeneratorFactory.eINSTANCE.createTextInput();
+				Literal literal = GeneratorFactory.eINSTANCE.createLiteral();
+				
+				literal.setText(category.template.text);
+				textInput.getTokens().add(literal);
+				languageInput.setLanguage(Language.ENGLISH);
+				languageInput.getInputs().add(textInput);
+				ret.add(languageInput);
+			}
 			
-			literal.setText(category.template.text);
-			textInput.getTokens().add(literal);
-			languageInput.setLanguage(Language.ENGLISH);
-			languageInput.getInputs().add(textInput);
-			ret.add(languageInput);
-		}
-		
-		// Caso en que el template tenga srais
-		if (category.template.srais != null) {
-			ret.addAll(addResponseSrais(category.template.srais, intents));
-		}
-		
-		// Caso en que el template tenga conditions
-		if (category.template.condition != null) {
-			ret.addAll(getConditionResponsesREC(category.template.condition, intents, new ArrayList<TextLanguageInput>()));
-		}
-		
-		// Caso en el que el template tenga un think con srais
-		if (category.template.think != null && category.template.think.srais != null) {
-			ret.addAll(addResponseSrais(category.template.think.srais, intents));
+			// Caso en que el template tenga srais
+			if (category.template.srais != null) {
+				ret.addAll(addResponseSrais(category.template.srais, intents));
+			}
+			
+			// Caso en que el template tenga conditions
+			if (category.template.condition != null) {
+				ret.addAll(getConditionResponsesREC(category.template.condition, intents, new ArrayList<TextLanguageInput>()));
+			}
+			
+			// Caso en el que el template tenga un think con srais
+			if (category.template.think != null && category.template.think.srais != null) {
+				ret.addAll(addResponseSrais(category.template.think.srais, intents));
+			}
 		}
 		
 		return ret;
@@ -623,50 +629,54 @@ public class AgentIntentsGetter {
 				int starsFound = srai.stars.size();
 				
 				for (Intent intent: intents) {
-					var firstToken = intent.getInputs().get(0).getInputs().get(0);
-					if (firstToken instanceof Literal && ((Literal) firstToken).getText().equals(srai.text)) {
-						List<Parameter> parameters = new ArrayList<Parameter>();
-						
-						// Se recogen los parámetros del intent en cuestión
-						for (var token: intent.getInputs().get(0).getInputs()) {
-							if (token instanceof ParameterReferenceToken) {
-								parameters.add(((ParameterReferenceToken) token).getParameter());
-								starsFound -= 1;
-							}
-						}
-						
-						// Caso en que sólo haya un parámetro
-						if (srai.stars.size() == 1 && !parameters.isEmpty()) {
-							ParameterReferenceToken parameterRef = GeneratorFactory.eINSTANCE.createParameterReferenceToken();
+					try {
+						var firstToken = intent.getInputs().get(0).getInputs().get(0);
+						if (firstToken instanceof Literal && ((Literal) firstToken).getText().equals(srai.text)) {
+							List<Parameter> parameters = new ArrayList<Parameter>();
 							
-							parameterRef.setParameter(parameters.get(0));
-							textInput.getTokens().add(parameterRef);
-							starsFound -= 1;
-							break;
-						}
-
-						// Caso en que haya más de un parámetro (fechas y horas no soportadas)
-						else {
-							// Se hace el matching de los parámetros con sus índices 
-							// o en caso de error se añade un parámetro genérico
-							for (Star star: srai.stars) {
+							// Se recogen los parámetros del intent en cuestión
+							for (var token: intent.getInputs().get(0).getInputs()) {
+								if (token instanceof ParameterReferenceToken) {
+									parameters.add(((ParameterReferenceToken) token).getParameter());
+									starsFound -= 1;
+								}
+							}
+							
+							// Caso en que sólo haya un parámetro
+							if (srai.stars.size() == 1 && !parameters.isEmpty()) {
 								ParameterReferenceToken parameterRef = GeneratorFactory.eINSTANCE.createParameterReferenceToken();
 								
-								try {
-									parameterRef.setParameter(parameters.get(star.index - 1));
-								} catch(Exception e) {
-									Parameter parameter = GeneratorFactory.eINSTANCE.createParameter();
-
-									parameter.setDefaultEntity(DefaultEntity.TEXT);
-									parameterRef.setParameter(parameter);
-									textInput.getTokens().add(parameterRef);
-								}
-								
+								parameterRef.setParameter(parameters.get(0));
 								textInput.getTokens().add(parameterRef);
 								starsFound -= 1;
 								break;
 							}
+	
+							// Caso en que haya más de un parámetro (fechas y horas no soportadas)
+							else {
+								// Se hace el matching de los parámetros con sus índices 
+								// o en caso de error se añade un parámetro genérico
+								for (Star star: srai.stars) {
+									ParameterReferenceToken parameterRef = GeneratorFactory.eINSTANCE.createParameterReferenceToken();
+									
+									try {
+										parameterRef.setParameter(parameters.get(star.index - 1));
+									} catch(Exception e) {
+										Parameter parameter = GeneratorFactory.eINSTANCE.createParameter();
+	
+										parameter.setDefaultEntity(DefaultEntity.TEXT);
+										parameterRef.setParameter(parameter);
+										textInput.getTokens().add(parameterRef);
+									}
+									
+									textInput.getTokens().add(parameterRef);
+									starsFound -= 1;
+									break;
+								}
+							}
 						}
+					} catch (Exception e) {
+						// TODO: handle exception
 					}
 				}
 				
@@ -725,47 +735,51 @@ public class AgentIntentsGetter {
 						int starsFound = srai.stars.size();
 						
 						for (Intent intent: intents) {
-							var firstToken = intent.getInputs().get(0).getInputs().get(0);
-							if (firstToken instanceof Literal && ((Literal) firstToken).getText().equals(srai.text)) {
-								List<Parameter> parameters = new ArrayList<Parameter>();
-								
-								// Se recogen los parámetros del intent en cuestión
-								for (var token: intent.getInputs().get(0).getInputs()) {
-									if (token instanceof ParameterReferenceToken) {
-										parameters.add(((ParameterReferenceToken) token).getParameter());
-									}
-								}
-								
-								// Caso en que sólo haya un parámetro
-								if (srai.stars.size() == 1 && !parameters.isEmpty()) {
-									ParameterReferenceToken parameterRef = GeneratorFactory.eINSTANCE.createParameterReferenceToken();
+							try {
+								var firstToken = intent.getInputs().get(0).getInputs().get(0);
+								if (firstToken instanceof Literal && ((Literal) firstToken).getText().equals(srai.text)) {
+									List<Parameter> parameters = new ArrayList<Parameter>();
 									
-									parameterRef.setParameter(parameters.get(0));
-									textInput.getTokens().add(parameterRef);
-									break;
-								}
-
-								// Caso en que haya más de un parámetro (fechas y horas no soportadas)
-								else {
-									// Se hace el matching de los parámetros con sus índices 
-									// o en caso de error se añade un parámetro genérico
-									for (Star star: srai.stars) {
+									// Se recogen los parámetros del intent en cuestión
+									for (var token: intent.getInputs().get(0).getInputs()) {
+										if (token instanceof ParameterReferenceToken) {
+											parameters.add(((ParameterReferenceToken) token).getParameter());
+										}
+									}
+									
+									// Caso en que sólo haya un parámetro
+									if (srai.stars.size() == 1 && !parameters.isEmpty()) {
 										ParameterReferenceToken parameterRef = GeneratorFactory.eINSTANCE.createParameterReferenceToken();
 										
-										try {
-											parameterRef.setParameter(parameters.get(star.index - 1));
-										} catch(Exception e) {
-											Parameter parameter = GeneratorFactory.eINSTANCE.createParameter();
-
-											parameter.setDefaultEntity(DefaultEntity.TEXT);
-											parameterRef.setParameter(parameter);
-											textInput.getTokens().add(parameterRef);
-										}
-										
+										parameterRef.setParameter(parameters.get(0));
 										textInput.getTokens().add(parameterRef);
 										break;
 									}
+	
+									// Caso en que haya más de un parámetro (fechas y horas no soportadas)
+									else {
+										// Se hace el matching de los parámetros con sus índices 
+										// o en caso de error se añade un parámetro genérico
+										for (Star star: srai.stars) {
+											ParameterReferenceToken parameterRef = GeneratorFactory.eINSTANCE.createParameterReferenceToken();
+											
+											try {
+												parameterRef.setParameter(parameters.get(star.index - 1));
+											} catch(Exception e) {
+												Parameter parameter = GeneratorFactory.eINSTANCE.createParameter();
+	
+												parameter.setDefaultEntity(DefaultEntity.TEXT);
+												parameterRef.setParameter(parameter);
+												textInput.getTokens().add(parameterRef);
+											}
+											
+											textInput.getTokens().add(parameterRef);
+											break;
+										}
+									}
 								}
+							} catch (Exception e) {
+								// TODO: handle exception
 							}
 						}
 						

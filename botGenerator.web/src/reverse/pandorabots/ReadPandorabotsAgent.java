@@ -26,8 +26,8 @@ public class ReadPandorabotsAgent {
 
 	public ReadPandorabotsAgent() {
 		mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
-				.configure(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY, true)
-				.configure(DeserializationFeature.ACCEPT_EMPTY_STRING_AS_NULL_OBJECT, true);
+			  .configure(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY, true)
+			  .configure(DeserializationFeature.ACCEPT_EMPTY_STRING_AS_NULL_OBJECT, true);
 	}
 
 	// Devuelve el agente, esto es: el bot creado con las clases intermedias al
@@ -36,6 +36,7 @@ public class ReadPandorabotsAgent {
 		// Descomprime el zip que contiene el bot
 		File agentFiles = new Unzipper(zip.getCanonicalPath()).unzip();
 		if (agentFiles == null) {
+			System.out.println("El archivo no existe.");
 			return null;
 		}
 		// Declaración del modelo intermedio del bot y la lista de ficheros a recorrer
