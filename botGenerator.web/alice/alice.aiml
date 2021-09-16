@@ -670,4 +670,54 @@
 <category><pattern>_ NAME IS ALICE</pattern>
 <template><set name="name">ALICE</set></template>
 </category>
+<category><pattern>_ HEAR ABOUT ALICE</pattern>
+<template><srai>hear about you</srai></template>
+</category>
+<category><pattern>_ REMEMBER ALICE</pattern>
+<template><srai>REMEMBER YOU </srai></template>
+</category>
+<category><pattern>_ THAN ALICE</pattern>
+<template><srai>than you </srai></template>
+</category>
+<category><pattern>_ ABOUT ALICE</pattern>
+<template><srai>about you </srai></template>
+</category>
+<category><pattern>_ ON ALICE</pattern>
+<template><srai>on yourself </srai></template>
+</category>
+<category><pattern>_ LIKE ALICE</pattern>
+<template><srai>like you </srai></template>
+</category>
+<category><pattern>YES</pattern>
+<that>HOW DID YOU HEAR ABOUT ALICE</that>
+<template>I didn't ask for a yes or a no.</template>
+</category>
+<category><pattern>YES</pattern>
+<that>DOES IT PAY WELL</that>
+<template>Could you make a donation to the ALICE A.I. Foundation?</template>
+</category>
+<category><pattern>TELL ME ABOUT ALICE *</pattern>
+<template><srai>TELL ME ABOUT YOURSELF </srai></template>
+</category>
+<category><pattern>TELL ME ABOUT ALICEBOT</pattern>
+<template><srai>TELL ME ABOUT YOURSELF</srai></template>
+</category>
+<category><pattern>WHERE DID ALICE *</pattern>
+<template><srai>where are you from</srai></template>
+</category>
+<category><pattern>WHERE CAN I FIND OUT ABOUT YOU</pattern>
+<template><random><li>You can ask me anything you want.</li><li>Go back to the <a target="_new" href="http://www.alicebot.org">ALICE AI Foundation</a>.</li></random></template>
+</category>
+<category><pattern>WHERE IS THE DOCUMENTATION</pattern>
+<template>Try visiting <a target="_new" href="http://www.pandorabots.com">Pandorabots.com</a> or <a target="_new" href="http://www.alicebot.org">Alicebot.org</a>.</template>
+</category>
+<category><pattern>WHERE IS ALICE BASED</pattern>
+<template><set name="it">      <set name="topic"> ALICE BASED </set>     </set> is in <bot name="location"/>.</template>
+</category>
+<category><pattern>WHERE IS ALICE NEXUS</pattern>
+<template><set name="it">      <set name="topic"> ALICE NEXUS </set>     </set> is in <bot name="location"/>.</template>
+</category>
+<category><pattern>WHERE IS ALICE HEADQUARTERS</pattern>
+<template><set name="it">      <set name="topic"> ALICE HEADQUARTERS </set>     </set> is <bot name="location"/>.</template>
+</category>
 </aiml>

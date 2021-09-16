@@ -5,6 +5,8 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.TreeSet;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import generator.Action;
 import generator.Bot;
 import generator.Entity;
@@ -118,9 +120,15 @@ public class Agent {
 		
 		// GUARDADO DE FLUJOS EN INTENTS
 		List<UserInteraction> flows = getFlows(bot.getIntents());
+//		for (UserInteraction flow: flows)
+//			bot.getFlows().add(flow);
 		bot.getFlows().addAll(flows);
 		getOutcomingsInFlows(flows);
-		
+//		for (UserInteraction flow: flows)
+//			if (!bot.getFlows().contains(flow))
+//				bot.getFlows().add(flow);
+//
+//		getOutcomingsInFlows(flows);
 		// GUARDADO DE ACTIONS
 		bot.getActions().addAll(getActions(bot.getFlows()));
 		

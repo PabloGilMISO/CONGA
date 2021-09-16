@@ -35,6 +35,11 @@ public class Option {
 		this.think = think;
 	}
 
+	public Option(String text) {
+		super();
+		this.text = text;
+	}
+
 	public Option(String value, String text) {
 		super();
 		this.value = value;

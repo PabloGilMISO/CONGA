@@ -419,15 +419,23 @@ public class AgentIntentsGetter {
 				try {
 					List<?> tokens1 = ((Text) cFlow.getTarget().getActions().get(0)).getInputs().get(0).getInputs().get(0).getTokens();
 					List<?> tokens2 = ((TrainingPhrase) flow.getIntent().getInputs().get(0).getInputs().get(0)).getTokens();
+					List<?> tokens3 = ((Text) flow.getTarget().getActions().get(0)).getInputs().get(0).getInputs().get(0).getTokens();
+
+					// Caso en que el target sea el mismo que el intent, y por tanto, se produzca una recursión infinita
+					// cuando el usuario entra a este intent
+					if (equalTokens(tokens2, tokens3))
+						continue;
 					
-					if (equalTokens(tokens1, tokens2)) {
-						cFlow.getTarget().getOutcoming().add(flow);
-						futureFlows.add(flow);
-						
-						// DEBUG
-	//					debug.add(tokens2);
-						
-						break;
+					else {
+						if (equalTokens(tokens1, tokens2)) {
+							cFlow.getTarget().getOutcoming().add(flow);
+							futureFlows.add(flow);
+							
+							// DEBUG
+		//					debug.add(tokens2);
+							
+							break;
+						}
 					}
 				} catch (Exception e) {
 					// TODO: handle exception

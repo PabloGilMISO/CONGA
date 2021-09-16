@@ -55,6 +55,10 @@ public class Think {
 		this.sets = sets;
 		this.srais = srais;
 	}
+	
+	public Think(String text) {
+		this.text = text;
+	}
 
 //	public Think(List<Set> sets) {
 //		this.sets = sets;
