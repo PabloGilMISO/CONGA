@@ -120,15 +120,9 @@ public class Agent {
 		
 		// GUARDADO DE FLUJOS EN INTENTS
 		List<UserInteraction> flows = getFlows(bot.getIntents());
-//		for (UserInteraction flow: flows)
-//			bot.getFlows().add(flow);
-		bot.getFlows().addAll(flows);
 		getOutcomingsInFlows(flows);
-//		for (UserInteraction flow: flows)
-//			if (!bot.getFlows().contains(flow))
-//				bot.getFlows().add(flow);
-//
-//		getOutcomingsInFlows(flows);
+		bot.getFlows().addAll(AgentIntentsGetter.copyFlows(flows));
+		
 		// GUARDADO DE ACTIONS
 		bot.getActions().addAll(getActions(bot.getFlows()));
 		

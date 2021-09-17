@@ -385,19 +385,27 @@ public class AgentIntentsGetter {
 		BotInteraction target = GeneratorFactory.eINSTANCE.createBotInteraction();
 		
 		// Caso en que el target no tenga responses
-		if (responses.isEmpty())
-			return null;
-		
-		for (TextLanguageInput response: responses) {
-			Text targetText = GeneratorFactory.eINSTANCE.createText();
+		if (responses.isEmpty()) {
+			// Caso en que tenga una llamada de tipo HTTP (callapi)
+			if (category.template.callapi != null)
+				addCallapi(category.template.callapi, target);
 			
-			targetText.getInputs().add(response);
-			target.getActions().add(targetText);
+			else
+				return null;
 		}
 		
-		// Caso en que tenga una llamada de tipo HTTP (callapi)
-		if (category.template.callapi != null)
-			addCallapi(category.template.callapi, target);
+		else {
+			for (TextLanguageInput response: responses) {
+				Text targetText = GeneratorFactory.eINSTANCE.createText();
+				
+				targetText.getInputs().add(response);
+				target.getActions().add(targetText);
+			}
+			
+			// Caso en que tenga una llamada de tipo HTTP (callapi)
+			if (category.template.callapi != null)
+				addCallapi(category.template.callapi, target);
+		}
 
 		flow.setTarget(target);
 		flow.setIntent(intent);
@@ -445,6 +453,154 @@ public class AgentIntentsGetter {
 		
 		if (!futureFlows.isEmpty())
 			getOutcomingsFlows(futureFlows, flows);
+	}
+	
+	// Hace una copia de los flows y sus referencias internas
+	public static List<UserInteraction> copyFlows(List<UserInteraction> flows) {
+		List<UserInteraction> ret = new ArrayList<UserInteraction>();
+		
+		for (UserInteraction flow: flows) {
+			UserInteraction flowCopy = GeneratorFactory.eINSTANCE.createUserInteraction();
+			
+			// Variables del Intent
+			Intent intentCopy = GeneratorFactory.eINSTANCE.createIntent();
+			IntentLanguageInputs languageInputCopy = GeneratorFactory.eINSTANCE.createIntentLanguageInputs();
+			TrainingPhrase phraseCopy = GeneratorFactory.eINSTANCE.createTrainingPhrase();
+			
+			// Variables del Target
+			BotInteraction targetCopy = GeneratorFactory.eINSTANCE.createBotInteraction();
+			
+			// Parte de copia del Intent
+			for (var token: ((TrainingPhrase) flow.getIntent().getInputs().get(0).getInputs().get(0)).getTokens()) {
+				if (token instanceof Literal) {
+					Literal literalCopy = GeneratorFactory.eINSTANCE.createLiteral();
+					literalCopy.setText(((Literal) token).getText());
+					
+					phraseCopy.getTokens().add(literalCopy);
+				}
+				
+				else if (token instanceof ParameterReferenceToken) {
+					ParameterReferenceToken parameterReferenceTokenCopy = GeneratorFactory.eINSTANCE.createParameterReferenceToken();
+					Parameter parameterCopy = GeneratorFactory.eINSTANCE.createParameter();
+					
+					parameterCopy.setName(((ParameterReferenceToken) token).getParameter().getName());
+					parameterCopy.setDefaultEntity(((ParameterReferenceToken) token).getParameter().getDefaultEntity());
+					parameterReferenceTokenCopy.setParameter(parameterCopy);
+					phraseCopy.getTokens().add(parameterReferenceTokenCopy);
+				}
+				
+				else {
+					System.out.println("El token no es un Literal o un Parameter en el intent.");
+				}
+			}
+			
+			languageInputCopy.setLanguage(Language.ENGLISH);
+			languageInputCopy.getInputs().add(phraseCopy);
+			intentCopy.getInputs().add(languageInputCopy);
+			flowCopy.setIntent(intentCopy);
+			
+			// Parte de copia del Target
+			for (var action: flow.getTarget().getActions()) {
+				if (action instanceof Text) {
+					Text textCopy = GeneratorFactory.eINSTANCE.createText();
+					TextLanguageInput textLanguageInputCopy = GeneratorFactory.eINSTANCE.createTextLanguageInput();
+					TextInput textInputCopy = GeneratorFactory.eINSTANCE.createTextInput();
+					
+					for (var token: ((Text) action).getInputs().get(0).getInputs().get(0).getTokens()) {
+						if (token instanceof Literal) {
+							Literal literalCopy = GeneratorFactory.eINSTANCE.createLiteral();
+							literalCopy.setText(((Literal) token).getText());
+							
+							textInputCopy.getTokens().add(literalCopy);
+						}
+						
+						else if (token instanceof ParameterReferenceToken) {
+							ParameterReferenceToken parameterReferenceTokenCopy = GeneratorFactory.eINSTANCE.createParameterReferenceToken();
+							Parameter parameterCopy = GeneratorFactory.eINSTANCE.createParameter();
+							
+							parameterCopy.setName(((ParameterReferenceToken) token).getParameter().getName());
+							parameterCopy.setDefaultEntity(((ParameterReferenceToken) token).getParameter().getDefaultEntity());
+							parameterReferenceTokenCopy.setParameter(parameterCopy);
+							textInputCopy.getTokens().add(parameterReferenceTokenCopy);
+						}
+						
+						else {
+							System.out.println("El token no es un Literal o un Parameter en el target.");
+						}
+					}
+					
+					textLanguageInputCopy.getInputs().add(textInputCopy);
+					textCopy.getInputs().add(textLanguageInputCopy);
+					targetCopy.getActions().add(textCopy);
+				}
+				
+				else if (action instanceof HTTPRequest) {
+					HTTPRequest httpRequestCopy = GeneratorFactory.eINSTANCE.createHTTPRequest();
+					
+					if (((HTTPRequest) action).getURL() != null)
+						httpRequestCopy.setURL(((HTTPRequest) action).getURL());
+					
+					if (((HTTPRequest) action).getName() != null)
+						httpRequestCopy.setName(((HTTPRequest) action).getName());
+					
+					if (((HTTPRequest) action).getMethod() != null)
+						httpRequestCopy.setMethod(((HTTPRequest) action).getMethod());
+					
+					if (((HTTPRequest) action).getData() != null) {
+						for (KeyValue keyValue: ((HTTPRequest) action).getData()) {
+							// Caso en que el keyvalue guarde texto
+							if (keyValue.getValue() instanceof Literal) {
+								KeyValue keyValueCopy = GeneratorFactory.eINSTANCE.createKeyValue();
+								Literal literalCopy = GeneratorFactory.eINSTANCE.createLiteral();
+								
+								literalCopy.setText(((Literal) keyValue.getValue()).getText());
+
+								keyValueCopy.setKey(keyValue.getKey());
+								keyValueCopy.setValue(literalCopy);
+								httpRequestCopy.getData().add(keyValueCopy);
+							}
+							
+							// Caso en que el keyValue guarde un parámetro
+							if (keyValue.getValue() instanceof ParameterReferenceToken) {
+								KeyValue keyValueCopy = GeneratorFactory.eINSTANCE.createKeyValue();
+								ParameterReferenceToken parameterRefCopy = GeneratorFactory.eINSTANCE.createParameterReferenceToken();
+								Parameter parameterCopy = GeneratorFactory.eINSTANCE.createParameter();
+								
+								parameterCopy.setName(((ParameterReferenceToken) keyValue.getValue()).getParameter().getName());
+								parameterCopy.setDefaultEntity(((ParameterReferenceToken) keyValue.getValue()).getParameter().getDefaultEntity());
+								parameterRefCopy.setParameter(parameterCopy);
+								
+								keyValueCopy.setKey(keyValue.getKey());
+								keyValueCopy.setValue(parameterRefCopy);
+								httpRequestCopy.getData().add(keyValueCopy);
+							}
+						}
+					}
+					
+					if (((HTTPRequest) action).getHeaders() != null) {
+						KeyValue keyValueCopy = GeneratorFactory.eINSTANCE.createKeyValue();
+						keyValueCopy.setKey(((HTTPRequest) action).getHeaders().get(0).getKey());
+						keyValueCopy.setValue(((HTTPRequest) action).getHeaders().get(0).getValue());
+						
+						httpRequestCopy.getHeaders().add(keyValueCopy);
+					}
+					
+					targetCopy.getActions().add(httpRequestCopy);
+				}
+				
+				else {
+					System.out.println("El action no es de tipo Text o HTTPRequest.");
+				}
+			}
+			
+			if (flow.getTarget().getOutcoming() != null)
+				targetCopy.getOutcoming().addAll(copyFlows(flow.getTarget().getOutcoming()));
+			
+			flowCopy.setTarget(targetCopy);
+			ret.add(flowCopy);
+		}
+		
+		return ret;
 	}
 	
 	// Función para añadir llamadas HTTP
