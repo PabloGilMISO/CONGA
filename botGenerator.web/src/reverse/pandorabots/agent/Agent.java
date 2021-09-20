@@ -106,6 +106,8 @@ public class Agent {
 	public Bot getBot() {
 		Bot bot = GeneratorFactory.eINSTANCE.createBot();
 
+		bot.getLanguages().add(Language.ENGLISH);
+		
 		clearTexts();
 		
 		bot.setName(name);
@@ -229,8 +231,9 @@ public class Agent {
 	public List<Intent> getIntents() {
 		List<Intent> intents = new ArrayList<Intent>();
 
-		for (Category category : categories) {
+		for (int i = 0; i < categories.size(); i++) {
 			Intent intent = GeneratorFactory.eINSTANCE.createIntent();
+			Category category = categories.get(i);
 
 			if (category.pattern != null) {
 				// Caso en que la categoría sólo contenga sets de tipo <set>example</set>
@@ -252,7 +255,9 @@ public class Agent {
 					// Caso base: intents que contengan texto y puedan o no contener parámetros
 					else
 						AgentIntentsGetter.addCategoryBasic(category, intent, mapFiles);
-				}	
+				}
+				
+				intent.setName("Intent " + i);
 			}
 			
 			intents.add(intent);

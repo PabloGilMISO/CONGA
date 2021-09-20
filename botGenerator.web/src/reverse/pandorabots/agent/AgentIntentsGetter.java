@@ -496,6 +496,7 @@ public class AgentIntentsGetter {
 			
 			languageInputCopy.setLanguage(Language.ENGLISH);
 			languageInputCopy.getInputs().add(phraseCopy);
+			intentCopy.setName(flow.getIntent().getName());
 			intentCopy.getInputs().add(languageInputCopy);
 			flowCopy.setIntent(intentCopy);
 			

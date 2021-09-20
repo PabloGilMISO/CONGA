@@ -2,15 +2,15 @@
 <aiml>
   <category>
     <pattern>A</pattern>
-    <template>B</template>
+    <template><srai>B</srai></template>
   </category>
   <category>
     <pattern>B</pattern>
-    <template>C</template>
+    <template><srai>C</srai></template>
   </category>
   <category>
     <pattern>C</pattern>
-    <template>D</template>
+    <template><srai>D</srai></template>
   </category>
   <category>
     <pattern>D</pattern>

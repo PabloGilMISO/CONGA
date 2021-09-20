@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <qualifiedTypeNameHistroy>
-    <fullyQualifiedTypeName name="reverse.pandorabots.agent.InnerXmlHandler"/>
     <fullyQualifiedTypeName name="com.fasterxml.jackson.databind.deser.std.StdDeserializer"/>
     <fullyQualifiedTypeName name="com.fasterxml.jackson.core.JsonParser"/>
     <fullyQualifiedTypeName name="com.fasterxml.jackson.databind.DeserializationContext"/>
@@ -60,4 +59,5 @@
     <fullyQualifiedTypeName name="generator.Text"/>
     <fullyQualifiedTypeName name="generator.HTTPRequest"/>
     <fullyQualifiedTypeName name="reverse.pandorabots.agent.AgentIntentsGetter"/>
+    <fullyQualifiedTypeName name="com.sun.tools.javac.util.Pair"/>
 </qualifiedTypeNameHistroy>

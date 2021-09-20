@@ -19,8 +19,8 @@ public class TempMain {
 //		String pandorabotsPath = "C:/CONGA/pandorabots/bots-externos/aiml-en-us-foundation-alice/atomic";
 		
 //		// Lectura de un archivo AIML
-		removeZip(pandorabotsPath);
-		buildZip(pandorabotsPath);
+//		removeZip(pandorabotsPath);
+//		buildZip(pandorabotsPath);
 		
 		// Lectura de un zip ya existente
 		File zip = new File(pandorabotsPath + ".zip");		
