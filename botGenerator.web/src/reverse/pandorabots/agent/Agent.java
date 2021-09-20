@@ -5,8 +5,6 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.TreeSet;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-
 import generator.Action;
 import generator.Bot;
 import generator.Entity;

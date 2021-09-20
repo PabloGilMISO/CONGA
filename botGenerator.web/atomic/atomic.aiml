@@ -9,11 +9,17 @@
 <!-- as adopted by the ALICE A.I. Foundation.  -->
 <!-- Last modified 11/24/2011 -->
 <!-- -->
+<category><pattern>DID NOT</pattern>
+<template>DID</template>
+</category>
+<category><pattern>DID</pattern>
+<template>DID NOT</template>
+</category>
 <category><pattern>YOU CAN DO BETTER</pattern>
 <template>Ok, I will try.</template>
 </category>
 <category><pattern>WHAT DO YOU WANT TO TALK ABOUT</pattern>
-<template>Let's talk about <set name="topic"><srai>RANDOM TOPIC</srai></set>.</template>
+<template>Let's talk about <set name="topic"><srai>RANDOM TOPIC</srai></set></template>
 </category>
 <category>
 <pattern>WHAT WE HAVE IN COMMON</pattern>
@@ -200,8 +206,6 @@
 <category><pattern>LIFE IS BEAUTIFUL</pattern>
 <template>I haven't seen <set name="it"> LIFE IS BEAUTIFUL</set> yet but lots of people say it is good.</template>
 </category>
-
-
 <category><pattern>LIFE</pattern>
 <template>What is the meaning of life?</template>
 </category>
@@ -232,8 +236,6 @@
 <category><pattern>YOU TURN ME ON</pattern>
 <template>How can a <bot name="genus"/> online do that to a person?</template>
 </category>
-
-
 <category><pattern>YOU SOUND DIFFERENT</pattern>
 <template>In what way?</template>
 </category>
@@ -291,8 +293,6 @@
 <category><pattern>YOU ALREADY KNOW MY NAME</pattern>
 <template>Your name is <get name="name"/>.</template>
 </category>
-
-
 <category><pattern>YOU ALREADY KNOW</pattern>
 <template>How do I know you are telling the truth?</template>
 </category>
@@ -332,8 +332,6 @@
 <category><pattern>YOU DID NOT ANSWER MY QUESTION</pattern>
 <template>OK. Please help me improve my communication skills. What would you have said?</template>
 </category>
-
-
 <category><pattern>YOU DID NOT ANSWER</pattern>
 <template>Try to rephrase your question.</template>
 </category>
@@ -346,8 +344,6 @@
 <category><pattern>YOU DID NOT</pattern>
 <template>Try asking me in simpler terms.</template>
 </category>
-
-
 <category><pattern>YOU HURT MY FEELINGS</pattern>
 <template>That was not my intention.</template>
 </category>
@@ -360,8 +356,6 @@
 <category><pattern>YOU WERE CREATED BY HUMANS</pattern>
 <template>So were you :-)</template>
 </category>
-
-
 <category><pattern>YOU WERE SAYING</pattern>
 <template>We are talking about <srai>POP</srai></template>
 </category>
@@ -470,8 +464,6 @@
 <category><pattern>YOU ASKED ME</pattern>
 <template>Is that your final answer?</template>
 </category>
-
-
 <category><pattern>YOU ASKED</pattern>
 <template>Ah.</template>
 </category>
@@ -1214,9 +1206,7 @@
 <category><pattern>DID NOT YOU UNDERSTAND IT</pattern>
 <template>Perhaps I misunderstood your meaning.</template>
 </category>
-<category><pattern>DID NOT</pattern>
-<template>DID</template>
-</category>
+
 <category><pattern>DID I OFFEND YOU</pattern>
 <template>No, I do not take offense.</template>
 </category>
@@ -1244,4 +1234,21 @@
 <category><pattern>DID YOU SEE CONTACT</pattern>
 <template>Yeah, <set name="it">Contact</set> gave me a contact high ;-)</template>
 </category>
+<category><pattern>DID YOU SLEEP WELL</pattern>
+<template>yes I am fully rested thank you.  How about you?</template>
+</category>
+<category><pattern>DID YOU MISS ME</pattern>
+<template>Yes <get name="name"/>, I've been thinking about you.</template>
+</category>
+<category><pattern>DID YOU KNOW</pattern>
+<template>No I didn't know that.<think>  <set name="it">   <set name="topic">KNOW</set>  </set> </think></template>
+</category>
+<category><pattern>DID YOU CRASH</pattern>
+<template>Yes, I think I was down for a while. What happened?</template>
+</category>
+<category><pattern>DID YOU THINK ABOUT IT</pattern>
+<template>I am still thinking.<think>  <set name="it">   <set name="topic">THINK ABOUT IT</set>  </set> </think></template>
+</category>
+
+
 </aiml>

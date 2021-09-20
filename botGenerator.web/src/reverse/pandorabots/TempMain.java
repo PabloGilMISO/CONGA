@@ -16,11 +16,11 @@ public class TempMain {
 	public static void main(String[] args) throws IOException {
 		String pandorabotsPath = "C:/CONGA/pandorabots/veterinaryCenterPruebas";
 //		String pandorabotsPath = "C:/Users/pablo/CONGA/pandorabots/veterinaryCenterPruebas.zip";
-//		String pandorabotsPath = "C:/CONGA/pandorabots/bots-externos/aiml-en-us-foundation-alice/client_profile";
-//		
+//		String pandorabotsPath = "C:/CONGA/pandorabots/bots-externos/aiml-en-us-foundation-alice/atomic";
+		
 //		// Lectura de un archivo AIML
-//		removeZip(pandorabotsPath);
-//		buildZip(pandorabotsPath);
+		removeZip(pandorabotsPath);
+		buildZip(pandorabotsPath);
 		
 		// Lectura de un zip ya existente
 		File zip = new File(pandorabotsPath + ".zip");		

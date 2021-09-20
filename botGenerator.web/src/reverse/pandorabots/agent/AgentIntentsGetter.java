@@ -387,7 +387,7 @@ public class AgentIntentsGetter {
 		// Caso en que el target no tenga responses
 		if (responses.isEmpty()) {
 			// Caso en que tenga una llamada de tipo HTTP (callapi)
-			if (category.template.callapi != null)
+			if (category.template != null && category.template.callapi != null)
 				addCallapi(category.template.callapi, target);
 			
 			else
