@@ -3,6 +3,8 @@ package reverse.pandorabots.agent;
 import java.util.ArrayList;
 import java.util.List;
 
+import generator.Action;
+import generator.Bot;
 import generator.BotInteraction;
 import generator.DefaultEntity;
 import generator.Entity;
@@ -17,6 +19,7 @@ import generator.Literal;
 import generator.Method;
 import generator.Parameter;
 import generator.ParameterReferenceToken;
+import generator.PromptLanguage;
 import generator.SimpleInput;
 import generator.Text;
 import generator.TextInput;
@@ -35,14 +38,23 @@ public class AgentIntentsGetter {
 			for (SetAttr set : category.pattern.sets) {
 				ParameterReferenceToken parameterRef = GeneratorFactory.eINSTANCE.createParameterReferenceToken();
 				Parameter parameter = GeneratorFactory.eINSTANCE.createParameter();
-
+				PromptLanguage prompt = GeneratorFactory.eINSTANCE.createPromptLanguage();
+				
 				parameter.setName(set.name);
+				parameter.setRequired(true);
+				
+				prompt.setLanguage(Language.ENGLISH);
+				prompt.getPrompts().add("Tell me the " + set.name);
+				parameter.setName(set.name);
+				parameter.getPrompts().add(prompt);
+				parameterRef.setTextReference(set.name);
 				parameterRef.setParameter(parameter);
 				phrase.getTokens().add(parameterRef);
 				intent.getParameters().add(parameter);
 			}
 
 			languageInput.getInputs().add(phrase);
+			languageInput.setLanguage(Language.ENGLISH);
 			intent.getInputs().add(languageInput);
 		}
 	}
@@ -70,8 +82,14 @@ public class AgentIntentsGetter {
 		if (tokens.size() == 0) {
 			ParameterReferenceToken parameterRef = GeneratorFactory.eINSTANCE.createParameterReferenceToken();
 			Parameter parameter = GeneratorFactory.eINSTANCE.createParameter();
+			PromptLanguage prompt = GeneratorFactory.eINSTANCE.createPromptLanguage();
 			
+			prompt.setLanguage(Language.ENGLISH);
+			prompt.getPrompts().add("Tell me the date.");
+			parameter.setRequired(true);
+			parameter.getPrompts().add(prompt);
 			parameter.setDefaultEntity(DefaultEntity.DATE);
+			parameterRef.setTextReference("DD/MM/AAAA");
 			parameterRef.setParameter(parameter);
 			phrase.getTokens().add(parameterRef);
 			intent.getParameters().add(parameter);
@@ -105,8 +123,14 @@ public class AgentIntentsGetter {
 					if (innerTokens.size() == 0) {
 						ParameterReferenceToken innerParameterRef = GeneratorFactory.eINSTANCE.createParameterReferenceToken();
 						Parameter innerParameter = GeneratorFactory.eINSTANCE.createParameter();
+						PromptLanguage prompt = GeneratorFactory.eINSTANCE.createPromptLanguage();
 						
+						prompt.setLanguage(Language.ENGLISH);
+						prompt.getPrompts().add("Tell me the time.");
+						innerParameter.setRequired(true);
+						innerParameter.getPrompts().add(prompt);
 						innerParameter.setDefaultEntity(DefaultEntity.TIME);
+						innerParameterRef.setTextReference("HH:MM");
 						innerParameterRef.setParameter(innerParameter);
 						phrase.getTokens().add(innerParameterRef);
 						intent.getParameters().add(innerParameter);
@@ -121,6 +145,7 @@ public class AgentIntentsGetter {
 						for (String innerToken : innerTokens) {
 							ParameterReferenceToken hourParameterRef = GeneratorFactory.eINSTANCE.createParameterReferenceToken();
 							Parameter hourParameter = GeneratorFactory.eINSTANCE.createParameter();
+							PromptLanguage hourPrompt = GeneratorFactory.eINSTANCE.createPromptLanguage();
 							
 							// Caso en que haya otros parámetros en el fragmento
 							if (innerToken.contains("*")) {
@@ -129,13 +154,19 @@ public class AgentIntentsGetter {
 									Literal innerLiteral = GeneratorFactory.eINSTANCE.createLiteral();
 									ParameterReferenceToken innerParameterRef = GeneratorFactory.eINSTANCE.createParameterReferenceToken();
 									Parameter innerParameter = GeneratorFactory.eINSTANCE.createParameter();
+									PromptLanguage prompt = GeneratorFactory.eINSTANCE.createPromptLanguage();
 									
 									// Guardado de texto previo al parametro
 									innerLiteral.setText(innerToken2);
 									phrase.getTokens().add(innerLiteral);
 
 									// Guardado del parámetro
+									prompt.setLanguage(Language.ENGLISH);
+									prompt.getPrompts().add("I need a parameter.");
+									innerParameter.setRequired(true);
+									innerParameter.getPrompts().add(prompt);
 									innerParameter.setDefaultEntity(DefaultEntity.TEXT);
+									innerParameterRef.setTextReference("parameter");
 									innerParameterRef.setParameter(innerParameter);
 									phrase.getTokens().add(innerParameterRef);
 									intent.getParameters().add(innerParameter);
@@ -153,7 +184,12 @@ public class AgentIntentsGetter {
 							
 							// Control de adición de parámetros de tipo hora
 							if (timeCount > 0) {
+								hourPrompt.setLanguage(Language.ENGLISH);
+								hourPrompt.getPrompts().add("Tell me the hour.");
+								hourParameter.setRequired(true);
+								hourParameter.getPrompts().add(hourPrompt);
 								hourParameter.setDefaultEntity(DefaultEntity.TIME);
+								hourParameterRef.setTextReference("HH:MM");
 								hourParameterRef.setParameter(hourParameter);
 								phrase.getTokens().add(hourParameterRef);
 								intent.getParameters().add(hourParameter);
@@ -170,13 +206,19 @@ public class AgentIntentsGetter {
 						Literal innerLiteral = GeneratorFactory.eINSTANCE.createLiteral();
 						ParameterReferenceToken parameterRef = GeneratorFactory.eINSTANCE.createParameterReferenceToken();
 						Parameter parameter = GeneratorFactory.eINSTANCE.createParameter();
+						PromptLanguage prompt = GeneratorFactory.eINSTANCE.createPromptLanguage();
 						
 						// Guardado de texto previo al parametro
 						innerLiteral.setText(innerToken);
 						phrase.getTokens().add(innerLiteral);
 
 						// Guardado del parámetro
+						prompt.setLanguage(Language.ENGLISH);
+						prompt.getPrompts().add("I need a parameter.");
+						parameter.setRequired(true);
+						parameter.getPrompts().add(prompt);
 						parameter.setDefaultEntity(DefaultEntity.TEXT);
+						parameterRef.setTextReference("parameter");
 						parameterRef.setParameter(parameter);
 						phrase.getTokens().add(parameterRef);
 						intent.getParameters().add(parameter);
@@ -194,7 +236,15 @@ public class AgentIntentsGetter {
 				
 				// Control de adición de parámetros de tipo fecha
 				if (dateCount > 0) {
+					PromptLanguage datePrompt = GeneratorFactory.eINSTANCE.createPromptLanguage();
+
+					// Guardado del parámetro
+					datePrompt.setLanguage(Language.ENGLISH);
+					datePrompt.getPrompts().add("Tell me the date.");
+					dateParameter.setRequired(true);
+					dateParameter.getPrompts().add(datePrompt);
 					dateParameter.setDefaultEntity(DefaultEntity.DATE);
+					dateParameterRef.setTextReference("DD/MM/AAAA");
 					dateParameterRef.setParameter(dateParameter);
 					phrase.getTokens().add(dateParameterRef);
 					intent.getParameters().add(dateParameter);
@@ -208,6 +258,7 @@ public class AgentIntentsGetter {
 		}
 		
 		languageInput.getInputs().add(phrase);
+		languageInput.setLanguage(Language.ENGLISH);
 		intent.getInputs().add(languageInput);
 	}
 
@@ -232,8 +283,15 @@ public class AgentIntentsGetter {
 		if (tokens.size() == 0) {
 			ParameterReferenceToken innerParameterRef = GeneratorFactory.eINSTANCE.createParameterReferenceToken();
 			Parameter innerParameter = GeneratorFactory.eINSTANCE.createParameter();
-			
+			PromptLanguage hourPrompt = GeneratorFactory.eINSTANCE.createPromptLanguage();
+
+			// Guardado del parámetro
+			hourPrompt.setLanguage(Language.ENGLISH);
+			hourPrompt.getPrompts().add("Tell me the hour.");
+			innerParameter.setRequired(true);
+			innerParameter.getPrompts().add(hourPrompt);
 			innerParameter.setDefaultEntity(DefaultEntity.TIME);
+			innerParameterRef.setTextReference("HH:MM");
 			innerParameterRef.setParameter(innerParameter);
 			phrase.getTokens().add(innerParameterRef);
 			intent.getParameters().add(innerParameter);
@@ -256,13 +314,19 @@ public class AgentIntentsGetter {
 						Literal innerLiteral = GeneratorFactory.eINSTANCE.createLiteral();
 						ParameterReferenceToken innerParameterRef = GeneratorFactory.eINSTANCE.createParameterReferenceToken();
 						Parameter innerParameter = GeneratorFactory.eINSTANCE.createParameter();
-						
+						PromptLanguage prompt = GeneratorFactory.eINSTANCE.createPromptLanguage();
+
 						// Guardado de texto previo al parametro
 						innerLiteral.setText(innerToken2);
 						phrase.getTokens().add(innerLiteral);
 
 						// Guardado del parámetro
+						prompt.setLanguage(Language.ENGLISH);
+						prompt.getPrompts().add("I need a parameter.");
+						innerParameter.setRequired(true);
+						innerParameter.getPrompts().add(prompt);
 						innerParameter.setDefaultEntity(DefaultEntity.TEXT);
+						innerParameterRef.setTextReference("parameter");
 						innerParameterRef.setParameter(innerParameter);
 						phrase.getTokens().add(innerParameterRef);
 						intent.getParameters().add(innerParameter);
@@ -280,7 +344,15 @@ public class AgentIntentsGetter {
 				
 				// Control de adición de parámetros de tipo hora
 				if (timeCount > 0) {
+					PromptLanguage hourPrompt = GeneratorFactory.eINSTANCE.createPromptLanguage();
+
+					// Guardado del parámetro
+					hourPrompt.setLanguage(Language.ENGLISH);
+					hourPrompt.getPrompts().add("Tell me the hour.");
+					hourParameter.setRequired(true);
+					hourParameter.getPrompts().add(hourPrompt);
 					hourParameter.setDefaultEntity(DefaultEntity.TIME);
+					hourParameterRef.setTextReference("HH:MM");
 					hourParameterRef.setParameter(hourParameter);
 					phrase.getTokens().add(hourParameterRef);
 					intent.getParameters().add(hourParameter);
@@ -290,6 +362,7 @@ public class AgentIntentsGetter {
 		}
 		
 		languageInput.getInputs().add(phrase);
+		languageInput.setLanguage(Language.ENGLISH);
 		intent.getInputs().add(languageInput);
 	}
 
@@ -309,6 +382,7 @@ public class AgentIntentsGetter {
 				intentAddSets(category.pattern.sets, intent, mapFiles, phrase);
 
 			languageInput.getInputs().add(phrase);
+			languageInput.setLanguage(Language.ENGLISH);
 			intent.getInputs().add(languageInput);
 		}
 		
@@ -334,6 +408,7 @@ public class AgentIntentsGetter {
 				Literal literal = GeneratorFactory.eINSTANCE.createLiteral();
 				ParameterReferenceToken parameterRef = GeneratorFactory.eINSTANCE.createParameterReferenceToken();
 				Parameter parameter = GeneratorFactory.eINSTANCE.createParameter();
+				PromptLanguage prompt = GeneratorFactory.eINSTANCE.createPromptLanguage();
 				int setsFlag = 0;
 				
 				// Guardado de texto previo al parametro
@@ -358,8 +433,13 @@ public class AgentIntentsGetter {
 						}
 					}
 				}
-				
+
+				prompt.setLanguage(Language.ENGLISH);
+				prompt.getPrompts().add("I need a parameter.");
+				parameter.setRequired(true);
+				parameter.getPrompts().add(prompt);
 				parameter.setDefaultEntity(DefaultEntity.TEXT);
+				parameterRef.setTextReference("parameter");
 				parameterRef.setParameter(parameter);
 				phrase.getTokens().add(parameterRef);
 				intent.getParameters().add(parameter);
@@ -372,6 +452,7 @@ public class AgentIntentsGetter {
 				intentAddSets(category.pattern.sets, intent, mapFiles, phrase);
 
 			languageInput.getInputs().add(phrase);
+			languageInput.setLanguage(Language.ENGLISH);
 			intent.getInputs().add(languageInput);
 		}
 	}
@@ -482,9 +563,14 @@ public class AgentIntentsGetter {
 				else if (token instanceof ParameterReferenceToken) {
 					ParameterReferenceToken parameterReferenceTokenCopy = GeneratorFactory.eINSTANCE.createParameterReferenceToken();
 					Parameter parameterCopy = GeneratorFactory.eINSTANCE.createParameter();
+					PromptLanguage promptCopy = GeneratorFactory.eINSTANCE.createPromptLanguage();
 					
+					promptCopy.setLanguage(Language.ENGLISH);
+					promptCopy.getPrompts().add(((ParameterReferenceToken) token).getParameter().getPrompts().get(0).getPrompts().get(0));
+					parameterCopy.getPrompts().add(promptCopy);
 					parameterCopy.setName(((ParameterReferenceToken) token).getParameter().getName());
 					parameterCopy.setDefaultEntity(((ParameterReferenceToken) token).getParameter().getDefaultEntity());
+					parameterReferenceTokenCopy.setTextReference(((ParameterReferenceToken) token).getTextReference());
 					parameterReferenceTokenCopy.setParameter(parameterCopy);
 					phraseCopy.getTokens().add(parameterReferenceTokenCopy);
 				}
@@ -518,9 +604,13 @@ public class AgentIntentsGetter {
 						else if (token instanceof ParameterReferenceToken) {
 							ParameterReferenceToken parameterReferenceTokenCopy = GeneratorFactory.eINSTANCE.createParameterReferenceToken();
 							Parameter parameterCopy = GeneratorFactory.eINSTANCE.createParameter();
+							PromptLanguage promptCopy = GeneratorFactory.eINSTANCE.createPromptLanguage();
 							
+							promptCopy.setLanguage(Language.ENGLISH);
+							promptCopy.getPrompts().add(((ParameterReferenceToken) token).getParameter().getPrompts().get(0).getPrompts().get(0));
 							parameterCopy.setName(((ParameterReferenceToken) token).getParameter().getName());
 							parameterCopy.setDefaultEntity(((ParameterReferenceToken) token).getParameter().getDefaultEntity());
+							parameterReferenceTokenCopy.setTextReference(((ParameterReferenceToken) token).getTextReference());
 							parameterReferenceTokenCopy.setParameter(parameterCopy);
 							textInputCopy.getTokens().add(parameterReferenceTokenCopy);
 						}
@@ -531,6 +621,7 @@ public class AgentIntentsGetter {
 					}
 					
 					textLanguageInputCopy.getInputs().add(textInputCopy);
+					textLanguageInputCopy.setLanguage(Language.ENGLISH);
 					textCopy.getInputs().add(textLanguageInputCopy);
 					targetCopy.getActions().add(textCopy);
 				}
@@ -566,9 +657,14 @@ public class AgentIntentsGetter {
 								KeyValue keyValueCopy = GeneratorFactory.eINSTANCE.createKeyValue();
 								ParameterReferenceToken parameterRefCopy = GeneratorFactory.eINSTANCE.createParameterReferenceToken();
 								Parameter parameterCopy = GeneratorFactory.eINSTANCE.createParameter();
+								PromptLanguage promptCopy = GeneratorFactory.eINSTANCE.createPromptLanguage();
+								
+								promptCopy.setLanguage(Language.ENGLISH);
+								promptCopy.getPrompts().add(((ParameterReferenceToken) keyValue.getValue()).getParameter().getPrompts().get(0).getPrompts().get(0));
 								
 								parameterCopy.setName(((ParameterReferenceToken) keyValue.getValue()).getParameter().getName());
 								parameterCopy.setDefaultEntity(((ParameterReferenceToken) keyValue.getValue()).getParameter().getDefaultEntity());
+								parameterRefCopy.setTextReference(((ParameterReferenceToken) keyValue.getValue()).getTextReference());
 								parameterRefCopy.setParameter(parameterCopy);
 								
 								keyValueCopy.setKey(keyValue.getKey());
@@ -642,9 +738,15 @@ public class AgentIntentsGetter {
 						KeyValue keyValue = GeneratorFactory.eINSTANCE.createKeyValue();
 						ParameterReferenceToken parameterRef = GeneratorFactory.eINSTANCE.createParameterReferenceToken();
 						Parameter parameter = GeneratorFactory.eINSTANCE.createParameter();
+						PromptLanguage prompt = GeneratorFactory.eINSTANCE.createPromptLanguage();
 						
-						parameter.setName(get.name);
+						prompt.setLanguage(Language.ENGLISH);
+						prompt.getPrompts().add("Tell me the " + param.name);
+						
+						parameter.getPrompts().add(prompt);
+						parameter.setName(param.name);
 						parameter.setDefaultEntity(DefaultEntity.TEXT);
+						parameterRef.setTextReference(param.name);
 						parameterRef.setParameter(parameter);
 						
 						keyValue.setKey(param.name + "_param_" + get.name);
@@ -812,6 +914,7 @@ public class AgentIntentsGetter {
 								ParameterReferenceToken parameterRef = GeneratorFactory.eINSTANCE.createParameterReferenceToken();
 								
 								parameterRef.setParameter(parameters.get(0));
+								parameterRef.setTextReference(parameters.get(0).getName());
 								textInput.getTokens().add(parameterRef);
 								starsFound -= 1;
 								break;
@@ -828,9 +931,15 @@ public class AgentIntentsGetter {
 										parameterRef.setParameter(parameters.get(star.index - 1));
 									} catch(Exception e) {
 										Parameter parameter = GeneratorFactory.eINSTANCE.createParameter();
-	
+										PromptLanguage prompt = GeneratorFactory.eINSTANCE.createPromptLanguage();
+										
+										prompt.setLanguage(Language.ENGLISH);
+										prompt.getPrompts().add("Tell me the time.");
+										parameter.setRequired(true);
+										parameter.getPrompts().add(prompt);
 										parameter.setDefaultEntity(DefaultEntity.TEXT);
 										parameterRef.setParameter(parameter);
+										parameterRef.setTextReference(parameter.getName() != null ? parameter.getName() : "parameter");
 										textInput.getTokens().add(parameterRef);
 									}
 									
@@ -851,9 +960,15 @@ public class AgentIntentsGetter {
 					for (int i = 0; i < starsFound; i++) {
 						ParameterReferenceToken parameterRef = GeneratorFactory.eINSTANCE.createParameterReferenceToken();
 						Parameter parameter = GeneratorFactory.eINSTANCE.createParameter();
+						PromptLanguage prompt = GeneratorFactory.eINSTANCE.createPromptLanguage();
 						
+						prompt.setLanguage(Language.ENGLISH);
+						prompt.getPrompts().add("I need a parameter.");
+						parameter.setRequired(true);
+						parameter.getPrompts().add(prompt);
 						parameter.setDefaultEntity(DefaultEntity.TEXT);
 						parameterRef.setParameter(parameter);
+						parameterRef.setTextReference(parameter.getName() != null ? parameter.getName() : "parameter");
 						textInput.getTokens().add(parameterRef);
 					}
 				}
@@ -916,6 +1031,7 @@ public class AgentIntentsGetter {
 									if (srai.stars.size() == 1 && !parameters.isEmpty()) {
 										ParameterReferenceToken parameterRef = GeneratorFactory.eINSTANCE.createParameterReferenceToken();
 										
+										parameterRef.setTextReference(parameters.get(0).getName() != null ? parameters.get(0).getName() : "parameter");
 										parameterRef.setParameter(parameters.get(0));
 										textInput.getTokens().add(parameterRef);
 										break;
@@ -932,8 +1048,14 @@ public class AgentIntentsGetter {
 												parameterRef.setParameter(parameters.get(star.index - 1));
 											} catch(Exception e) {
 												Parameter parameter = GeneratorFactory.eINSTANCE.createParameter();
-	
+												PromptLanguage prompt = GeneratorFactory.eINSTANCE.createPromptLanguage();
+												
+												prompt.setLanguage(Language.ENGLISH);
+												prompt.getPrompts().add("I need a parameter.");
+												parameter.setRequired(true);
+												parameter.getPrompts().add(prompt);
 												parameter.setDefaultEntity(DefaultEntity.TEXT);
+												parameterRef.setTextReference(parameter.getName() != null ? parameter.getName() : "parameter");
 												parameterRef.setParameter(parameter);
 												textInput.getTokens().add(parameterRef);
 											}
@@ -954,8 +1076,14 @@ public class AgentIntentsGetter {
 							for (int i = 0; i < starsFound; i++) {
 								ParameterReferenceToken parameterRef = GeneratorFactory.eINSTANCE.createParameterReferenceToken();
 								Parameter parameter = GeneratorFactory.eINSTANCE.createParameter();
+								PromptLanguage prompt = GeneratorFactory.eINSTANCE.createPromptLanguage();
 								
+								prompt.setLanguage(Language.ENGLISH);
+								prompt.getPrompts().add("I need a parameter.");
+								parameter.setRequired(true);
+								parameter.getPrompts().add(prompt);
 								parameter.setDefaultEntity(DefaultEntity.TEXT);
+								parameterRef.setTextReference(parameter.getName() != null ? parameter.getName() : "parameter");
 								parameterRef.setParameter(parameter);
 								textInput.getTokens().add(parameterRef);
 							}
@@ -987,6 +1115,7 @@ public class AgentIntentsGetter {
 		for (SetAttr set : sets) {
 			ParameterReferenceToken parameterRef = GeneratorFactory.eINSTANCE.createParameterReferenceToken();
 			Parameter parameter = GeneratorFactory.eINSTANCE.createParameter();
+			PromptLanguage prompt = GeneratorFactory.eINSTANCE.createPromptLanguage();
 			Entity entity = GeneratorFactory.eINSTANCE.createEntity();
 
 			if (mapFiles != null) {
@@ -1000,8 +1129,9 @@ public class AgentIntentsGetter {
 							attrVal.setName(key);
 							attrVal.getValues().addAll(mapFile.content.get(key));
 							entityLanguageInput.getInputs().add(attrVal);
+							entityLanguageInput.setLanguage(Language.ENGLISH);
 						}
-
+						
 						entity.getInputs().add(entityLanguageInput);
 					}
 				}
@@ -1009,8 +1139,14 @@ public class AgentIntentsGetter {
 
 			parameter.setEntity(entity);
 			entity.setName(set.name);
+
+			prompt.setLanguage(Language.ENGLISH);
+			prompt.getPrompts().add("Tell me the " + set.name);
+			parameter.setRequired(true);
+			parameter.getPrompts().add(prompt);
 			parameter.setName(set.name);
 			parameter.setDefaultEntity(DefaultEntity.TEXT);
+			parameterRef.setTextReference(set.name);
 			parameterRef.setParameter(parameter);
 			phrase.getTokens().add(parameterRef);
 			intent.getParameters().add(parameter);
@@ -1030,6 +1166,39 @@ public class AgentIntentsGetter {
 					ret.addAll(li.think.sets);
 			
 		return ret;
+	}
+	
+	// Rellena los nombres vacíos de los parámetros
+	public static void setParameterNames(Bot bot) {
+		int num = 0;
+		
+		// Rellenado de nombres de los parámetros ubicados en los intents
+		for (Intent intent: bot.getIntents()) {
+			if (intent.getParameters() != null) {
+				for (Parameter parameter: intent.getParameters()) {
+					if (parameter.getName() == null) {
+						parameter.setName("Parameter_" + num);
+						num++;
+					}
+				}
+			}
+		}
+		
+		// Rellenado de nombres de los parámetros ubicados en los actions
+		for (Action action: bot.getActions()) {
+			if (action instanceof Text) {
+				for (TextInput input: ((Text) action).getInputs().get(0).getInputs()) {
+					 for (var token: input.getTokens()) {
+						 if (token instanceof ParameterReferenceToken) {
+							 if (((ParameterReferenceToken) token).getParameter().getName() == null) {
+								 ((ParameterReferenceToken) token).getParameter().setName("Parameter_" + num);
+								 num++;
+							 }
+						 }
+					 }
+				}
+			}
+		}
 	}
 	
 	//// Funciones necesarias pero ajenas a la tarea que se está tratando

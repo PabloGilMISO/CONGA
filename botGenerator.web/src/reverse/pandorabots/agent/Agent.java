@@ -11,10 +11,13 @@ import generator.Entity;
 import generator.GeneratorFactory;
 import generator.HTTPRequest;
 import generator.Intent;
+import generator.IntentLanguageInputs;
 import generator.Language;
 import generator.LanguageInput;
+import generator.Literal;
 import generator.SimpleInput;
 import generator.Text;
+import generator.TrainingPhrase;
 import generator.UserInteraction;
 
 public class Agent {
@@ -126,6 +129,8 @@ public class Agent {
 		// GUARDADO DE ACTIONS
 		bot.getActions().addAll(getActions(bot.getFlows()));
 		
+		AgentIntentsGetter.setParameterNames(bot);
+		
 		return bot;
 	}
 
@@ -230,7 +235,8 @@ public class Agent {
 	// Recoge los intents de Pandorabots como intents de CONGA
 	public List<Intent> getIntents() {
 		List<Intent> intents = new ArrayList<Intent>();
-
+		int fallbackFlag = 0;
+		
 		for (int i = 0; i < categories.size(); i++) {
 			Intent intent = GeneratorFactory.eINSTANCE.createIntent();
 			Category category = categories.get(i);
@@ -257,10 +263,32 @@ public class Agent {
 						AgentIntentsGetter.addCategoryBasic(category, intent, mapFiles);
 				}
 				
-				intent.setName("Intent " + i);
+				intent.setName("Intent_" + i);
 			}
 			
 			intents.add(intent);
+		}
+		
+		// Comprobación de si el bot tiene fallbacks, en caso contrario se añade uno
+		for (Intent intent: intents) {
+			if (intent.isFallbackIntent()) {
+				fallbackFlag = 1;
+				break;
+			}
+		}
+
+		if (fallbackFlag == 0) {
+			Intent fallbackIntent = GeneratorFactory.eINSTANCE.createIntent();
+			IntentLanguageInputs fallbackLanguageInput = GeneratorFactory.eINSTANCE.createIntentLanguageInputs();
+			TrainingPhrase fallbackPhrase = GeneratorFactory.eINSTANCE.createTrainingPhrase();
+			Literal fallbackLiteral = GeneratorFactory.eINSTANCE.createLiteral();
+			fallbackLiteral.setText("*");
+			fallbackPhrase.getTokens().add(fallbackLiteral);
+			fallbackLanguageInput.getInputs().add(fallbackPhrase);
+			fallbackIntent.getInputs().add(fallbackLanguageInput);
+			fallbackIntent.setFallbackIntent(true);
+			fallbackIntent.setName("Fallback");
+			intents.add(fallbackIntent);
 		}
 		
 		return intents;
