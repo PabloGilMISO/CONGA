@@ -2,6 +2,7 @@ package reverse.pandorabots.agent;
 
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
 import java.util.TreeSet;
 
@@ -119,10 +120,10 @@ public class Agent {
 		bot.getEntities().addAll(getEntities());
 
 		// GUARDADO DE INTENTS BÁSICOS
-		bot.getIntents().addAll(getIntents());
+		bot.getIntents().addAll(getIntents(bot.getEntities()));
 		
 		// GUARDADO DE FLUJOS EN INTENTS
-		List<UserInteraction> flows = getFlows(bot.getIntents());
+		List<UserInteraction> flows = getFlows(bot.getIntents(), bot.getEntities());
 		getOutcomingsInFlows(flows);
 		bot.getFlows().addAll(AgentIntentsGetter.copyFlows(flows));
 		
@@ -233,7 +234,7 @@ public class Agent {
 	}
 	
 	// Recoge los intents de Pandorabots como intents de CONGA
-	public List<Intent> getIntents() {
+	public List<Intent> getIntents(List<Entity> entities) {
 		List<Intent> intents = new ArrayList<Intent>();
 		int fallbackFlag = 0;
 		
@@ -251,16 +252,16 @@ public class Agent {
 					// Caso en que contenga fechas
 					if (category.pattern.text.contains("* slash * slash *")
 							|| category.pattern.text.contains("*slash*slash*"))
-						AgentIntentsGetter.addCategoryWithDate(category, intent, mapFiles);
+						AgentIntentsGetter.addCategoryWithDate(category, intent, entities);
 	
 					// Caso en que contenga horas
 					else if (category.pattern.text.contains("* colon *") || 
 							 category.pattern.text.contains("*colon*"))
-						AgentIntentsGetter.addCategoryWithHour(category, intent, mapFiles);
+						AgentIntentsGetter.addCategoryWithHour(category, intent);
 					
 					// Caso base: intents que contengan texto y puedan o no contener parámetros
 					else
-						AgentIntentsGetter.addCategoryBasic(category, intent, mapFiles);
+						AgentIntentsGetter.addCategoryBasic(category, intent, entities);
 				}
 				
 				intent.setName("Intent_" + i);
@@ -295,11 +296,11 @@ public class Agent {
 	}
 
 	// Procesa los datos de Agent para extraer los flujos de conversación
-	public List<UserInteraction> getFlows(List<Intent> intents) {
+	public List<UserInteraction> getFlows(List<Intent> intents, List<Entity> entities) {
 		List<UserInteraction> ret = new ArrayList<UserInteraction>();
 		
 		for (int i = 0; i < categories.size(); i++) {
-			List<UserInteraction> categoryFlows = AgentIntentsGetter.getMainFlows(categories.get(i), intents.get(i), intents);
+			List<UserInteraction> categoryFlows = AgentIntentsGetter.getMainFlows(categories.get(i), intents.get(i), intents, entities);
 			if (categoryFlows != null)
 				ret.addAll(categoryFlows);
 		}
@@ -316,22 +317,31 @@ public class Agent {
 	public List<Action> getActions(List<UserInteraction> flows) {
 		List<Action> actions = new ArrayList<Action>();
 		List<Action> ret = new ArrayList<Action>();
+		int num = 0;
 		
 		for (UserInteraction flow: flows)
 			actions.addAll(flow.getTarget().getActions());
 		
+	    // Introducción de nombres únicos en las actions
+	    for (Action action: actions) {
+	    	action.setName("Action_" + num);
+	    	num++;
+	    }
+	    
 	    java.util.Set<Action> s = new TreeSet<Action>(new Comparator<Action>() {
 	        @Override
 	        public int compare(Action a1, Action a2) {
 	        	// Caso en que sean actions textuales
 	        	if (a1 instanceof Text && a2 instanceof Text &&
-	        		AgentIntentsGetter.equalTextInputs((Text)a1, (Text)a2))
+	        		AgentIntentsGetter.equalTextInputs((Text)a1, (Text)a2)) {
 	        		return 0;
+	        	}
 	        	
 	        	// Caso en que sean actions de tipo HTTP
 	        	else if (a1 instanceof HTTPRequest && a2 instanceof HTTPRequest &&
-		        		AgentIntentsGetter.equalHTTPRequest((HTTPRequest)a1, (HTTPRequest)a2))
+		        		AgentIntentsGetter.equalHTTPRequest((HTTPRequest)a1, (HTTPRequest)a2)) {
 	        		return 0;
+	        	}
 	        	
 	        	else
 	        		return 1;
@@ -340,7 +350,29 @@ public class Agent {
 	    
         s.addAll(actions);
 	    ret.addAll(s);
-		
-		return ret;
+	    
+	    // Se intercambian las actions repetidas en los flows que correspondan
+	    for (UserInteraction flow: flows) {
+	    	HashMap<Action, Action> changeActions = new HashMap<Action, Action>();
+	    	
+	    	for (Action a1: flow.getTarget().getActions()) {
+	    		for (Action a2: actions) {
+	    			if ((a1 instanceof Text && a2 instanceof Text &&
+	    	        		AgentIntentsGetter.equalTextInputs((Text)a1, (Text)a2)) || 
+	    				(a1 instanceof HTTPRequest && a2 instanceof HTTPRequest &&
+	    		        		AgentIntentsGetter.equalHTTPRequest((HTTPRequest)a1, (HTTPRequest)a2))) {
+	    				changeActions.put(a1, a2);
+	    				break;
+	    			}
+	    		}
+	    	}
+	    	
+	    	for (Action key: changeActions.keySet()) {
+	    		flow.getTarget().getActions().remove(key);
+	    		flow.getTarget().getActions().add(changeActions.get(key));
+	    	}
+	    }
+	    
+    	return ret;
 	}
 }

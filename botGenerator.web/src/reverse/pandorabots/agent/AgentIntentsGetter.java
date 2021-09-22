@@ -60,7 +60,7 @@ public class AgentIntentsGetter {
 	}
 
 	// Función para gestionar los intents cuya entrada contenga fechas en el formato DD/MM/AA
-	public static void addCategoryWithDate(Category category, Intent intent, List<MapFile> mapFiles) {
+	public static void addCategoryWithDate(Category category, Intent intent, List<Entity> entities) {
 		IntentLanguageInputs languageInput = GeneratorFactory.eINSTANCE.createIntentLanguageInputs();
 		TrainingPhrase phrase = GeneratorFactory.eINSTANCE.createTrainingPhrase();
 
@@ -254,7 +254,7 @@ public class AgentIntentsGetter {
 			
 			// Caso en que contenga sets en el pattern
 			if (category.pattern.sets != null)
-				intentAddSets(category.pattern.sets, intent, mapFiles, phrase);
+				intentAddSets(category.pattern.sets, intent, entities, phrase);
 		}
 		
 		languageInput.getInputs().add(phrase);
@@ -263,7 +263,7 @@ public class AgentIntentsGetter {
 	}
 
 	// Función para gestionar los intents cuya entrada contenga horas en el formato HH:MM
-	public static void addCategoryWithHour(Category category, Intent intent, List<MapFile> mapFiles) {
+	public static void addCategoryWithHour(Category category, Intent intent) {
 		IntentLanguageInputs languageInput = GeneratorFactory.eINSTANCE.createIntentLanguageInputs();
 		TrainingPhrase phrase = GeneratorFactory.eINSTANCE.createTrainingPhrase();
 		String[] tokens1 = category.pattern.text.split("\\* colon \\*");
@@ -367,7 +367,7 @@ public class AgentIntentsGetter {
 	}
 
 	// Función para gestionar los intents básicos, es decir, aquellos que están formados por texto y parámetros o sets
-	public static void addCategoryBasic(Category category, Intent intent, List<MapFile> mapFiles) {
+	public static void addCategoryBasic(Category category, Intent intent, List<Entity> entities) {
 		// Caso en que el intent contenga sólo texto
 		if (!category.pattern.text.contains("*")) {
 			IntentLanguageInputs languageInput = GeneratorFactory.eINSTANCE.createIntentLanguageInputs();
@@ -379,7 +379,7 @@ public class AgentIntentsGetter {
 
 			// Caso en que contenga sets en el pattern
 			if (category.pattern.sets != null)
-				intentAddSets(category.pattern.sets, intent, mapFiles, phrase);
+				intentAddSets(category.pattern.sets, intent, entities, phrase);
 
 			languageInput.getInputs().add(phrase);
 			languageInput.setLanguage(Language.ENGLISH);
@@ -449,7 +449,7 @@ public class AgentIntentsGetter {
 			
 			// Caso en que contenga sets en el pattern
 			if (category.pattern.sets != null)
-				intentAddSets(category.pattern.sets, intent, mapFiles, phrase);
+				intentAddSets(category.pattern.sets, intent, entities, phrase);
 
 			languageInput.getInputs().add(phrase);
 			languageInput.setLanguage(Language.ENGLISH);
@@ -459,7 +459,7 @@ public class AgentIntentsGetter {
 	
 	//// Funciones para gestionar los flujos de conversación
 	// Función para gestionar los flujos de conversación directos, a nivel 1
-	public static List<UserInteraction> getMainFlows(Category category, Intent intent, List<Intent> intents) {
+	public static List<UserInteraction> getMainFlows(Category category, Intent intent, List<Intent> intents, List<Entity> entities) {
 		List<UserInteraction> ret = new ArrayList<UserInteraction>();
 		List<TextLanguageInput> responses = getAllIntentDirectResponses(category, intents);
 		UserInteraction flow = GeneratorFactory.eINSTANCE.createUserInteraction();
@@ -469,7 +469,7 @@ public class AgentIntentsGetter {
 		if (responses.isEmpty()) {
 			// Caso en que tenga una llamada de tipo HTTP (callapi)
 			if (category.template != null && category.template.callapi != null)
-				addCallapi(category.template.callapi, target);
+				addCallapi(category.template.callapi, target, entities);
 			
 			else
 				return null;
@@ -485,7 +485,7 @@ public class AgentIntentsGetter {
 			
 			// Caso en que tenga una llamada de tipo HTTP (callapi)
 			if (category.template.callapi != null)
-				addCallapi(category.template.callapi, target);
+				addCallapi(category.template.callapi, target, entities);
 		}
 
 		flow.setTarget(target);
@@ -646,7 +646,6 @@ public class AgentIntentsGetter {
 								Literal literalCopy = GeneratorFactory.eINSTANCE.createLiteral();
 								
 								literalCopy.setText(((Literal) keyValue.getValue()).getText());
-
 								keyValueCopy.setKey(keyValue.getKey());
 								keyValueCopy.setValue(literalCopy);
 								httpRequestCopy.getData().add(keyValueCopy);
@@ -660,10 +659,12 @@ public class AgentIntentsGetter {
 								PromptLanguage promptCopy = GeneratorFactory.eINSTANCE.createPromptLanguage();
 								
 								promptCopy.setLanguage(Language.ENGLISH);
-								promptCopy.getPrompts().add(((ParameterReferenceToken) keyValue.getValue()).getParameter().getPrompts().get(0).getPrompts().get(0));
+								promptCopy.getPrompts().add("Tell me the " + keyValue.getKey());
 								
+								parameterCopy.getPrompts().add(promptCopy);
 								parameterCopy.setName(((ParameterReferenceToken) keyValue.getValue()).getParameter().getName());
 								parameterCopy.setDefaultEntity(((ParameterReferenceToken) keyValue.getValue()).getParameter().getDefaultEntity());
+								parameterCopy.setEntity(((ParameterReferenceToken) keyValue.getValue()).getParameter().getEntity());
 								parameterRefCopy.setTextReference(((ParameterReferenceToken) keyValue.getValue()).getTextReference());
 								parameterRefCopy.setParameter(parameterCopy);
 								
@@ -701,7 +702,7 @@ public class AgentIntentsGetter {
 	}
 	
 	// Función para añadir llamadas HTTP
-	public static void addCallapi(Callapi callapi, BotInteraction target) {
+	public static void addCallapi(Callapi callapi, BotInteraction target, List<Entity> entities) {
 		HTTPRequest httpRequest = GeneratorFactory.eINSTANCE.createHTTPRequest();
 		
 		if (callapi.url != null)
@@ -733,28 +734,26 @@ public class AgentIntentsGetter {
 				}
 				
 				// Caso en que el parámetro tenga llamadas a variables guardadas
-				if (param.gets != null) {
-					for (Get get: param.gets) {
-						KeyValue keyValue = GeneratorFactory.eINSTANCE.createKeyValue();
-						ParameterReferenceToken parameterRef = GeneratorFactory.eINSTANCE.createParameterReferenceToken();
-						Parameter parameter = GeneratorFactory.eINSTANCE.createParameter();
-						PromptLanguage prompt = GeneratorFactory.eINSTANCE.createPromptLanguage();
-						
-						prompt.setLanguage(Language.ENGLISH);
-						prompt.getPrompts().add("Tell me the " + param.name);
-						
-						parameter.getPrompts().add(prompt);
-						parameter.setName(param.name);
-						parameter.setDefaultEntity(DefaultEntity.TEXT);
-						parameterRef.setTextReference(param.name);
-						parameterRef.setParameter(parameter);
-						
-						keyValue.setKey(param.name + "_param_" + get.name);
-						keyValue.setValue(parameterRef);
-						httpRequest.getData().add(keyValue);
-					}
-				}
-				
+//				if (param.gets != null) {
+//					List<Parameter> botParameters = getParameters(bot);
+//					
+//					for (Get get: param.gets) {
+//						for (Parameter parameter: botParameters) {
+//							if (parameter.getName().equals(get.name)) {
+//								KeyValue keyValue = GeneratorFactory.eINSTANCE.createKeyValue();
+//								ParameterReferenceToken parameterRef = GeneratorFactory.eINSTANCE.createParameterReferenceToken();
+//
+//								parameterRef.setTextReference(param.name);
+//								parameterRef.setParameter(parameter);
+//								
+//								keyValue.setKey(param.name + "_param_" + get.name);
+//								keyValue.setValue(parameterRef);
+//								httpRequest.getData().add(keyValue);
+//								break;
+//							}
+//						}
+//					}
+//				}
 			}
 		}
 		
@@ -1111,34 +1110,20 @@ public class AgentIntentsGetter {
 	}
 	
 	// Dada una lista no-vacía de sets del patrón de una categoría, añade dichos sets a la frase en forma de parámetros
-	public static void intentAddSets(List<SetAttr> sets, Intent intent, List<MapFile> mapFiles, TrainingPhrase phrase) {
+	public static void intentAddSets(List<SetAttr> sets, Intent intent, List<Entity> entities, TrainingPhrase phrase) {
 		for (SetAttr set : sets) {
 			ParameterReferenceToken parameterRef = GeneratorFactory.eINSTANCE.createParameterReferenceToken();
 			Parameter parameter = GeneratorFactory.eINSTANCE.createParameter();
 			PromptLanguage prompt = GeneratorFactory.eINSTANCE.createPromptLanguage();
-			Entity entity = GeneratorFactory.eINSTANCE.createEntity();
 
-			if (mapFiles != null) {
-				for (MapFile mapFile : mapFiles) {
-					if (mapFile.name.equals(set.name)) {
-						LanguageInput entityLanguageInput = GeneratorFactory.eINSTANCE.createLanguageInput();
-						
-						for (String key : mapFile.content.keySet()) {
-							SimpleInput attrVal = GeneratorFactory.eINSTANCE.createSimpleInput();
-
-							attrVal.setName(key);
-							attrVal.getValues().addAll(mapFile.content.get(key));
-							entityLanguageInput.getInputs().add(attrVal);
-							entityLanguageInput.setLanguage(Language.ENGLISH);
-						}
-						
-						entity.getInputs().add(entityLanguageInput);
+			if (entities != null) {
+				for (Entity entity : entities) {
+					if (entity.getName().equals(set.name)) {
+						parameter.setEntity(entity);
+						break;
 					}
 				}
 			}
-
-			parameter.setEntity(entity);
-			entity.setName(set.name);
 
 			prompt.setLanguage(Language.ENGLISH);
 			prompt.getPrompts().add("Tell me the " + set.name);
@@ -1171,16 +1156,24 @@ public class AgentIntentsGetter {
 	// Rellena los nombres vacíos de los parámetros
 	public static void setParameterNames(Bot bot) {
 		int num = 0;
+		List<Parameter> parameters = getParameters(bot);
+		
+		for (Parameter parameter: parameters) {
+			if (parameter.getName() == null) {
+				parameter.setName("Parameter_" + num);
+				num++;
+			}
+		}
+	}
+	
+	// Devuelve los parámetros contenidos en todo el bot
+	public static List<Parameter> getParameters(Bot bot) {
+		List<Parameter> ret = new ArrayList<Parameter>();
 		
 		// Rellenado de nombres de los parámetros ubicados en los intents
 		for (Intent intent: bot.getIntents()) {
 			if (intent.getParameters() != null) {
-				for (Parameter parameter: intent.getParameters()) {
-					if (parameter.getName() == null) {
-						parameter.setName("Parameter_" + num);
-						num++;
-					}
-				}
+				ret.addAll(intent.getParameters());
 			}
 		}
 		
@@ -1190,15 +1183,14 @@ public class AgentIntentsGetter {
 				for (TextInput input: ((Text) action).getInputs().get(0).getInputs()) {
 					 for (var token: input.getTokens()) {
 						 if (token instanceof ParameterReferenceToken) {
-							 if (((ParameterReferenceToken) token).getParameter().getName() == null) {
-								 ((ParameterReferenceToken) token).getParameter().setName("Parameter_" + num);
-								 num++;
-							 }
+							 ret.add(((ParameterReferenceToken) token).getParameter());
 						 }
 					 }
 				}
 			}
 		}
+		
+		return ret;
 	}
 	
 	//// Funciones necesarias pero ajenas a la tarea que se está tratando

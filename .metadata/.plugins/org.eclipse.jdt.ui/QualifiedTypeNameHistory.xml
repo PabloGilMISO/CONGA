@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <qualifiedTypeNameHistroy>
-    <fullyQualifiedTypeName name="com.fasterxml.jackson.core.JsonParser"/>
     <fullyQualifiedTypeName name="com.fasterxml.jackson.databind.DeserializationContext"/>
     <fullyQualifiedTypeName name="java.io.IOException"/>
     <fullyQualifiedTypeName name="com.fasterxml.jackson.core.JsonProcessingException"/>
@@ -37,7 +36,6 @@
     <fullyQualifiedTypeName name="generator.BotInteraction"/>
     <fullyQualifiedTypeName name="java.util.ArrayList"/>
     <fullyQualifiedTypeName name="generator.Method"/>
-    <fullyQualifiedTypeName name="generator.KeyValue"/>
     <fullyQualifiedTypeName name="generator.IntentInput"/>
     <fullyQualifiedTypeName name="generator.TextLanguageInput"/>
     <fullyQualifiedTypeName name="java.util.Set"/>
@@ -60,4 +58,6 @@
     <fullyQualifiedTypeName name="generator.DefaultEntity"/>
     <fullyQualifiedTypeName name="generator.Bot"/>
     <fullyQualifiedTypeName name="generator.Action"/>
+    <fullyQualifiedTypeName name="generator.KeyValue"/>
+    <fullyQualifiedTypeName name="java.util.HashMap"/>
 </qualifiedTypeNameHistroy>

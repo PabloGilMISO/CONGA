@@ -1,6 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <aiml>
   <category>
+    <pattern>ActionPattern1 *</pattern>
+    <template>SAVE <star/></template>
+  </category>
+  <category>
+    <pattern>ActionPattern2 *</pattern>
+    <template>SAVE <star/></template>
+  </category>
+  <category>
     <pattern>A</pattern>
     <template><srai>B</srai></template>
   </category>
