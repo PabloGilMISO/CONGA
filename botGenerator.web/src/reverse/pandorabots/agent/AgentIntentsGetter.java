@@ -2,6 +2,7 @@ package reverse.pandorabots.agent;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import generator.Action;
 import generator.Bot;
@@ -47,6 +48,7 @@ public class AgentIntentsGetter {
 				prompt.getPrompts().add("Tell me the " + set.name);
 				parameter.setName(set.name);
 				parameter.getPrompts().add(prompt);
+				parameter.setRequired(true);
 				parameterRef.setTextReference(set.name);
 				parameterRef.setParameter(parameter);
 				phrase.getTokens().add(parameterRef);
@@ -488,6 +490,63 @@ public class AgentIntentsGetter {
 				addCallapi(category.template.callapi, target, entities);
 		}
 
+//		if (intent.getInputs().get(0).getInputs().get(0) instanceof TrainingPhrase) {
+//			List<Parameter> targetParameters = new ArrayList<Parameter>();
+//			List<Parameter> intentParametersToRemove = new ArrayList<Parameter>();
+//			
+//			// Extracción de parámetros del target
+//			for (Action action: target.getActions()) {
+//				if (action instanceof TextLanguageInput) {
+//					for (var token: ((TextLanguageInput) action).getInputs().get(0).getTokens()) {
+//						if (token instanceof ParameterReferenceToken)
+//							targetParameters.add(((ParameterReferenceToken) token).getParameter());
+//					}
+//				}
+//				
+//				else if (action instanceof HTTPRequest) {
+//					if (((HTTPRequest) action).getData() != null) {
+//						for (KeyValue keyValue: ((HTTPRequest) action).getData()) {
+//							if (keyValue.getValue() instanceof ParameterReferenceToken)
+//								targetParameters.add(((ParameterReferenceToken) keyValue.getValue()).getParameter());
+//						}
+//					}
+//				}
+//			}
+//			
+//			// Extracción de parámetros del intent
+//			for (var token: ((TrainingPhrase) intent.getInputs().get(0).getInputs().get(0)).getTokens()) {
+//				if (token instanceof ParameterReferenceToken)
+//					intentParametersToRemove.add(((ParameterReferenceToken) token).getParameter());
+//			}
+//			
+//			// Sustitución de parámetros
+//			for (Parameter intentParameter: intentParametersToRemove) {
+//				if (intentParameter.getDefaultEntity().equals(DefaultEntity.TEXT)) {
+//					// Caso en que el parámetro del intent tenga más información
+//					if (intentParameter.getEntity() != null) {
+//						for (Action action: target.getActions()) {
+//							if (action instanceof TextLanguageInput) {
+//								for (var token: ((TextLanguageInput) action).getInputs().get(0).getTokens()) {
+//									if (token instanceof ParameterReferenceToken) {
+//										
+//									}
+//								}
+//							}
+//						}
+//						
+//					// Caso en que el parámetro del target tenga más información
+//					}
+//				
+//				// TODO: Ver qué hacer, porque un parámetro de fecha del intent puede ser varios parámetros en el target
+////				if (intentParameter.getDefaultEntity().equals(DefaultEntity.DATE)) {
+////					for (Parameter targetParameter: targetParameters) {
+////						
+////					}
+////				}
+//				}
+//			}
+//		}
+		
 		flow.setTarget(target);
 		flow.setIntent(intent);
 		ret.add(flow);
@@ -496,7 +555,8 @@ public class AgentIntentsGetter {
 	}
 	
 	// Función para gestionar los flujos de conversación indirectos.
-	public static void getOutcomingsFlows(List<UserInteraction> currentFlows, List<UserInteraction> flows) {
+	public static void getOutcomingsFlows(List<UserInteraction> currentFlows, List<UserInteraction> flows, 
+			int num, List<Intent> intentsGenerated, List<Action> actionsGenerated) {
 		List<UserInteraction> futureFlows = new ArrayList<UserInteraction>();
 		
 		// DEBUG
@@ -517,7 +577,19 @@ public class AgentIntentsGetter {
 					
 					else {
 						if (equalTokens(tokens1, tokens2)) {
-							cFlow.getTarget().getOutcoming().add(flow);
+							List<UserInteraction> flowToCopy = new ArrayList<UserInteraction>();
+							UserInteraction copiedFlow;
+							
+							flowToCopy.add(flow);
+							copiedFlow = copyFlows(flowToCopy).get(0);
+							copiedFlow.getIntent().setName(copiedFlow.getIntent() + "_" + num);
+							for (Action action: copiedFlow.getTarget().getActions())
+								action.setName(action.getName() + "_" + num);
+							
+							intentsGenerated.add(copiedFlow.getIntent());
+							actionsGenerated.addAll(copiedFlow.getTarget().getActions());
+							
+							cFlow.getTarget().getOutcoming().add(copiedFlow);
 							futureFlows.add(flow);
 							
 							// DEBUG
@@ -533,7 +605,7 @@ public class AgentIntentsGetter {
 		}
 		
 		if (!futureFlows.isEmpty())
-			getOutcomingsFlows(futureFlows, flows);
+			getOutcomingsFlows(futureFlows, flows, num + 1, intentsGenerated, actionsGenerated);
 	}
 	
 	// Hace una copia de los flows y sus referencias internas
@@ -552,39 +624,43 @@ public class AgentIntentsGetter {
 			BotInteraction targetCopy = GeneratorFactory.eINSTANCE.createBotInteraction();
 			
 			// Parte de copia del Intent
-			for (var token: ((TrainingPhrase) flow.getIntent().getInputs().get(0).getInputs().get(0)).getTokens()) {
-				if (token instanceof Literal) {
-					Literal literalCopy = GeneratorFactory.eINSTANCE.createLiteral();
-					literalCopy.setText(((Literal) token).getText());
-					
-					phraseCopy.getTokens().add(literalCopy);
-				}
-				
-				else if (token instanceof ParameterReferenceToken) {
-					ParameterReferenceToken parameterReferenceTokenCopy = GeneratorFactory.eINSTANCE.createParameterReferenceToken();
-					Parameter parameterCopy = GeneratorFactory.eINSTANCE.createParameter();
-					PromptLanguage promptCopy = GeneratorFactory.eINSTANCE.createPromptLanguage();
-					
-					promptCopy.setLanguage(Language.ENGLISH);
-					promptCopy.getPrompts().add(((ParameterReferenceToken) token).getParameter().getPrompts().get(0).getPrompts().get(0));
-					parameterCopy.getPrompts().add(promptCopy);
-					parameterCopy.setName(((ParameterReferenceToken) token).getParameter().getName());
-					parameterCopy.setDefaultEntity(((ParameterReferenceToken) token).getParameter().getDefaultEntity());
-					parameterReferenceTokenCopy.setTextReference(((ParameterReferenceToken) token).getTextReference());
-					parameterReferenceTokenCopy.setParameter(parameterCopy);
-					phraseCopy.getTokens().add(parameterReferenceTokenCopy);
-				}
-				
-				else {
-					System.out.println("El token no es un Literal o un Parameter en el intent.");
-				}
-			}
+//			for (var token: ((TrainingPhrase) flow.getIntent().getInputs().get(0).getInputs().get(0)).getTokens()) {
+//				if (token instanceof Literal) {
+//					Literal literalCopy = GeneratorFactory.eINSTANCE.createLiteral();
+//					literalCopy.setText(((Literal) token).getText());
+//					
+//					phraseCopy.getTokens().add(literalCopy);
+//				}
+//				
+//				else if (token instanceof ParameterReferenceToken) {
+//					ParameterReferenceToken parameterReferenceTokenCopy = GeneratorFactory.eINSTANCE.createParameterReferenceToken();
+//					Parameter parameterCopy = GeneratorFactory.eINSTANCE.createParameter();
+//					PromptLanguage promptCopy = GeneratorFactory.eINSTANCE.createPromptLanguage();
+//					
+//					promptCopy.setLanguage(Language.ENGLISH);
+//					promptCopy.getPrompts().add(((ParameterReferenceToken) token).getParameter().getPrompts().get(0).getPrompts().get(0));
+//					parameterCopy.getPrompts().add(promptCopy);
+//					parameterCopy.setName(((ParameterReferenceToken) token).getParameter().getName());
+//					parameterCopy.setDefaultEntity(((ParameterReferenceToken) token).getParameter().getDefaultEntity());
+//					parameterReferenceTokenCopy.setTextReference(((ParameterReferenceToken) token).getTextReference());
+//					parameterReferenceTokenCopy.setParameter(parameterCopy);
+////					parameterReferenceTokenCopy.setParameter(((ParameterReferenceToken) token).getParameter());
+//					phraseCopy.getTokens().add(parameterReferenceTokenCopy);
+//					intentCopy.getParameters().add(parameterCopy);
+//				}
+//				
+//				else {
+//					System.out.println("El token no es un Literal o un Parameter en el intent.");
+//				}
+//			}
 			
 			languageInputCopy.setLanguage(Language.ENGLISH);
 			languageInputCopy.getInputs().add(phraseCopy);
 			intentCopy.setName(flow.getIntent().getName());
 			intentCopy.getInputs().add(languageInputCopy);
-			flowCopy.setIntent(intentCopy);
+//			intentCopy.getParameters().addAll(flow.getIntent().getParameters());
+//			flowCopy.setIntent(intentCopy);
+			flowCopy.setIntent(flow.getIntent());
 			
 			// Parte de copia del Target
 			for (var action: flow.getTarget().getActions()) {
@@ -603,15 +679,18 @@ public class AgentIntentsGetter {
 						
 						else if (token instanceof ParameterReferenceToken) {
 							ParameterReferenceToken parameterReferenceTokenCopy = GeneratorFactory.eINSTANCE.createParameterReferenceToken();
-							Parameter parameterCopy = GeneratorFactory.eINSTANCE.createParameter();
-							PromptLanguage promptCopy = GeneratorFactory.eINSTANCE.createPromptLanguage();
+//							Parameter parameterCopy = GeneratorFactory.eINSTANCE.createParameter();
+//							PromptLanguage promptCopy = GeneratorFactory.eINSTANCE.createPromptLanguage();
 							
-							promptCopy.setLanguage(Language.ENGLISH);
-							promptCopy.getPrompts().add(((ParameterReferenceToken) token).getParameter().getPrompts().get(0).getPrompts().get(0));
-							parameterCopy.setName(((ParameterReferenceToken) token).getParameter().getName());
-							parameterCopy.setDefaultEntity(((ParameterReferenceToken) token).getParameter().getDefaultEntity());
+//							promptCopy.setLanguage(Language.ENGLISH);
+//							promptCopy.getPrompts().add(((ParameterReferenceToken) token).getParameter().getPrompts().get(0).getPrompts().get(0));
+//							parameterCopy.getPrompts().add(promptCopy);
+//							parameterCopy.setRequired(true);
+//							parameterCopy.setName(((ParameterReferenceToken) token).getParameter().getName());
+//							parameterCopy.setDefaultEntity(((ParameterReferenceToken) token).getParameter().getDefaultEntity());
 							parameterReferenceTokenCopy.setTextReference(((ParameterReferenceToken) token).getTextReference());
-							parameterReferenceTokenCopy.setParameter(parameterCopy);
+//							parameterReferenceTokenCopy.setParameter(parameterCopy);
+							parameterReferenceTokenCopy.setParameter(((ParameterReferenceToken) token).getParameter());
 							textInputCopy.getTokens().add(parameterReferenceTokenCopy);
 						}
 						
@@ -622,8 +701,10 @@ public class AgentIntentsGetter {
 					
 					textLanguageInputCopy.getInputs().add(textInputCopy);
 					textLanguageInputCopy.setLanguage(Language.ENGLISH);
+					textCopy.setName(action.getName());
 					textCopy.getInputs().add(textLanguageInputCopy);
-					targetCopy.getActions().add(textCopy);
+//					targetCopy.getActions().add(textCopy);
+					targetCopy.getActions().add(action);
 				}
 				
 				else if (action instanceof HTTPRequest) {
@@ -691,8 +772,11 @@ public class AgentIntentsGetter {
 				}
 			}
 			
-			if (flow.getTarget().getOutcoming() != null)
-				targetCopy.getOutcoming().addAll(copyFlows(flow.getTarget().getOutcoming()));
+			if (flow.getTarget().getOutcoming() != null) {
+				List<UserInteraction> outcomingFlowsCopy = copyFlows(flow.getTarget().getOutcoming());
+				targetCopy.getOutcoming().addAll(outcomingFlowsCopy);
+//				ret.addAll(outcomingFlowsCopy);
+			}
 			
 			flowCopy.setTarget(targetCopy);
 			ret.add(flowCopy);
@@ -922,24 +1006,26 @@ public class AgentIntentsGetter {
 							// Caso en que haya más de un parámetro (fechas y horas no soportadas)
 							else {
 								// Se hace el matching de los parámetros con sus índices 
-								// o en caso de error se añade un parámetro genérico
+								// o en caso de error se añade un parámetro genérico -> No se puede
+								// porque los parámetros del target
+								// deben estár presentes en el intent
 								for (Star star: srai.stars) {
 									ParameterReferenceToken parameterRef = GeneratorFactory.eINSTANCE.createParameterReferenceToken();
 									
 									try {
 										parameterRef.setParameter(parameters.get(star.index - 1));
 									} catch(Exception e) {
-										Parameter parameter = GeneratorFactory.eINSTANCE.createParameter();
-										PromptLanguage prompt = GeneratorFactory.eINSTANCE.createPromptLanguage();
-										
-										prompt.setLanguage(Language.ENGLISH);
-										prompt.getPrompts().add("Tell me the time.");
-										parameter.setRequired(true);
-										parameter.getPrompts().add(prompt);
-										parameter.setDefaultEntity(DefaultEntity.TEXT);
-										parameterRef.setParameter(parameter);
-										parameterRef.setTextReference(parameter.getName() != null ? parameter.getName() : "parameter");
-										textInput.getTokens().add(parameterRef);
+//										Parameter parameter = GeneratorFactory.eINSTANCE.createParameter();
+//										PromptLanguage prompt = GeneratorFactory.eINSTANCE.createPromptLanguage();
+//										
+//										prompt.setLanguage(Language.ENGLISH);
+//										prompt.getPrompts().add("Tell me the time.");
+//										parameter.setRequired(true);
+//										parameter.getPrompts().add(prompt);
+//										parameter.setDefaultEntity(DefaultEntity.TEXT);
+//										parameterRef.setParameter(parameter);
+//										parameterRef.setTextReference(parameter.getName() != null ? parameter.getName() : "parameter");
+//										textInput.getTokens().add(parameterRef);
 									}
 									
 									textInput.getTokens().add(parameterRef);
@@ -954,23 +1040,23 @@ public class AgentIntentsGetter {
 				}
 				
 				// En caso de no encontrar el intent al que se hace referencia en la lista de intents,
-				// se añaden las stars como parámetros
-				if (starsFound > 0) {
-					for (int i = 0; i < starsFound; i++) {
-						ParameterReferenceToken parameterRef = GeneratorFactory.eINSTANCE.createParameterReferenceToken();
-						Parameter parameter = GeneratorFactory.eINSTANCE.createParameter();
-						PromptLanguage prompt = GeneratorFactory.eINSTANCE.createPromptLanguage();
-						
-						prompt.setLanguage(Language.ENGLISH);
-						prompt.getPrompts().add("I need a parameter.");
-						parameter.setRequired(true);
-						parameter.getPrompts().add(prompt);
-						parameter.setDefaultEntity(DefaultEntity.TEXT);
-						parameterRef.setParameter(parameter);
-						parameterRef.setTextReference(parameter.getName() != null ? parameter.getName() : "parameter");
-						textInput.getTokens().add(parameterRef);
-					}
-				}
+				// se añaden las stars como parámetros -> No se puede por la razón expuesta en el caso anterior
+//				if (starsFound > 0) {
+//					for (int i = 0; i < starsFound; i++) {
+//						ParameterReferenceToken parameterRef = GeneratorFactory.eINSTANCE.createParameterReferenceToken();
+//						Parameter parameter = GeneratorFactory.eINSTANCE.createParameter();
+//						PromptLanguage prompt = GeneratorFactory.eINSTANCE.createPromptLanguage();
+//						
+//						prompt.setLanguage(Language.ENGLISH);
+//						prompt.getPrompts().add("I need a parameter.");
+//						parameter.setRequired(true);
+//						parameter.getPrompts().add(prompt);
+//						parameter.setDefaultEntity(DefaultEntity.TEXT);
+//						parameterRef.setParameter(parameter);
+//						parameterRef.setTextReference(parameter.getName() != null ? parameter.getName() : "parameter");
+//						textInput.getTokens().add(parameterRef);
+//					}
+//				}
 			}
 
 			languageInput.setLanguage(Language.ENGLISH);
@@ -1190,7 +1276,52 @@ public class AgentIntentsGetter {
 			}
 		}
 		
+		for (UserInteraction flow: bot.getFlows())
+			ret.addAll(flow.getIntent().getParameters());
+		
 		return ret;
+	}
+	
+	// Devuelve 1 si el camino del flow a es más largo que el del flow b, siendo ambos equivalentes,
+	// 0 si son distintos, y -1 si b es más largo que a
+	public static int isLongerPath(UserInteraction a, UserInteraction b) {
+		// Si el número de actions es distinto, entonces se trata de dos caminos distintos 
+		if (a.getTarget().getActions().size() != b.getTarget().getActions().size())
+			return 0;
+		
+		// Caso en que el número de actions sea el mismo
+		else {
+			// Si las actions son distintas, entonces se trata de caminos distintos
+			for (int i = 0; i < a.getTarget().getActions().size(); i++) {
+				if (a.getTarget().getActions().get(i) != b.getTarget().getActions().get(i))
+					return 0;
+			}
+			
+			// Casos en que el principio del camino sea el mismo
+			if (a.getTarget().getOutcoming() != null) {
+				// Caso en que los dos caminos continúen
+				if (b.getTarget().getOutcoming() != null) {
+					if (a.getTarget().getOutcoming().size() > b.getTarget().getOutcoming().size())
+						return 1;
+					
+					else if (a.getTarget().getOutcoming().size() < b.getTarget().getOutcoming().size())
+						return -1;
+					
+					else
+//						return isLongerPath(a.getTarget().get)
+				}
+				
+				// Caso en que el camino A sea más largo que el camino B porque el camino B no tiene continuación
+				else
+					return 1;
+			}
+			
+			else {
+				// Caso en que el camino B sea más largo
+				if (b.getTarget().getOutcoming() != null)
+					return -1;
+			}
+		}
 	}
 	
 	//// Funciones necesarias pero ajenas a la tarea que se está tratando

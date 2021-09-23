@@ -5,6 +5,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.TreeSet;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import generator.Action;
 import generator.Bot;
@@ -124,13 +125,16 @@ public class Agent {
 		
 		// GUARDADO DE FLUJOS EN INTENTS
 		List<UserInteraction> flows = getFlows(bot.getIntents(), bot.getEntities());
-		getOutcomingsInFlows(flows);
+		getOutcomingsInFlows(flows, bot);
 		bot.getFlows().addAll(AgentIntentsGetter.copyFlows(flows));
 		
 		// GUARDADO DE ACTIONS
 		bot.getActions().addAll(getActions(bot.getFlows()));
 		
 		AgentIntentsGetter.setParameterNames(bot);
+		
+		for (int i = 0; i < bot.getIntents().size(); i++)
+			bot.getIntents().get(i).setName("Intent_" + i);
 		
 		return bot;
 	}
@@ -264,7 +268,7 @@ public class Agent {
 						AgentIntentsGetter.addCategoryBasic(category, intent, entities);
 				}
 				
-				intent.setName("Intent_" + i);
+//				intent.setName("Intent_" + i);
 			}
 			
 			intents.add(intent);
@@ -309,8 +313,13 @@ public class Agent {
 	}
 	
 	// Recorre los flujos de conversación añadiendo las conexiones a profundidades superiores a 1 (outcomings)
-	public void getOutcomingsInFlows(List<UserInteraction> flows) {
-		AgentIntentsGetter.getOutcomingsFlows(new ArrayList<UserInteraction>(flows), flows);
+	public void getOutcomingsInFlows(List<UserInteraction> flows, Bot bot) {
+		List<Intent> newIntents = new ArrayList<Intent>();
+		List<Action> newActions = new ArrayList<Action>();
+		
+		AgentIntentsGetter.getOutcomingsFlows(new ArrayList<UserInteraction>(flows), flows, 0, newIntents, newActions);
+		bot.getActions().addAll(newActions);
+		bot.getIntents().addAll(newIntents);
 	}
 	
 	// Extrae las actions de los flujos de conversación creados anteriormente

@@ -1,7 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <qualifiedTypeNameHistroy>
-    <fullyQualifiedTypeName name="com.fasterxml.jackson.databind.DeserializationContext"/>
-    <fullyQualifiedTypeName name="java.io.IOException"/>
     <fullyQualifiedTypeName name="com.fasterxml.jackson.core.JsonProcessingException"/>
     <fullyQualifiedTypeName name="com.fasterxml.jackson.databind.annotation.JsonDeserialize"/>
     <fullyQualifiedTypeName name="com.sun.tools.javac.util.List"/>
@@ -27,7 +25,6 @@
     <fullyQualifiedTypeName name="generator.Literal"/>
     <fullyQualifiedTypeName name="generator.IntentLanguageInputs"/>
     <fullyQualifiedTypeName name="generator.LanguageInput"/>
-    <fullyQualifiedTypeName name="generator.ParameterReferenceToken"/>
     <fullyQualifiedTypeName name="generator.Parameter"/>
     <fullyQualifiedTypeName name="com.sun.tools.javac.util.StringUtils"/>
     <fullyQualifiedTypeName name="generator.TextInput"/>
@@ -50,14 +47,17 @@
     <fullyQualifiedTypeName name="java.io.FileInputStream"/>
     <fullyQualifiedTypeName name="generator.Language"/>
     <fullyQualifiedTypeName name="generator.Text"/>
-    <fullyQualifiedTypeName name="generator.HTTPRequest"/>
-    <fullyQualifiedTypeName name="reverse.pandorabots.agent.AgentIntentsGetter"/>
     <fullyQualifiedTypeName name="com.sun.tools.javac.util.Pair"/>
     <fullyQualifiedTypeName name="generator.PromptLanguage"/>
     <fullyQualifiedTypeName name="generator.GeneratorFactory"/>
-    <fullyQualifiedTypeName name="generator.DefaultEntity"/>
     <fullyQualifiedTypeName name="generator.Bot"/>
     <fullyQualifiedTypeName name="generator.Action"/>
     <fullyQualifiedTypeName name="generator.KeyValue"/>
     <fullyQualifiedTypeName name="java.util.HashMap"/>
+    <fullyQualifiedTypeName name="org.xtext.botGenerator.services.BotGrammarAccess.TextInputTextElements"/>
+    <fullyQualifiedTypeName name="generator.HTTPRequest"/>
+    <fullyQualifiedTypeName name="generator.ParameterReferenceToken"/>
+    <fullyQualifiedTypeName name="generator.DefaultEntity"/>
+    <fullyQualifiedTypeName name="java.util.concurrent.atomic.AtomicInteger"/>
+    <fullyQualifiedTypeName name="reverse.pandorabots.agent.AgentIntentsGetter"/>
 </qualifiedTypeNameHistroy>
