@@ -1282,45 +1282,201 @@ public class AgentIntentsGetter {
 		return ret;
 	}
 	
+	// Elimina los caminos equivalentes más cortos
+	public static void clearShorterPaths(List<UserInteraction> flows) {
+		for (UserInteraction flow: flows) {
+			List<UserInteraction> outcomings = flow.getTarget().getOutcoming();
+			if (outcomings != null) {
+				if (outcomings.size() == 1) {
+					List<UserInteraction> tempList = new ArrayList<UserInteraction>();
+					tempList.add(outcomings.get(0));
+					clearShorterPaths(tempList);
+				}
+				
+				else {
+					List<UserInteraction> toRemove = new ArrayList<UserInteraction>();
+					
+					for (UserInteraction outcoming1: outcomings) {
+						if (!toRemove.contains(outcoming1)) {
+							for (UserInteraction outcoming2: outcomings) {
+								if (!toRemove.contains(outcoming2)) {
+									if (outcoming1 != outcoming2) {
+										int res = isLongerPath(outcoming1, outcoming2);
+										if (res == 0)
+											continue;
+										
+										else if (res == -1) {
+											toRemove.add(outcoming1);
+										}
+										
+										else {
+											toRemove.add(outcoming2);
+										}
+									}
+								}
+							}
+						}
+					}
+					
+					outcomings.removeAll(toRemove);
+					
+					// Eliminación de caminos más profundos
+					for (UserInteraction outcoming: outcomings) {
+						List<UserInteraction> tempList = new ArrayList<UserInteraction>();
+						tempList.add(outcoming);
+						clearShorterPaths(tempList);
+					}
+				}
+			}
+		}
+	}
+	
 	// Devuelve 1 si el camino del flow a es más largo que el del flow b, siendo ambos equivalentes,
 	// 0 si son distintos, y -1 si b es más largo que a
 	public static int isLongerPath(UserInteraction a, UserInteraction b) {
-		// Si el número de actions es distinto, entonces se trata de dos caminos distintos 
-		if (a.getTarget().getActions().size() != b.getTarget().getActions().size())
+		// Caso en que los targets no sean iguales
+		if (!equivalentTargets(a.getTarget().getActions(), b.getTarget().getActions()))
 			return 0;
 		
-		// Caso en que el número de actions sea el mismo
+		// Caso en que se trate del mismo target
 		else {
-			// Si las actions son distintas, entonces se trata de caminos distintos
-			for (int i = 0; i < a.getTarget().getActions().size(); i++) {
-				if (a.getTarget().getActions().get(i) != b.getTarget().getActions().get(i))
-					return 0;
-			}
-			
-			// Casos en que el principio del camino sea el mismo
-			if (a.getTarget().getOutcoming() != null) {
-				// Caso en que los dos caminos continúen
-				if (b.getTarget().getOutcoming() != null) {
-					if (a.getTarget().getOutcoming().size() > b.getTarget().getOutcoming().size())
-						return 1;
-					
-					else if (a.getTarget().getOutcoming().size() < b.getTarget().getOutcoming().size())
-						return -1;
-					
-					else
-//						return isLongerPath(a.getTarget().get)
-				}
-				
-				// Caso en que el camino A sea más largo que el camino B porque el camino B no tiene continuación
-				else
+			// A no tiene outcomings
+			if (a.getTarget().getOutcoming() == null || a.getTarget().getOutcoming().isEmpty()) {
+				// Ni A ni B tienen outcomings
+				if (b.getTarget().getOutcoming() == null || b.getTarget().getOutcoming().isEmpty())
 					return 1;
-			}
-			
-			else {
-				// Caso en que el camino B sea más largo
-				if (b.getTarget().getOutcoming() != null)
+				
+				// A no tiene outcomings pero B sí
+				else
 					return -1;
 			}
+			
+			// A tiene outcomings
+			else {
+				// A tiene outcomings y B no
+				if (b.getTarget().getOutcoming() == null || b.getTarget().getOutcoming().isEmpty())
+					return 1;
+				
+				// A y B tienen outcomings
+				else {
+					List<UserInteraction> outcomingsA = a.getTarget().getOutcoming();
+					List<UserInteraction> outcomingsB = b.getTarget().getOutcoming();
+					
+					// Si los outcomings de A son más que los de B
+					if (outcomingsA.size() > outcomingsB.size()) {
+						for (UserInteraction outcomingB: outcomingsB) {
+							int flag = 0;
+							
+							for (UserInteraction outcomingA: outcomingsA) {
+								if (equivalentTargets(outcomingA.getTarget().getActions(), 
+										outcomingB.getTarget().getActions())) {
+									flag = 1;
+									break;
+								}
+							}
+							
+							// Caso en que los outcomings de B no estén contenidos en los de A
+							if (flag == 0)
+								return 0;
+						}
+						
+						// A contiene a B
+						return 1;
+					}
+					
+					// Si los outcomings de B son más que los de A
+					else if (outcomingsA.size() < outcomingsB.size()) {
+						for (UserInteraction outcomingA: outcomingsA) {
+							int flag = 0;
+							
+							for (UserInteraction outcomingB: outcomingsB) {
+								if (equivalentTargets(outcomingA.getTarget().getActions(), 
+										outcomingB.getTarget().getActions())) {
+									flag = 1;
+									break;
+								}
+							}
+							
+							// Caso en que los outcomings de A no estén contenidos en los de B
+							if (flag == 0)
+								return 0;
+						}
+						
+						// B contiene a A
+						return -1;
+					}
+					
+					// Caso en que A y B tengan la misma cantidad de outcomings
+					else {
+						for (UserInteraction outcomingA: outcomingsA) {
+							int flag = 0;
+							
+							for (UserInteraction outcomingB: outcomingsB) {
+								if (equivalentTargets(outcomingA.getTarget().getActions(), 
+										outcomingB.getTarget().getActions())) {
+									flag = 1;
+									break;
+								}
+							}
+							
+							// Caso en que los outcomings de A no sean los mismos que los de B
+							if (flag == 0)
+								return 0;
+						}
+						
+						// Caso en que los outcomings de A son iguales que los de B
+						List<Integer> results = new ArrayList<Integer>();
+						
+						// Extracción del mismo outcoming y búsqueda de si es más largo o distinto
+						for (UserInteraction outcomingA: outcomingsA) {
+							for (UserInteraction outcomingB: outcomingsB) {
+								if (equivalentTargets(outcomingA.getTarget().getActions(), 
+										outcomingB.getTarget().getActions())) {
+									results.add(isLongerPath(outcomingA, outcomingB));
+									break;
+								}
+							}
+						}
+						
+						if (results.contains(0))
+							return 0;
+						
+						else
+							return results.get(0);
+					}
+				}
+			}
+		}
+	}
+	
+	// Comprueba si las acciones A son equivalentes a las acciones B
+	public static boolean equivalentTargets(List<Action> actionsA, List<Action> actionsB) {
+		if (actionsA.size() != actionsB.size())
+			return false;
+		
+		else {
+			for (Action a: actionsA) {
+				int flag = 0;
+				for (Action b: actionsB) {
+		        	if (a instanceof Text && b instanceof Text &&
+		        		AgentIntentsGetter.equalTextInputs((Text)a, (Text)b)) {
+		        		flag = 1;
+		        		break;
+		        	}
+		        	
+		        	else if (a instanceof HTTPRequest && b instanceof HTTPRequest &&
+			        		AgentIntentsGetter.equalHTTPRequest((HTTPRequest)a, (HTTPRequest)b)) {
+		        		flag = 1;
+		        		break;
+		        	}
+				}
+				
+				// Caso en que no se encuentre una action en la lista de actions del otro target
+				if (flag == 0)
+					return false;
+			}
+			
+			return true;
 		}
 	}
 	

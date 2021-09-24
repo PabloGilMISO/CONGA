@@ -127,6 +127,7 @@ public class Agent {
 		List<UserInteraction> flows = getFlows(bot.getIntents(), bot.getEntities());
 		getOutcomingsInFlows(flows, bot);
 		bot.getFlows().addAll(AgentIntentsGetter.copyFlows(flows));
+		AgentIntentsGetter.clearShorterPaths(bot.getFlows());
 		
 		// GUARDADO DE ACTIONS
 		bot.getActions().addAll(getActions(bot.getFlows()));
