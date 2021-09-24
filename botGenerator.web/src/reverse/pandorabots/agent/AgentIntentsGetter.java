@@ -376,7 +376,12 @@ public class AgentIntentsGetter {
 			TrainingPhrase phrase = GeneratorFactory.eINSTANCE.createTrainingPhrase();
 			Literal literal = GeneratorFactory.eINSTANCE.createLiteral();
 			
-			literal.setText(category.pattern.text);
+			if (category.pattern.text == null)
+				literal.setText("");
+			
+			else
+				literal.setText(category.pattern.text);
+			
 			phrase.getTokens().add(literal);
 
 			// Caso en que contenga sets en el pattern
@@ -414,7 +419,12 @@ public class AgentIntentsGetter {
 				int setsFlag = 0;
 				
 				// Guardado de texto previo al parametro
-				literal.setText(token);
+				if (token == null)
+					literal.setText("");
+				
+				else
+					literal.setText(token);
+				
 				phrase.getTokens().add(literal);
 
 				// Guardado del parámetro
@@ -810,7 +820,11 @@ public class AgentIntentsGetter {
 					KeyValue keyValue = GeneratorFactory.eINSTANCE.createKeyValue();
 					Literal literal = GeneratorFactory.eINSTANCE.createLiteral();
 					
-					literal.setText(param.text);
+					if (param.text == null)
+						literal.setText("");
+					
+					else
+						literal.setText(param.text);
 
 					keyValue.setKey(param.name + "_text");
 					keyValue.setValue(literal);
@@ -935,7 +949,12 @@ public class AgentIntentsGetter {
 				TextInput textInput = GeneratorFactory.eINSTANCE.createTextInput();
 				Literal literal = GeneratorFactory.eINSTANCE.createLiteral();
 				
-				literal.setText(category.template.text);
+				if (category.pattern.text == null)
+					literal.setText("");
+				
+				else
+					literal.setText(category.pattern.text);
+				
 				textInput.getTokens().add(literal);
 				languageInput.setLanguage(Language.ENGLISH);
 				languageInput.getInputs().add(textInput);
@@ -970,7 +989,12 @@ public class AgentIntentsGetter {
 			TextInput textInput = GeneratorFactory.eINSTANCE.createTextInput();
 			Literal literal = GeneratorFactory.eINSTANCE.createLiteral();
 			
-			literal.setText(srai.text);
+			if (srai.text == null)
+				literal.setText("");
+			
+			else
+				literal.setText(srai.text);
+			
 			textInput.getTokens().add(literal);
 
 			// Si el srai tiene referencias a argumentos del pattern, 
@@ -1077,7 +1101,12 @@ public class AgentIntentsGetter {
 				TextInput textInput = GeneratorFactory.eINSTANCE.createTextInput();
 				Literal literal = GeneratorFactory.eINSTANCE.createLiteral();
 				
-				literal.setText(option.text);
+				if (option.text == null)
+					literal.setText("");
+				
+				else
+					literal.setText(option.text);
+				
 				textInput.getTokens().add(literal);
 				languageInput.setLanguage(Language.ENGLISH);
 				languageInput.getInputs().add(textInput);
@@ -1091,7 +1120,12 @@ public class AgentIntentsGetter {
 					TextInput textInput = GeneratorFactory.eINSTANCE.createTextInput();
 					Literal literal = GeneratorFactory.eINSTANCE.createLiteral();
 					
-					literal.setText(srai.text);
+					if (srai.text == null)
+						literal.setText("");
+					
+					else
+						literal.setText(srai.text);
+					
 					textInput.getTokens().add(literal);
 
 					// Si el srai tiene referencias a argumentos del pattern, 
