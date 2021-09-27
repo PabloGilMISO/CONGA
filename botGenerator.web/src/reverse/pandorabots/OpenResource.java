@@ -36,7 +36,7 @@ public class OpenResource {
 //		Bot bot = createBotExamlpe();
 
 //		String pandorabotsPath = "C:/CONGA/pandorabots/veterinaryCenterPruebas";
-		String pandorabotsPath = "C:/CONGA/pandorabots/bots-externos/aiml-en-us-foundation-alice/alice";
+		String pandorabotsPath = "C:/CONGA/pandorabots/bots-externos/aiml-en-us-foundation-alice/client";
 
 		removeZip(pandorabotsPath);
 		buildZip(pandorabotsPath);
