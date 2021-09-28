@@ -16,7 +16,6 @@
     <fullyQualifiedTypeName name="io.github.lukehutch.fastclasspathscanner.utils.FileUtils"/>
     <fullyQualifiedTypeName name="org.apache.commons.io.FileUtils"/>
     <fullyQualifiedTypeName name="java.util.HashSet"/>
-    <fullyQualifiedTypeName name="java.util.Map"/>
     <fullyQualifiedTypeName name="generator.impl.EntityImpl"/>
     <fullyQualifiedTypeName name="generator.Entity"/>
     <fullyQualifiedTypeName name="generator.SimpleInput"/>
@@ -31,7 +30,6 @@
     <fullyQualifiedTypeName name="generator.UserInteraction"/>
     <fullyQualifiedTypeName name="congabase.User"/>
     <fullyQualifiedTypeName name="generator.BotInteraction"/>
-    <fullyQualifiedTypeName name="java.util.ArrayList"/>
     <fullyQualifiedTypeName name="generator.Method"/>
     <fullyQualifiedTypeName name="generator.IntentInput"/>
     <fullyQualifiedTypeName name="generator.TextLanguageInput"/>
@@ -53,11 +51,13 @@
     <fullyQualifiedTypeName name="generator.Bot"/>
     <fullyQualifiedTypeName name="generator.Action"/>
     <fullyQualifiedTypeName name="generator.KeyValue"/>
-    <fullyQualifiedTypeName name="java.util.HashMap"/>
     <fullyQualifiedTypeName name="org.xtext.botGenerator.services.BotGrammarAccess.TextInputTextElements"/>
     <fullyQualifiedTypeName name="generator.HTTPRequest"/>
-    <fullyQualifiedTypeName name="generator.ParameterReferenceToken"/>
     <fullyQualifiedTypeName name="generator.DefaultEntity"/>
     <fullyQualifiedTypeName name="java.util.concurrent.atomic.AtomicInteger"/>
     <fullyQualifiedTypeName name="reverse.pandorabots.agent.AgentIntentsGetter"/>
+    <fullyQualifiedTypeName name="java.util.HashMap"/>
+    <fullyQualifiedTypeName name="java.util.Map"/>
+    <fullyQualifiedTypeName name="generator.ParameterReferenceToken"/>
+    <fullyQualifiedTypeName name="java.util.ArrayList"/>
 </qualifiedTypeNameHistroy>
